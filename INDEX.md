@@ -3,14 +3,15 @@ title: "108 Vision — Architecture Index"
 brand: "108 Vision"
 claim: "Costruiamo la direzione, non solo il codice."
 author: "Elios Scoglio"
-version: "5.0"
-date: "2026-06-09"
+version: "6.0"
+date: "2026-06-11"
 ---
 
 # 108 Vision — Architecture Index
 
 > **Claim:** Costruiamo la direzione, non solo il codice.
 > **Owner:** Elios Scoglio
+> **Web:** www.108vision.it | **Email:** info@108vision.it
 
 ---
 
@@ -23,242 +24,229 @@ Vision/
 ├── brand/                      ← Identita visiva, naming, tone of voice
 │   └── 108-VISION-Brand-Copy-Sito.md
 │
-├── tracks/                     ← Offerta consulenziale (15 track)
-│   ├── ai-adoption/           ← Adozione AI nelle PMI
-│   ├── ai-platform/           ← Piattaforma AI aziendale (prodotto SaaS)
-│   ├── fractional-cto/        ← CTO part-time / governance tecnica
-│   ├── architettura/          ← Architettura software & scaling
-│   ├── trasformazione-digitale/ ← Digitalizzazione processi
-│   ├── leadership/            ← Tech leadership & management
-│   ├── agile-devops/          ← Agile, CI/CD, DevOps culture
-│   ├── wellbeing/             ← Benessere tech team & anti-burnout
-│   ├── pubblica-amministrazione/ ← Consulenza tecnica PA / MEPA
-│   ├── digital-starter/       ← Primo progetto digitale (startup/PMI)
-│   ├── sviluppo-progetto/     ← Sviluppo a corpo (prezzo fisso)
-│   ├── factory/               ← Team esterno continuativo + mobile
-│   ├── compliance-ai-act/     ← Compliance EU AI Act (2024/1689)
-│   ├── nocode-automation/     ← Automazione No-Code / Low-Code
-│   ├── data-analytics/        ← Data & Analytics / BI
+├── tracks/                     ← Offerta consulenziale (15 track — naming 108-X)
+│   ├── 108-ai/                ← 108 AI — Piattaforma AI aziendale (SaaS)
+│   ├── 108-ai-adoption/       ← 108 AI Adoption — Adozione AI nelle PMI
+│   ├── 108-cto/               ← 108 CTO — Fractional CTO / governance tecnica
+│   ├── 108-arch/              ← 108 Arch — Architettura software & scaling
+│   ├── 108-digital/           ← 108 Digital — Trasformazione digitale
+│   ├── 108-lead/              ← 108 Lead — Tech leadership & management
+│   ├── 108-agile/             ← 108 Agile — Agile, CI/CD, DevOps culture
+│   ├── 108-wellbeing/         ← 108 Wellbeing — Benessere tech team
+│   ├── 108-pa/                ← 108 PA — Consulenza tecnica PA / MEPA
+│   ├── 108-starter/           ← 108 Starter — Primo progetto digitale
+│   ├── 108-dev/               ← 108 Dev — Sviluppo (progetto + factory)
+│   ├── 108-compliance/        ← 108 Compliance — EU AI Act
+│   ├── 108-nocode/            ← 108 NoCode — Automazione No-Code
+│   ├── 108-data/              ← 108 Data — Analytics & BI
+│   ├── 108-sales/             ← 108 Sales — Sales kit e content calendar
 │   ├── study/                 ← Manuali di studio per il consulente
-│   └── sales/                 ← Sales kit e content calendar
+│   └── Curriculum/            ← CV professionali
 │
 ├── aia-platform/              ← Codice sorgente piattaforma AI (monorepo TS)
-└── aia-website/               ← Sito web promozionale (Astro + TinaCMS)
+└── aia-website/               ← Sito web (Astro + Tailwind — www.108vision.it)
 ```
 
 ---
 
 ## Struttura di ogni Track
 
-Ogni track segue una struttura standard a 3 documenti:
+Ogni track segue la naming convention `108-{keyword}/` e contiene 3 documenti standard:
 
-| Documento | Scopo | Audience |
-|-----------|-------|----------|
-| **Playbook** | Processo operativo end-to-end per il consulente | Interna |
-| **Manuale** | Contenuto tecnico approfondito (lead magnet) | Cliente |
-| **Sito/Copy** | Testi per la pagina web del servizio | Pubblico |
-
-Le track `ai-adoption` e `ai-platform` hanno documenti aggiuntivi (segmentazione PMI, piano esecutivo, assistente aziendale).
+| Documento | Naming | Audience |
+|-----------|--------|----------|
+| **Playbook** | `108{PREFIX}-Playbook.md` | Interna (consulente) |
+| **Manuale** | `108{PREFIX}-Manuale.md` | Cliente (lead magnet) |
+| **Sito** | `108{PREFIX}-Sito.md` | Pubblico (copy pagina web) |
 
 ---
 
 ## Catalogo Track
 
-### 1. AI Adoption (`tracks/ai-adoption/`)
+### 1. 108 AI Adoption (`tracks/108-ai-adoption/`)
 **Claim:** "Adottare l'AI e una decisione di business, non tecnologica."
 
-Programma strutturato per portare l'intelligenza artificiale in PMI senza hype. Assessment readiness, selezione use case ad alto ROI, implementazione pilota, scaling.
+Programma strutturato per portare l'AI in PMI senza hype. Assessment readiness, selezione use case ad alto ROI, implementazione pilota, scaling.
 
 | File | Contenuto |
 |------|-----------|
-| `AI-Adoption-Manuale-PMI.md` | Guida completa adozione AI per PMI |
-| `AI-Adoption-Sito-Copy.md` | Copy pagina sito |
-| `AI-Adoption-Program-README.md` | Overview programma |
-| `AI-Piccole-Imprese.md` | Segmento micro/piccole (< 50 dipendenti) |
-| `AI-Medie-Imprese.md` | Segmento medie (50-250 dipendenti) |
+| `108AIA-Manuale.md` | Guida completa adozione AI per PMI |
+| `108AIA-Sito.md` | Copy pagina sito |
+| `108AIA-README.md` | Overview programma |
+| `108AIA-Piccole-Imprese.md` | Segmento micro/piccole (< 50 dipendenti) |
+| `108AIA-Medie-Imprese.md` | Segmento medie (50-250 dipendenti) |
 
-### 2. AI Platform (`tracks/ai-platform/`)
+### 2. 108 AI (`tracks/108-ai/`)
 **Claim:** "L'AI che conosce la tua azienda."
 
-Piattaforma SaaS di assistente AI aziendale con RAG su knowledge base interna. Prodotto proprio in sviluppo.
+Piattaforma SaaS di assistente AI aziendale con RAG su knowledge base interna. Prodotto proprio.
 
 | File | Contenuto |
 |------|-----------|
-| `AIA-Playbook-Piattaforma.md` | Processo delivery piattaforma |
-| `AIA-Manuale-Piattaforma.md` | Architettura tecnica e funzionalita |
-| `AIA-Sito-Piattaforma.md` | Copy pagina sito |
-| `PLATFORM-AI-Assistente-Aziendale.md` | Spec funzionale assistente |
-| `PLATFORM-AI-Piano-Esecutivo.md` | Piano di sviluppo e go-to-market |
+| `108AI-Playbook.md` | Processo delivery piattaforma |
+| `108AI-Manuale.md` | Architettura tecnica e funzionalita |
+| `108AI-Sito.md` | Copy pagina sito |
+| `108AI-Assistente-Aziendale.md` | Spec funzionale assistente |
+| `108AI-Desktop-Bridge.md` | Manuale Desktop Bridge |
+| `108AI-PLATFORM-AI-Piano-Esecutivo.md` | Piano go-to-market |
 
-### 3. Fractional CTO (`tracks/fractional-cto/`)
+### 3. 108 CTO (`tracks/108-cto/`)
 **Claim:** "La governance tecnica che ti manca."
 
-CTO part-time per PMI: governance architetturale, code review strategica, mentoring tech lead, decisioni build-vs-buy, due diligence tecnica.
+CTO part-time per PMI: governance architetturale, code review strategica, mentoring tech lead.
 
 | File | Contenuto |
 |------|-----------|
-| `FCTO-Playbook-FractionalCTO.md` | Framework operativo |
-| `FCTO-Manuale-FractionalCTO.md` | Guida completa ruolo e deliverable |
-| `FCTO-Sito-FractionalCTO.md` | Copy pagina sito |
+| `108CTO-Playbook.md` | Framework operativo |
+| `108CTO-Manuale.md` | Guida ruolo e deliverable |
+| `108CTO-Sito.md` | Copy pagina sito |
 
-### 4. Architettura Software (`tracks/architettura/`)
+### 4. 108 Arch (`tracks/108-arch/`)
 **Claim:** "Il debito tecnico ha un costo invisibile."
 
-Consulenza architetturale: audit sistemi esistenti, modernizzazione monoliti, design microservizi, scalabilita, performance.
+Consulenza architetturale: audit sistemi, modernizzazione monoliti, design microservizi, scalabilita.
 
 | File | Contenuto |
 |------|-----------|
-| `ARCH-Playbook-Scaling.md` | Processo audit e redesign |
-| `ARCH-Manuale-Scaling.md` | Principi architetturali e pattern |
-| `ARCH-Sito-Scaling.md` | Copy pagina sito |
+| `108ARCH-Playbook.md` | Processo audit e redesign |
+| `108ARCH-Manuale.md` | Principi architetturali e pattern |
+| `108ARCH-Sito.md` | Copy pagina sito |
 
-### 5. Trasformazione Digitale (`tracks/trasformazione-digitale/`)
+### 5. 108 Digital (`tracks/108-digital/`)
 **Claim:** "Digitalizzare e ripensare come lavori."
 
-Accompagnamento nella digitalizzazione di processi aziendali: mappatura as-is, design to-be, selezione strumenti, change management.
+Accompagnamento nella digitalizzazione processi: mappatura as-is, design to-be, selezione strumenti.
 
 | File | Contenuto |
 |------|-----------|
-| `DIGI-Playbook-Trasformazione.md` | Framework trasformazione |
-| `DIGI-Manuale-Trasformazione.md` | Guida metodologica |
-| `DIGI-Sito-Trasformazione.md` | Copy pagina sito |
+| `108DIGI-Playbook.md` | Framework trasformazione |
+| `108DIGI-Manuale.md` | Guida metodologica |
+| `108DIGI-Sito.md` | Copy pagina sito |
 
-### 6. Tech Leadership (`tracks/leadership/`)
+### 6. 108 Lead (`tracks/108-lead/`)
 **Claim:** "Da tech lead a leader tecnico."
 
-Coaching e mentoring per tech lead e engineering manager: comunicazione, delega, gestione conflitti, crescita team.
+Coaching per tech lead e engineering manager: comunicazione, delega, crescita team.
 
 | File | Contenuto |
 |------|-----------|
-| `LEAD-Playbook-Leadership.md` | Framework coaching |
-| `LEAD-Manuale-Leadership.md` | Guida leadership tecnica |
-| `LEAD-Sito-Leadership.md` | Copy pagina sito |
+| `108LEAD-Playbook.md` | Framework coaching |
+| `108LEAD-Manuale.md` | Guida leadership tecnica |
+| `108LEAD-Sito.md` | Copy pagina sito |
 
-### 7. Agile & DevOps (`tracks/agile-devops/`)
+### 7. 108 Agile (`tracks/108-agile/`)
 **Claim:** "Rilasciare senza paura."
 
-Implementazione pratiche Agile e DevOps: CI/CD, trunk-based development, team topology, metriche DORA, cultura blameless.
+Implementazione Agile e DevOps: CI/CD, trunk-based development, team topology, metriche DORA.
 
 | File | Contenuto |
 |------|-----------|
-| `AGILE-Playbook-AgileDevOps.md` | Framework implementazione |
-| `AGILE-Manuale-AgileDevOps.md` | Guida pratiche e strumenti |
-| `AGILE-Sito-AgileDevOps.md` | Copy pagina sito |
+| `108AGILE-Playbook.md` | Framework implementazione |
+| `108AGILE-Manuale.md` | Guida pratiche e strumenti |
+| `108AGILE-Sito.md` | Copy pagina sito |
 
-### 8. Tech Wellbeing (`tracks/wellbeing/`)
+### 8. 108 Wellbeing (`tracks/108-wellbeing/`)
 **Claim:** "Il burnout costa il doppio."
 
-Programma anti-burnout per team tecnici: riconoscimento segnali, riduzione cognitive load, sustainable pace, retrospettive di benessere.
+Programma anti-burnout: riconoscimento segnali, riduzione cognitive load, sustainable pace.
 
 | File | Contenuto |
 |------|-----------|
-| `WELL-Playbook-Wellbeing.md` | Framework wellbeing |
-| `WELL-Manuale-Wellbeing.md` | Guida completa |
-| `WELL-Sito-Wellbeing.md` | Copy pagina sito |
+| `108WELL-Playbook.md` | Framework wellbeing |
+| `108WELL-Manuale.md` | Guida completa |
+| `108WELL-Sito.md` | Copy pagina sito |
 
-### 9. Pubblica Amministrazione (`tracks/pubblica-amministrazione/`)
+### 9. 108 PA (`tracks/108-pa/`)
 **Claim:** "La PA ha bisogno di sistemi che funzionano."
 
-Consulenza tecnica per enti pubblici: MEPA, bandi digitali, modernizzazione legacy PA, accessibilita, interoperabilita.
+Consulenza tecnica per enti pubblici: MEPA, bandi digitali, accessibilita, interoperabilita.
 
 | File | Contenuto |
 |------|-----------|
-| `PA-Playbook-PubblicaAmministrazione.md` | Framework PA |
-| `PA-Manuale-PubblicaAmministrazione.md` | Guida completa |
-| `PA-Sito-PubblicaAmministrazione.md` | Copy pagina sito |
+| `108PA-Playbook.md` | Framework PA |
+| `108PA-Manuale.md` | Guida completa |
+| `108PA-Sito.md` | Copy pagina sito |
 
-### 10. Digital Starter (`tracks/digital-starter/`)
+### 10. 108 Starter (`tracks/108-starter/`)
 **Claim:** "Il tuo primo passo. Senza fuffa."
 
-Pacchetto entry-level per chi parte da zero: primo sito, primo e-commerce, primo CRM, primo workflow digitale.
+Pacchetto entry-level per chi parte da zero: primo sito, e-commerce, CRM, workflow digitale.
 
 | File | Contenuto |
 |------|-----------|
-| `ZERO-Playbook-FromScratch.md` | Processo onboarding |
-| `ZERO-Manuale-FromScratch.md` | Guida primi passi |
-| `ZERO-Sito-FromScratch.md` | Copy pagina sito |
+| `108START-Playbook.md` | Processo onboarding |
+| `108START-Manuale.md` | Guida primi passi |
+| `108START-Sito.md` | Copy pagina sito |
 
-### 11. Sviluppo a Progetto (`tracks/sviluppo-progetto/`)
-**Claim:** "Un progetto. Un prezzo. Un risultato."
+### 11. 108 Dev (`tracks/108-dev/`)
+**Claim:** "Un progetto. Un prezzo. Un risultato." / "Il tuo team esterno. Senza assumerlo."
 
-Sviluppo software a corpo con scope definito: discovery, sviluppo, delivery, garanzia. Prezzo fisso, nessuna sorpresa.
-
-| File | Contenuto |
-|------|-----------|
-| `PROJ-Playbook-SviluppoProgetto.md` | Processo delivery |
-| `PROJ-Manuale-SviluppoProgetto.md` | Framework progettuale |
-| `PROJ-Sito-SviluppoProgetto.md` | Copy pagina sito |
-
-### 12. Factory (`tracks/factory/`)
-**Claim:** "Il tuo team esterno. Senza assumerlo."
-
-Team dedicato in outsourcing continuativo: sviluppo, manutenzione evolutiva, mobile. Modello a canone mensile.
+Sviluppo software in due modalita: progetto a scope fisso (discovery → delivery) oppure team continuativo (factory a retainer mensile).
 
 | File | Contenuto |
 |------|-----------|
-| `FACT-Playbook-Factory.md` | Framework factory |
-| `FACT-Manuale-Factory.md` | Guida operativa |
-| `FACT-Sito-Factory.md` | Copy pagina sito |
+| `108DEV-Playbook-Progetto.md` | Delivery progetto chiavi in mano |
+| `108DEV-Manuale-Progetto.md` | Framework progettuale |
+| `108DEV-Sito-Progetto.md` | Copy sezione progetto |
+| `108DEV-Playbook-Factory.md` | Framework factory / retainer |
+| `108DEV-Manuale-Factory.md` | Guida operativa factory |
+| `108DEV-Sito-Factory.md` | Copy sezione factory |
 
-### 13. Compliance & AI Act (`tracks/compliance-ai-act/`)
+### 12. 108 Compliance (`tracks/108-compliance/`)
 **Claim:** "L'AI Act non e un problema legale. E un problema di sistema."
 
-Accompagnamento PMI nella compliance al Regolamento EU 2024/1689: classificazione rischio, gap analysis, piano adeguamento, audit readiness. Approccio tecnico (non solo legale).
+Compliance EU AI Act 2024/1689: classificazione rischio, gap analysis, piano adeguamento.
 
 | File | Contenuto |
 |------|-----------|
-| `COMP-Playbook-ComplianceAIAct.md` | Framework compliance 6 fasi |
-| `COMP-Manuale-ComplianceAIAct.md` | Guida AI Act per PMI (lead magnet) |
-| `COMP-Sito-ComplianceAIAct.md` | Copy pagina sito + LinkedIn posts |
+| `108COMP-Playbook.md` | Framework compliance 6 fasi |
+| `108COMP-Manuale.md` | Guida AI Act per PMI (lead magnet) |
+| `108COMP-Sito.md` | Copy pagina sito |
 
-### 14. No-Code / Low-Code Automation (`tracks/nocode-automation/`)
+### 13. 108 NoCode (`tracks/108-nocode/`)
 **Claim:** "Automatizza prima di assumere."
 
-Progettazione e implementazione automazioni con piattaforme no-code (Make, n8n, Zapier): workflow inter-app, integrazioni gestionali italiani, riduzione lavoro manuale ripetitivo.
+Automazioni no-code (Make, n8n, Zapier): workflow inter-app, integrazioni gestionali italiani.
 
 | File | Contenuto |
 |------|-----------|
-| `NOCODE-Playbook-Automation.md` | Framework consulenziale + gestionali IT |
-| `NOCODE-Manuale-Automation.md` | Guida step-by-step automazione (lead magnet) |
-| `NOCODE-Sito-Automation.md` | Copy pagina sito + pricing |
+| `108NOCODE-Playbook.md` | Framework consulenziale |
+| `108NOCODE-Manuale.md` | Guida step-by-step (lead magnet) |
+| `108NOCODE-Sito.md` | Copy pagina sito |
 
-### 15. Data & Analytics (`tracks/data-analytics/`)
+### 14. 108 Data (`tracks/108-data/`)
 **Claim:** "I dati che hai gia ti dicono cosa fare."
 
-Business intelligence e analytics per PMI: audit dati esistenti, dashboard KPI, data literacy team, cultura data-driven senza big-data hype.
+Business intelligence per PMI: audit dati, dashboard KPI, data literacy, cultura data-driven.
 
 | File | Contenuto |
 |------|-----------|
-| `DATA-Playbook-Analytics.md` | Framework analytics 5 fasi |
-| `DATA-Manuale-Analytics.md` | Guida BI per PMI (lead magnet) |
-| `DATA-Sito-Analytics.md` | Copy pagina sito + pricing |
+| `108DATA-Playbook.md` | Framework analytics 5 fasi |
+| `108DATA-Manuale.md` | Guida BI per PMI (lead magnet) |
+| `108DATA-Sito.md` | Copy pagina sito |
 
 ---
 
 ## Track Trasversali
 
-### Study (`tracks/study/`)
-Manuali di studio per il consulente. Coprono la teoria e i framework dietro ogni track.
-
-| File | Copertura |
-|------|-----------|
-| `STUDY-AI-Adoption.md` | Teoria adozione AI |
-| `STUDY-AIA-Piattaforma.md` | Architettura piattaforme AI |
-| `STUDY-AGILE-DevOps.md` | Fondamenti Agile/DevOps |
-| `STUDY-ARCH-Scaling.md` | Pattern architetturali |
-| `STUDY-DIGI-Trasformazione.md` | Digital transformation theory |
-| `STUDY-FCTO-FractionalCTO.md` | Fractional leadership models |
-| `STUDY-LEAD-Leadership.md` | Engineering management |
-| `STUDY-WELL-Wellbeing.md` | Occupational psychology |
-| `STUDY-ZERO-DigitalStarter.md` | Digital literacy foundations |
-
-### Sales (`tracks/sales/`)
+### 108 Sales (`tracks/108-sales/`)
 Materiali commerciali trasversali a tutte le track.
 
 | File | Contenuto |
 |------|-----------|
-| `AI-Sales-Kit.md` | Script vendita, obiezioni, pricing |
-| `AI-Content-Calendar.md` | Piano editoriale 90 giorni |
+| `108SALES-Sales-Kit.md` | Script vendita, obiezioni, pricing |
+| `108SALES-Content-Calendar.md` | Piano editoriale 90 giorni |
+
+### Study (`tracks/study/`)
+Manuali di studio per il consulente.
+
+| File | Copertura |
+|------|-----------|
+| `108-STUDY-AI-Adoption.md` | Teoria adozione AI |
+| `108-STUDY-AI-Platform.md` | Architettura piattaforme AI |
+| `108-STUDY-Agile.md` | Fondamenti Agile/DevOps |
+| `108-STUDY-Arch.md` | Pattern architetturali |
+| `108-STUDY-Digital.md` | Digital transformation theory |
 
 ---
 
@@ -267,14 +255,12 @@ Materiali commerciali trasversali a tutte le track.
 | Modello | Target | Range | Entry Point |
 |---------|--------|-------|-------------|
 | Quick Win | Primo contatto | 500-1.500 EUR | Audit / Assessment |
-| Progetto | Obiettivo definito | 3.000-80.000 EUR | Discovery Sprint |
-| Factory | Evoluzione continua | 1.500-5.500 EUR/mese | Assessment sistema |
-| Fractional CTO | Governance continuativa | 3.000-8.000 EUR/mese | Call strategica |
-| Mobile (a corpo) | App chiavi in mano | 5.000-60.000 EUR | Discovery |
-| Mobile (Factory) | App in evoluzione | 2.500 EUR/mese | Assessment |
-| Compliance AI Act | Adeguamento normativo | 1.500-20.000 EUR | AI Risk Assessment |
-| No-Code Automation | Automazione processi | 1.500-8.000 EUR | Workshop discovery |
-| Data & Analytics | BI / Dashboard KPI | 2.000-15.000 EUR | Audit dati |
+| Progetto (108 Dev) | Obiettivo definito | 3.000-80.000 EUR | Discovery Sprint |
+| Factory (108 Dev) | Evoluzione continua | 1.500-5.500 EUR/mese | Assessment sistema |
+| 108 CTO | Governance continuativa | 3.000-8.000 EUR/mese | Call strategica |
+| 108 Compliance | Adeguamento AI Act | 1.500-20.000 EUR | AI Risk Assessment |
+| 108 NoCode | Automazione processi | 1.500-8.000 EUR | Workshop discovery |
+| 108 Data | BI / Dashboard KPI | 2.000-15.000 EUR | Audit dati |
 
 ---
 
@@ -282,21 +268,20 @@ Materiali commerciali trasversali a tutte le track.
 
 | Track | Playbook | Manuale | Sito | Studio | Codice |
 |-------|----------|---------|------|--------|--------|
-| AI Adoption | - | DONE | DONE | DONE | - |
-| AI Platform | DONE | DONE | DONE | DONE | WIP |
-| Fractional CTO | DONE | DONE | DONE | DONE | - |
-| Architettura | DONE | DONE | DONE | DONE | - |
-| Trasformazione | DONE | DONE | DONE | DONE | - |
-| Leadership | DONE | DONE | DONE | DONE | - |
-| Agile & DevOps | DONE | DONE | DONE | DONE | - |
-| Wellbeing | DONE | DONE | DONE | DONE | - |
-| PA | DONE | DONE | DONE | - | - |
-| Digital Starter | DONE | DONE | DONE | DONE | - |
-| Sviluppo Progetto | DONE | DONE | DONE | - | - |
-| Factory | DONE | DONE | DONE | - | - |
-| Compliance AI Act | DONE | DONE | DONE | - | - |
-| No-Code Automation | DONE | DONE | DONE | - | - |
-| Data & Analytics | DONE | DONE | DONE | - | - |
+| 108 AI Adoption | - | DONE | DONE | DONE | - |
+| 108 AI | DONE | DONE | DONE | DONE | WIP |
+| 108 CTO | DONE | DONE | DONE | DONE | - |
+| 108 Arch | DONE | DONE | DONE | DONE | - |
+| 108 Digital | DONE | DONE | DONE | DONE | - |
+| 108 Lead | DONE | DONE | DONE | DONE | - |
+| 108 Agile | DONE | DONE | DONE | DONE | - |
+| 108 Wellbeing | DONE | DONE | DONE | DONE | - |
+| 108 PA | DONE | DONE | DONE | - | - |
+| 108 Starter | DONE | DONE | DONE | DONE | - |
+| 108 Dev | DONE | DONE | DONE | - | - |
+| 108 Compliance | DONE | DONE | DONE | - | - |
+| 108 NoCode | DONE | DONE | DONE | - | - |
+| 108 Data | DONE | DONE | DONE | - | - |
 
 **Totale:** 51 documenti track + 9 study + 2 sales = 62 documenti
 

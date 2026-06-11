@@ -45,24 +45,24 @@ Vision/
 ├── CLAUDE.md                    ← Sei qui
 ├── INDEX.md                     ← Mappa completa (15 track, 62 documenti)
 ├── brand/                       ← Identità visiva, naming, tone of voice
-├── tracks/                      ← Offerta consulenziale (15 track)
-│   ├── ai-adoption/            ← Adozione AI nelle PMI
-│   ├── ai-platform/            ← Piattaforma AI aziendale (prodotto SaaS)
-│   ├── fractional-cto/         ← CTO part-time / governance tecnica
-│   ├── architettura/           ← Architettura software & scaling
-│   ├── trasformazione-digitale/ ← Digitalizzazione processi
-│   ├── leadership/             ← Tech leadership & management
-│   ├── agile-devops/           ← Agile, CI/CD, DevOps culture
-│   ├── wellbeing/              ← Benessere tech team & anti-burnout
-│   ├── pubblica-amministrazione/ ← Consulenza tecnica PA
-│   ├── digital-starter/        ← Primo progetto digitale
-│   ├── sviluppo-progetto/      ← Sviluppo a corpo (prezzo fisso)
-│   ├── factory/                ← Team esterno continuativo
-│   ├── compliance-ai-act/      ← Compliance EU AI Act
-│   ├── nocode-automation/      ← Automazione No-Code / Low-Code
-│   ├── data-analytics/         ← Data & Analytics / BI
-│   ├── study/                  ← Manuali studio per il consulente
-│   └── sales/                  ← Sales kit e content calendar
+├── tracks/                      ← Offerta consulenziale (15 track — naming 108-X)
+│   ├── 108-ai/                ← 108 AI — Piattaforma AI aziendale (SaaS)
+│   ├── 108-ai-adoption/       ← 108 AI Adoption — Adozione AI nelle PMI
+│   ├── 108-cto/               ← 108 CTO — Fractional CTO / governance
+│   ├── 108-arch/              ← 108 Arch — Architettura software & scaling
+│   ├── 108-digital/           ← 108 Digital — Trasformazione digitale
+│   ├── 108-lead/              ← 108 Lead — Tech leadership & management
+│   ├── 108-agile/             ← 108 Agile — Agile, CI/CD, DevOps
+│   ├── 108-wellbeing/         ← 108 Wellbeing — Benessere tech team
+│   ├── 108-pa/                ← 108 PA — Consulenza tecnica PA
+│   ├── 108-starter/           ← 108 Starter — Primo progetto digitale
+│   ├── 108-dev/               ← 108 Dev — Sviluppo (progetto + factory)
+│   ├── 108-compliance/        ← 108 Compliance — EU AI Act
+│   ├── 108-nocode/            ← 108 NoCode — Automazione No-Code
+│   ├── 108-data/              ← 108 Data — Analytics & BI
+│   ├── 108-sales/             ← 108 Sales — Sales kit e content calendar
+│   ├── study/                 ← Manuali studio per il consulente
+│   └── Curriculum/            ← CV professionali
 ├── aia-platform/               ← Codice sorgente piattaforma AI (monorepo TS)
 └── aia-website/                ← Sito web (Astro + TinaCMS)
 ```
