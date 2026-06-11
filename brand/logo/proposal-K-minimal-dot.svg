@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 80" fill="none">
+  <!-- Proposal K: Minimal Dot — tutto sullo stesso piano, dot violet come firma -->
+  <!-- Concept: leggibilissimo, zero decorazioni, il punto viola e' la firma -->
+
+  <!-- Full brand name as one unit -->
+  <text x="12" y="54" font-family="Inter, 'SF Pro Display', system-ui, sans-serif" font-size="42" font-weight="700" letter-spacing="-0.5" fill="#0F172A">108 Vision</text>
+
+  <!-- Il punto viola — la firma del brand -->
+  <circle cx="310" cy="50" r="6" fill="#6D28D9"/>
+</svg>

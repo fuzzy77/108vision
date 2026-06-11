@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 90" fill="none">
+  <!-- Proposal L: Dark Badge — tutto su fondo scuro, premium/luxury feel -->
+  <!-- Concept: sfondo dark come un badge di qualita, logo invertito -->
+
+  <defs>
+    <linearGradient id="darkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#1E1B4B"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Dark rounded background -->
+  <rect x="0" y="0" width="360" height="90" rx="16" fill="url(#darkGrad)"/>
+
+  <!-- "108" — white, bold -->
+  <text x="24" y="58" font-family="Inter, 'SF Pro Display', system-ui, sans-serif" font-size="46" font-weight="800" letter-spacing="-1" fill="white">108</text>
+
+  <!-- Small vertical bar separator -->
+  <rect x="128" y="22" width="2" height="46" rx="1" fill="#475569"/>
+
+  <!-- "VISION" — violet-light -->
+  <text x="144" y="58" font-family="Inter, 'SF Pro Display', system-ui, sans-serif" font-size="46" font-weight="700" letter-spacing="1" fill="#A78BFA">VISION</text>
+
+  <!-- Subtle glow line at bottom -->
+  <rect x="24" y="74" width="60" height="2.5" rx="1.25" fill="#6D28D9" opacity="0.8"/>
+</svg>

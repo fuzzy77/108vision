@@ -1,0 +1,53 @@
+fragment PageParts on Page {
+  __typename
+  title
+  description
+  hero_title
+  hero_subtitle
+  cta_text
+  cta_link
+  sections {
+    __typename
+    type
+    title
+    content
+  }
+  body
+}
+
+fragment BlogParts on Blog {
+  __typename
+  title
+  date
+  author
+  excerpt
+  cover_image
+  tags
+  body
+}
+
+fragment GlobalParts on Global {
+  __typename
+  nav {
+    __typename
+    items {
+      __typename
+      label
+      href
+    }
+  }
+  footer {
+    __typename
+    links {
+      __typename
+      label
+      href
+    }
+  }
+  social {
+    __typename
+    linkedin
+    github
+    twitter
+  }
+}

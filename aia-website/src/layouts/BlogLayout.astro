@@ -1,0 +1,100 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import BreadcrumbNav from '@/components/BreadcrumbNav.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  date: string;
+  author: string;
+  coverImage?: string;
+  tags?: string[];
+  readTime?: string;
+}
+
+const { title, description, date, author, coverImage, tags = [], readTime } = Astro.props;
+
+const formattedDate = new Date(date).toLocaleDateString('it-IT', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+
+<BaseLayout title={title} description={description} ogImage={coverImage}>
+  <BreadcrumbNav items={[
+    { label: 'Home', href: '/' },
+    { label: 'Blog', href: '/blog' },
+    { label: title },
+  ]} />
+
+  <article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Article Header -->
+    <header class="mb-10">
+      {tags.length > 0 && (
+        <div class="flex flex-wrap gap-2 mb-4">
+          {tags.map((tag) => (
+            <span class="inline-block px-3 py-1 text-xs font-medium bg-primary-100 text-primary-700 rounded-full">
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
+
+      <h1 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4 leading-tight">
+        {title}
+      </h1>
+
+      <div class="flex items-center gap-4 text-sm text-slate-500">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
+            <span class="text-primary-700 font-semibold text-xs">ES</span>
+          </div>
+          <span class="font-medium text-slate-700">{author}</span>
+        </div>
+        <span>&middot;</span>
+        <time datetime={date}>{formattedDate}</time>
+        {readTime && (
+          <>
+            <span>&middot;</span>
+            <span>{readTime}</span>
+          </>
+        )}
+      </div>
+    </header>
+
+    <!-- Cover Image -->
+    {coverImage && (
+      <div class="mb-10 rounded-xl overflow-hidden">
+        <img
+          src={coverImage}
+          alt={title}
+          class="w-full h-64 md:h-96 object-cover"
+          loading="eager"
+        />
+      </div>
+    )}
+
+    <!-- Article Content -->
+    <div class="prose max-w-none">
+      <slot />
+    </div>
+
+    <!-- Author Bio -->
+    <footer class="mt-16 pt-8 border-t border-slate-200">
+      <div class="flex items-start gap-4">
+        <div class="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0">
+          <img src="/logo-108-mark.svg" alt="108 Vision" class="w-10 h-10" />
+        </div>
+        <div>
+          <h3 class="font-semibold text-slate-900">Elios Scoglio</h3>
+          <p class="text-sm text-slate-500 mb-2">Fondatore, 108 Vision | Software Architecture Manager</p>
+          <p class="text-sm text-slate-600">
+            15+ anni di esperienza in architettura software, AI e trasformazione digitale.
+            Aiuto PMI e enterprise a costruire sistemi che funzionano davvero.
+          </p>
+        </div>
+      </div>
+    </footer>
+  </article>
+</BaseLayout>

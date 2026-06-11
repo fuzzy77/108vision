@@ -1,0 +1,116 @@
+---
+import CleanLayout from '@/layouts/CleanLayout.astro';
+---
+
+<CleanLayout
+  title="Elios Scoglio — Full-Stack AI Engineer"
+  description="Senior engineer con 15+ anni di esperienza in architettura software e AI/ML. Specializzato in LLM engineering, RAG systems, multi-agent orchestration e piattaforme AI production-ready."
+  noIndex={true}
+>
+  <section class="py-20 bg-white">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+
+      <!-- Header -->
+      <div class="flex items-center gap-4 mb-8">
+        <img src="/logo-108-mark.svg" alt="108 Vision" class="w-12 h-12" />
+        <div>
+          <h1 class="text-3xl font-bold text-slate-900">Elios Scoglio — Full-Stack AI Engineer</h1>
+          <p class="text-primary-600 font-medium">108 Vision | Profilo professionale</p>
+        </div>
+      </div>
+
+      <!-- Intro for companies -->
+      <div class="p-6 bg-primary-50 rounded-xl border-l-4 border-primary-500 mb-12">
+        <h2 class="font-semibold text-slate-900 mb-2">Per le aziende</h2>
+        <p class="text-slate-700 leading-relaxed">
+          Se cercate un profilo che unisce competenza full-stack solida a specializzazione AI/ML applicata,
+          con esperienza enterprise reale su sistemi ad alta affidabilità — questo è il profilo giusto.
+          Non un data scientist teorico, ma un engineer che porta modelli in produzione.
+        </p>
+      </div>
+
+      <!-- Summary -->
+      <div class="prose max-w-none mb-12">
+        <h2 class="text-2xl font-bold text-slate-900 mb-4">Sintesi competenze</h2>
+        <p class="text-lg text-slate-600 leading-relaxed">
+          Senior engineer con 15+ anni di esperienza in architettura software e AI/ML. Specializzato
+          in LLM engineering, RAG systems, multi-agent orchestration, e piattaforme AI production-ready.
+          Background enterprise su sistemi mission-critical (ticketing, compliance fiscale, e-commerce).
+          Stack: TypeScript, Python, .NET, Java, React, Node.js, PostgreSQL, Redis, Qdrant, LangChain,
+          OpenAI/Anthropic APIs.
+        </p>
+      </div>
+
+      <!-- Key areas -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-12">
+        <div class="p-4 bg-slate-50 rounded-xl">
+          <h3 class="font-semibold text-slate-900 mb-2">AI / LLM Engineering</h3>
+          <p class="text-sm text-slate-600">RAG systems, multi-agent orchestration, LLM evaluation, prompt engineering, AI gateway design, cost routing.</p>
+        </div>
+        <div class="p-4 bg-slate-50 rounded-xl">
+          <h3 class="font-semibold text-slate-900 mb-2">Backend & API</h3>
+          <p class="text-sm text-slate-600">TypeScript/Hono, .NET 8, Java Spring Boot, REST/gRPC, event-driven (Kafka), microservizi, resilienza (Polly, Resilience4j).</p>
+        </div>
+        <div class="p-4 bg-slate-50 rounded-xl">
+          <h3 class="font-semibold text-slate-900 mb-2">Frontend</h3>
+          <p class="text-sm text-slate-600">React 19, Angular 17, Vite, Tailwind CSS, shadcn/ui. SPA enterprise su sistemi B2C e B2B ad alta concorrenza.</p>
+        </div>
+        <div class="p-4 bg-slate-50 rounded-xl">
+          <h3 class="font-semibold text-slate-900 mb-2">Data & Infra</h3>
+          <p class="text-sm text-slate-600">PostgreSQL + pgvector, Redis, Qdrant, Oracle, MS SQL. Docker, Kubernetes, CI/CD GitLab, OpenTelemetry.</p>
+        </div>
+      </div>
+
+      <!-- Download CTA -->
+      <div class="p-8 bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl text-center">
+        <h3 class="text-xl font-bold text-white mb-3">Scarica il CV completo</h3>
+        <p class="text-slate-300 mb-6">PDF con esperienze, progetti, certificazioni e stack tecnologico dettagliato.</p>
+        <a
+          href="/cv/Elios_Scoglio_CV_FullStackAI.pdf"
+          download
+          class="inline-flex items-center px-6 py-3 text-sm font-semibold text-slate-900 bg-white rounded-lg hover:bg-slate-100 transition-colors"
+        >
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          Scarica PDF
+        </a>
+      </div>
+
+      <!-- Contact Form -->
+      <div class="mt-16 p-8 bg-slate-50 rounded-2xl border border-slate-200">
+        <h3 class="text-xl font-bold text-slate-900 mb-2 text-center">Interessato a questo profilo?</h3>
+        <p class="text-sm text-slate-500 text-center mb-6">Compila il form e ti rispondo entro 24 ore.</p>
+        <form action="https://formspree.io/f/YOUR_FORM_ID" method="POST" class="space-y-4 max-w-lg mx-auto">
+          <input type="hidden" name="_subject" value="Contatto profilo: Full-Stack AI Engineer" />
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="name" class="block text-sm font-medium text-slate-700 mb-1">Nome *</label>
+              <input type="text" id="name" name="name" required class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm" placeholder="Mario Rossi" />
+            </div>
+            <div>
+              <label for="email" class="block text-sm font-medium text-slate-700 mb-1">Email *</label>
+              <input type="email" id="email" name="email" required class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm" placeholder="mario@azienda.it" />
+            </div>
+          </div>
+          <div>
+            <label for="company" class="block text-sm font-medium text-slate-700 mb-1">Azienda</label>
+            <input type="text" id="company" name="company" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm" placeholder="Nome azienda" />
+          </div>
+          <div>
+            <label for="message" class="block text-sm font-medium text-slate-700 mb-1">Messaggio *</label>
+            <textarea id="message" name="message" required rows="3" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm resize-y" placeholder="Descrivi brevemente cosa stai cercando..."></textarea>
+          </div>
+          <div class="flex items-start gap-2">
+            <input type="checkbox" id="privacy" name="privacy" required class="mt-1 w-4 h-4 text-primary-600 border-slate-300 rounded focus:ring-primary-500" />
+            <label for="privacy" class="text-xs text-slate-500">Acconsento al trattamento dei dati. <a href="/privacy" class="underline text-primary-600">Privacy Policy</a></label>
+          </div>
+          <button type="submit" class="w-full px-6 py-3 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 transition-colors text-sm">
+            Invia messaggio
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </section>
+</CleanLayout>

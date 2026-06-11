@@ -1,0 +1,13 @@
+---
+interface Props {
+  url?: string;
+}
+
+const { url = 'https://calendly.com/eliosscoglio/discovery-call' } = Astro.props;
+---
+
+<div class="calendly-embed rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
+  <div class="calendly-inline-widget" data-url={url} style="min-width:320px;height:650px;"></div>
+</div>
+
+<script is:inline src="https://assets.calendly.com/assets/external/widget.js" async></script>

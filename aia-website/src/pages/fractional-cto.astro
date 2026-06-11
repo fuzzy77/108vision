@@ -1,0 +1,175 @@
+---
+import ServiceLayout from '@/layouts/ServiceLayout.astro';
+import FeatureGrid from '@/components/FeatureGrid.astro';
+import PricingTable from '@/components/PricingTable.astro';
+
+const features = [
+  { title: 'Governance Tecnica', description: 'Definizione standard, review architetturali, decisioni tecnologiche informate. ADR e documentazione viva.', icon: '🏛️' },
+  { title: 'Team Building', description: 'Hiring, onboarding, struttura team. Da freelancer sparsi a engineering team coeso e produttivo.', icon: '👥' },
+  { title: 'Architettura & Stack', description: 'Scelta tecnologie, design sistemi, technical debt management. Decisioni con trade-off espliciti.', icon: '🏗️' },
+  { title: 'Vendor Management', description: 'Valutazione fornitori, negoziazione contratti tech, gestione outsourcing. Il tuo interesse prima di tutto.', icon: '🤝' },
+  { title: 'Roadmap Tecnologica', description: 'Piano 6-12 mesi allineato al business. Priorita, dipendenze, rischi e milestone concrete.', icon: '🗺️' },
+  { title: 'Mentoring & Coaching', description: 'Crescita dei tuoi tech lead. Sessioni 1:1, code review formative, feedback strutturato.', icon: '🎯' },
+];
+
+const plans = [
+  {
+    name: 'Advisory',
+    price: 'Su misura',
+    description: '2 giorni/mese',
+    features: [
+      'Consulenza strategica bisettimanale',
+      'Review decisioni tecnologiche',
+      'Partecipazione a meeting chiave',
+      'Disponibilita via Slack/email',
+      'Monthly tech report',
+    ],
+    cta: 'Richiedi preventivo',
+    highlighted: false,
+  },
+  {
+    name: 'Embedded',
+    price: 'Su misura',
+    description: '4 giorni/mese',
+    features: [
+      'Tutto Advisory incluso',
+      'Partecipazione sprint planning',
+      'Code review settimanali',
+      'Mentoring tech lead 1:1',
+      'Gestione fornitori tech',
+      'Roadmap trimestrale',
+      'Hiring support',
+    ],
+    cta: 'Parliamone',
+    highlighted: true,
+  },
+  {
+    name: 'Intensive',
+    price: 'Su misura',
+    description: '8 giorni/mese',
+    features: [
+      'Tutto Embedded incluso',
+      'Presenza quasi-full-time',
+      'Leadership team engineering',
+      'Ristrutturazione team/processi',
+      'Definizione architettura completa',
+      'Due diligence tecnica',
+      'Board/investor reporting',
+    ],
+    cta: 'Parliamone',
+    highlighted: false,
+  },
+];
+---
+
+<ServiceLayout
+  title="Fractional CTO"
+  description="CTO part-time per startup e PMI. Governance tecnica, team building, architettura e vendor management."
+  heroTitle="Il tuo CTO, senza il costo di un full-time"
+  heroSubtitle="Leadership tecnica senior per startup e PMI che hanno bisogno di governance, visione architetturale e team building — con la flessibilità che serve alla tua fase di crescita."
+  breadcrumbs={[
+    { label: 'Home', href: '/' },
+    { label: 'Fractional CTO' },
+  ]}
+>
+  <!-- Who needs this -->
+  <section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl mx-auto text-center mb-16">
+        <h2 class="text-3xl font-bold text-slate-900 mb-6">Per chi e il Fractional CTO?</h2>
+        <p class="text-lg text-slate-600 leading-relaxed">
+          Per aziende tech-driven che stanno crescendo e hanno bisogno di un leader tecnico esperto,
+          ma non sono pronte (o non vogliono) assumere un CTO full-time a 150K+/anno.
+        </p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="p-6 bg-primary-50 rounded-xl">
+          <h3 class="font-semibold text-slate-900 mb-2">Startup in crescita</h3>
+          <p class="text-sm text-slate-600">Hai un MVP che funziona ma devi scalare. Serve architettura, processi, e un team strutturato.</p>
+        </div>
+        <div class="p-6 bg-primary-50 rounded-xl">
+          <h3 class="font-semibold text-slate-900 mb-2">PMI digitalizzate</h3>
+          <p class="text-sm text-slate-600">Hai sviluppatori ma manca la direzione tecnica. Debito tecnico che cresce, decisioni senza criterio.</p>
+        </div>
+        <div class="p-6 bg-primary-50 rounded-xl">
+          <h3 class="font-semibold text-slate-900 mb-2">Scale-up pre/post funding</h3>
+          <p class="text-sm text-slate-600">Investitori che chiedono un tech leader. Due diligence tecnica. Roadmap credibile per il board.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="py-20 bg-slate-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl font-bold text-slate-900 mb-4">Cosa faccio come tuo Fractional CTO</h2>
+      </div>
+      <FeatureGrid features={features} columns={3} />
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section class="py-20 bg-white">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl font-bold text-slate-900 mb-12 text-center">Come funziona</h2>
+      <div class="space-y-8">
+        <div class="flex gap-4">
+          <div class="w-8 h-8 bg-primary-600 text-white rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold">1</div>
+          <div>
+            <h3 class="font-semibold text-slate-900 mb-1">Discovery Call (gratuita)</h3>
+            <p class="text-sm text-slate-600">30 minuti per capire la tua situazione, le sfide e gli obiettivi. Nessun impegno.</p>
+          </div>
+        </div>
+        <div class="flex gap-4">
+          <div class="w-8 h-8 bg-primary-600 text-white rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold">2</div>
+          <div>
+            <h3 class="font-semibold text-slate-900 mb-1">Tech Assessment (settimana 1)</h3>
+            <p class="text-sm text-slate-600">Analizzo codice, architettura, team, processi. Produco un report con stato attuale e raccomandazioni.</p>
+          </div>
+        </div>
+        <div class="flex gap-4">
+          <div class="w-8 h-8 bg-primary-600 text-white rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold">3</div>
+          <div>
+            <h3 class="font-semibold text-slate-900 mb-1">Piano d'azione (settimana 2)</h3>
+            <p class="text-sm text-slate-600">Roadmap 90 giorni con priorita, quick wins e obiettivi misurabili. Allineamento con il business.</p>
+          </div>
+        </div>
+        <div class="flex gap-4">
+          <div class="w-8 h-8 bg-primary-600 text-white rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold">4</div>
+          <div>
+            <h3 class="font-semibold text-slate-900 mb-1">Esecuzione (ongoing)</h3>
+            <p class="text-sm text-slate-600">Lavoro fianco a fianco con il tuo team. Review settimanali, decisioni condivise, risultati tracciati.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing -->
+  <section class="py-20 bg-slate-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl font-bold text-slate-900 mb-4">Pacchetti disponibili</h2>
+        <p class="text-lg text-slate-600">Ogni percorso è personalizzato. Parliamone per trovare la formula giusta.</p>
+      </div>
+      <PricingTable plans={plans} />
+    </div>
+  </section>
+
+  <!-- PDF Omaggio -->
+  <section class="py-16 bg-white">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <div class="p-8 bg-gradient-to-br from-primary-50 to-violet-50 rounded-2xl border border-primary-100">
+        <svg class="w-12 h-12 text-primary-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        <h3 class="text-xl font-bold text-slate-900 mb-2">Scarica la guida gratuita</h3>
+        <p class="text-slate-600 mb-6">Ricevi il PDF con framework, checklist e casi studio reali. Nessuna email richiesta.</p>
+        <a href="/risorse" class="inline-flex items-center px-6 py-3 text-sm font-semibold text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors">
+          Scarica PDF omaggio
+        </a>
+      </div>
+    </div>
+  </section>
+</ServiceLayout>

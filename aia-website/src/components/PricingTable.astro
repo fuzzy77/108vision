@@ -1,0 +1,58 @@
+---
+interface Plan {
+  name: string;
+  price: string;
+  description?: string;
+  features: string[];
+  cta: string;
+  ctaLink?: string;
+  highlighted?: boolean;
+}
+
+interface Props {
+  plans: Plan[];
+}
+
+const { plans } = Astro.props;
+---
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
+  {plans.map((plan) => (
+    <div class={`relative p-8 rounded-2xl border-2 ${plan.highlighted ? 'border-primary-500 bg-primary-50/30 shadow-xl' : 'border-slate-200 bg-white'}`}>
+      {plan.highlighted && (
+        <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-primary-600 text-white text-xs font-semibold rounded-full">
+          Consigliato
+        </div>
+      )}
+      <div class="text-center mb-6">
+        <h3 class="text-lg font-semibold text-slate-900 mb-2">{plan.name}</h3>
+        {plan.description && (
+          <p class="text-sm text-slate-500 mb-4">{plan.description}</p>
+        )}
+        <div class="flex items-baseline justify-center gap-1">
+          <span class="text-3xl font-bold text-slate-900">{plan.price}</span>
+        </div>
+      </div>
+      <ul class="space-y-3 mb-8">
+        {plan.features.map((feature) => (
+          <li class="flex items-start gap-2 text-sm text-slate-600">
+            <svg class="w-5 h-5 text-accent-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            {feature}
+          </li>
+        ))}
+      </ul>
+      <a
+        href={plan.ctaLink || '/contatti'}
+        class={`block w-full text-center px-4 py-3 rounded-lg font-semibold text-sm transition-colors ${
+          plan.highlighted
+            ? 'bg-primary-600 text-white hover:bg-primary-700'
+            : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+        }`}
+      >
+        {plan.cta}
+      </a>
+    </div>
+  ))}
+</div>

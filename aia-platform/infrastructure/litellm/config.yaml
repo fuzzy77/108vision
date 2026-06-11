@@ -1,0 +1,150 @@
+model_list:
+  # =============================================================
+  # Tier 1: Fast & Cheap (high volume, simple tasks, chat)
+  # Primary: DeepSeek V3 — best cost/quality ratio for general tasks
+  # Fallback: Qwen3-8B (via Alibaba DashScope)
+  # =============================================================
+  - model_name: fast-cheap
+    litellm_params:
+      model: deepseek/deepseek-chat
+      api_key: os.environ/DEEPSEEK_API_KEY
+      max_tokens: 8192
+      temperature: 0.7
+
+  - model_name: fast-cheap
+    litellm_params:
+      model: openai/qwen3-8b
+      api_base: https://dashscope-intl.aliyuncs.com/compatible-mode/v1
+      api_key: os.environ/DASHSCOPE_API_KEY
+      max_tokens: 8192
+      temperature: 0.7
+
+  # =============================================================
+  # Tier 2: Balanced (complex reasoning, multi-step, code generation)
+  # Primary: DeepSeek R1 — strong reasoning at low cost
+  # Fallback: Qwen3-32B (via Alibaba DashScope)
+  # =============================================================
+  - model_name: balanced
+    litellm_params:
+      model: deepseek/deepseek-reasoner
+      api_key: os.environ/DEEPSEEK_API_KEY
+      max_tokens: 16384
+      temperature: 0.6
+
+  - model_name: balanced
+    litellm_params:
+      model: openai/qwen3-32b
+      api_base: https://dashscope-intl.aliyuncs.com/compatible-mode/v1
+      api_key: os.environ/DASHSCOPE_API_KEY
+      max_tokens: 16384
+      temperature: 0.7
+
+  # =============================================================
+  # Tier 3: Powerful (critical tasks, architecture, complex analysis)
+  # Primary: Qwen3-235B-A22B (MoE — full power)
+  # Fallback: DeepSeek R1 (already strong for reasoning)
+  # =============================================================
+  - model_name: powerful
+    litellm_params:
+      model: openai/qwen3-235b-a22b
+      api_base: https://dashscope-intl.aliyuncs.com/compatible-mode/v1
+      api_key: os.environ/DASHSCOPE_API_KEY
+      max_tokens: 32768
+      temperature: 0.6
+
+  - model_name: powerful
+    litellm_params:
+      model: deepseek/deepseek-reasoner
+      api_key: os.environ/DEEPSEEK_API_KEY
+      max_tokens: 32768
+      temperature: 0.6
+
+  # =============================================================
+  # Tier 4: Coding specialist (code generation, refactoring, review)
+  # Primary: DeepSeek Coder V3
+  # Fallback: Qwen3-Coder (Alibaba)
+  # =============================================================
+  - model_name: coding
+    litellm_params:
+      model: deepseek/deepseek-chat
+      api_key: os.environ/DEEPSEEK_API_KEY
+      max_tokens: 16384
+      temperature: 0.3
+
+  - model_name: coding
+    litellm_params:
+      model: openai/qwen3-30b-a3b
+      api_base: https://dashscope-intl.aliyuncs.com/compatible-mode/v1
+      api_key: os.environ/DASHSCOPE_API_KEY
+      max_tokens: 16384
+      temperature: 0.3
+
+  # =============================================================
+  # Embedding models
+  # =============================================================
+  - model_name: embedding
+    litellm_params:
+      model: openai/text-embedding-v3
+      api_base: https://dashscope-intl.aliyuncs.com/compatible-mode/v1
+      api_key: os.environ/DASHSCOPE_API_KEY
+      dimensions: 1024
+
+  - model_name: embedding
+    litellm_params:
+      model: openai/text-embedding-3-small
+      api_key: os.environ/OPENAI_API_KEY
+
+  # =============================================================
+  # Vision (for desktop.analyzeScreen and document analysis)
+  # =============================================================
+  - model_name: vision
+    litellm_params:
+      model: openai/qwen-vl-max
+      api_base: https://dashscope-intl.aliyuncs.com/compatible-mode/v1
+      api_key: os.environ/DASHSCOPE_API_KEY
+      max_tokens: 4096
+
+  - model_name: vision
+    litellm_params:
+      model: deepseek/deepseek-chat
+      api_key: os.environ/DEEPSEEK_API_KEY
+      max_tokens: 4096
+
+router_settings:
+  routing_strategy: simple-shuffle
+  allowed_fails: 3
+  cooldown_time: 60
+  num_retries: 2
+  timeout: 120
+  retry_after: 5
+  # Fallback: if primary fails, try next model in same tier
+  fallbacks:
+    - fast-cheap: [fast-cheap]
+    - balanced: [balanced]
+    - powerful: [powerful]
+    - coding: [coding]
+    - embedding: [embedding]
+    - vision: [vision]
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
+  database_url: os.environ/DATABASE_URL
+  alerting:
+    - slack
+  alert_types:
+    - llm_exceptions
+    - llm_too_slow
+    - llm_requests_hanging
+    - budget_alerts
+
+litellm_settings:
+  drop_params: true
+  set_verbose: false
+  max_budget: 500
+  budget_duration: 30d
+  # Cost tracking per token (updated 2026-06)
+  # DeepSeek V3: $0.27/1M input, $1.10/1M output
+  # DeepSeek R1: $0.55/1M input, $2.19/1M output
+  # Qwen3-8B: $0.20/1M input, $0.60/1M output
+  # Qwen3-32B: $0.50/1M input, $1.50/1M output
+  # Qwen3-235B: $1.20/1M input, $4.00/1M output

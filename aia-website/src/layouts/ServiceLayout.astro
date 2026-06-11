@@ -1,0 +1,38 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Hero from '@/components/Hero.astro';
+import CTASection from '@/components/CTASection.astro';
+import BreadcrumbNav from '@/components/BreadcrumbNav.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  heroTitle: string;
+  heroSubtitle?: string;
+  ctaText?: string;
+  ctaLink?: string;
+  breadcrumbs: { label: string; href?: string }[];
+}
+
+const {
+  title,
+  description,
+  heroTitle,
+  heroSubtitle,
+  ctaText = 'Prenota una call gratuita',
+  ctaLink = '/contatti',
+  breadcrumbs,
+} = Astro.props;
+---
+
+<BaseLayout title={title} description={description}>
+  <BreadcrumbNav items={breadcrumbs} />
+  <Hero title={heroTitle} subtitle={heroSubtitle} ctaText={ctaText} ctaLink={ctaLink} />
+  <slot />
+  <CTASection
+    title="Pronto a iniziare?"
+    description="Prenota una call gratuita di 30 minuti per capire come posso aiutarti."
+    ctaText={ctaText}
+    ctaLink={ctaLink}
+  />
+</BaseLayout>

@@ -1,0 +1,65 @@
+---
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import SEOHead from '@/components/SEOHead.astro';
+import '@/styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+  ogImage?: string;
+  canonical?: string;
+  noIndex?: boolean;
+}
+
+const { title, description, ogImage, canonical, noIndex = false } = Astro.props;
+const siteUrl = 'https://www.108vision.it';
+const fullTitle = `${title} | 108 Vision - Consulenza Tecnologica`;
+---
+
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+    <SEOHead
+      title={fullTitle}
+      description={description}
+      ogImage={ogImage || `${siteUrl}/og-default.png`}
+      canonical={canonical || Astro.url.href}
+      noIndex={noIndex}
+    />
+
+    <!-- Structured Data -->
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "ProfessionalService",
+      "name": "108 Vision",
+      "url": siteUrl,
+      "description": "Consulenza tecnologica per PMI: AI, architettura software, fractional CTO, trasformazione digitale.",
+      "founder": {
+        "@type": "Person",
+        "name": "Elios Scoglio",
+        "jobTitle": "Fondatore & Software Architecture Manager"
+      },
+      "areaServed": "IT",
+      "serviceType": ["AI Consulting", "Fractional CTO", "Software Architecture", "Digital Transformation"]
+    })} />
+
+    <!-- Vercel Analytics -->
+    <script defer src="/_vercel/insights/script.js"></script>
+    <script defer src="/_vercel/speed-insights/script.js"></script>
+  </head>
+  <body class="min-h-screen flex flex-col bg-white text-slate-900 antialiased">
+    <Header />
+    <main class="flex-1">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

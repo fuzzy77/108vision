@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 90" fill="none">
+  <!-- Proposal H: Split Color — "108" in violet, "VISION" in dark, dot separator -->
+  <!-- Concept: brand-color sul numero, il nome in contrasto, premium e memorabile -->
+
+  <!-- "108" — violet, bold -->
+  <text x="12" y="62" font-family="Inter, 'SF Pro Display', system-ui, sans-serif" font-size="52" font-weight="800" letter-spacing="-1" fill="#6D28D9">108</text>
+
+  <!-- Dot separator -->
+  <circle cx="120" cy="52" r="5" fill="#0F172A"/>
+
+  <!-- "VISION" — dark, bold -->
+  <text x="138" y="62" font-family="Inter, 'SF Pro Display', system-ui, sans-serif" font-size="52" font-weight="800" letter-spacing="-1" fill="#0F172A">VISION</text>
+</svg>

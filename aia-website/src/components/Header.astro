@@ -1,0 +1,100 @@
+---
+const navItems = [
+  { label: 'Servizi', href: '/#servizi' },
+  { label: 'AI Platform', href: '/ai-platform' },
+  { label: 'Fractional CTO', href: '/fractional-cto' },
+  { label: 'Digital Starter', href: '/digital-starter' },
+  { label: 'Sviluppo Progetto', href: '/sviluppo-progetto' },
+  { label: 'Factory', href: '/factory' },
+  { label: 'Chi Siamo', href: '/chi-siamo' },
+  { label: 'Blog', href: '/blog' },
+  { label: 'Risorse', href: '/risorse' },
+  { label: 'Wellbeing App', href: '/wellbeing-app' },
+];
+---
+
+<header class="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg border-b border-slate-100" id="site-header">
+  <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+      <!-- Logo -->
+      <a href="/" class="flex items-center gap-2 font-bold text-xl text-slate-900 hover:text-primary-600 transition-colors">
+        <img src="/logo-108-mark.svg" alt="108 Vision" class="w-8 h-8" />
+        <span class="hidden sm:inline">108 Vision</span>
+      </a>
+
+      <!-- Desktop Navigation -->
+      <div class="hidden lg:flex items-center gap-1">
+        {navItems.map((item) => (
+          <a
+            href={item.href}
+            class="px-3 py-2 text-sm font-medium text-slate-600 hover:text-primary-600 rounded-md hover:bg-primary-50 transition-all"
+          >
+            {item.label}
+          </a>
+        ))}
+      </div>
+
+      <!-- CTA Button -->
+      <div class="hidden lg:block">
+        <a
+          href="/contatti"
+          class="inline-flex items-center px-4 py-2 text-sm font-semibold text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors shadow-sm"
+        >
+          Parliamone
+        </a>
+      </div>
+
+      <!-- Mobile menu button -->
+      <button
+        type="button"
+        class="lg:hidden p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-md"
+        id="mobile-menu-btn"
+        aria-label="Apri menu"
+        aria-expanded="false"
+      >
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" id="menu-icon-open" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" class="hidden" id="menu-icon-close" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Mobile Navigation -->
+    <div class="hidden lg:hidden pb-4" id="mobile-menu">
+      <div class="flex flex-col gap-1 pt-2 border-t border-slate-100">
+        {navItems.map((item) => (
+          <a
+            href={item.href}
+            class="px-3 py-2 text-sm font-medium text-slate-600 hover:text-primary-600 rounded-md hover:bg-primary-50 transition-all"
+          >
+            {item.label}
+          </a>
+        ))}
+        <a
+          href="/contatti"
+          class="mt-2 inline-flex items-center justify-center px-4 py-2 text-sm font-semibold text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors"
+        >
+          Parliamone
+        </a>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<!-- Spacer for fixed header -->
+<div class="h-16"></div>
+
+<script>
+  const btn = document.getElementById('mobile-menu-btn');
+  const menu = document.getElementById('mobile-menu');
+  const iconOpen = document.getElementById('menu-icon-open');
+  const iconClose = document.getElementById('menu-icon-close');
+
+  btn?.addEventListener('click', () => {
+    const isOpen = !menu?.classList.contains('hidden');
+    menu?.classList.toggle('hidden');
+    iconOpen?.classList.toggle('hidden');
+    iconClose?.classList.toggle('hidden');
+    btn.setAttribute('aria-expanded', String(!isOpen));
+  });
+</script>

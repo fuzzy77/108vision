@@ -1,0 +1,24 @@
+{
+  "name": "aia-platform",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI Platform for SMEs — Multi-tenant AI assistant infrastructure",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "make up",
+    "build": "npm run build --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "clean": "make clean",
+    "setup": "make setup"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  },
+  "author": "AIA Platform",
+  "license": "UNLICENSED"
+}

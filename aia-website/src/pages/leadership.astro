@@ -1,0 +1,125 @@
+---
+import ServiceLayout from '@/layouts/ServiceLayout.astro';
+import FeatureGrid from '@/components/FeatureGrid.astro';
+import PricingTable from '@/components/PricingTable.astro';
+
+const features = [
+  { title: 'Coaching 1:1', description: 'Sessioni bisettimanali personalizzate. Dalla gestione del tempo alla comunicazione con stakeholder non tecnici.', icon: '🎯' },
+  { title: 'Workshop Team', description: 'Sessioni pratiche su feedback, decision making, conflict resolution, delegation. Per tutto il team engineering.', icon: '👥' },
+  { title: 'Career Path Design', description: 'Struttura progression framework per IC e manager track. Criteri chiari, aspettative esplicite.', icon: '📈' },
+  { title: 'Communication Skills', description: 'Come comunicare decisioni tecniche al business. Tradurre complessita in chiarezza per stakeholder.', icon: '💬' },
+  { title: 'Engineering Culture', description: 'Costruire una cultura di ownership, qualita e miglioramento continuo. Oltre le best practice di superficie.', icon: '🌟' },
+  { title: 'Conflict Resolution', description: 'Gestire tensioni team-team, tech-business, senior-junior. Framework pratici per conversazioni difficili.', icon: '🤝' },
+];
+
+const plans = [
+  {
+    name: 'Coaching Individuale',
+    price: 'Su misura',
+    description: '6 sessioni (3 mesi)',
+    features: [
+      '6 sessioni 1:1 da 60 minuti',
+      'Assessment iniziale competenze',
+      'Piano di sviluppo personalizzato',
+      'Supporto via email tra sessioni',
+      'Risorse e framework dedicati',
+      'Follow-up a 30 giorni',
+    ],
+    cta: 'Richiedi preventivo',
+    highlighted: false,
+  },
+  {
+    name: 'Team Leadership Program',
+    price: 'Su misura',
+    description: 'Workshop + coaching (3 mesi)',
+    features: [
+      'Assessment team culture',
+      '4 workshop da mezza giornata',
+      'Coaching 1:1 per i leader (4 sessioni)',
+      'Framework e tool personalizzati',
+      'Action plan per ogni partecipante',
+      'Metriche di miglioramento',
+      'Report finale con raccomandazioni',
+    ],
+    cta: 'Parliamone',
+    highlighted: true,
+  },
+];
+---
+
+<ServiceLayout
+  title="Tech Leadership"
+  description="Coaching per tech lead e engineering manager. Da individual contributor a leader efficace. Sessioni 1:1 e workshop team."
+  heroTitle="Da developer a leader: il salto non e tecnico"
+  heroSubtitle="Il passaggio da individual contributor a tech lead o engineering manager e il cambiamento piu difficile di una carriera tech. Non basta essere bravi tecnicamente: serve imparare un mestiere nuovo."
+  breadcrumbs={[
+    { label: 'Home', href: '/' },
+    { label: 'Tech Leadership' },
+  ]}
+>
+  <!-- The Challenge -->
+  <section class="py-20 bg-white">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl font-bold text-slate-900 mb-8 text-center">La sfida della leadership tecnica</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="p-6 bg-red-50 rounded-xl">
+          <h3 class="font-semibold text-slate-900 mb-3">Senza coaching</h3>
+          <ul class="text-sm text-slate-600 space-y-2">
+            <li>Micromanagement perche "lo faccio meglio io"</li>
+            <li>Burnout da doppio ruolo (coding + leading)</li>
+            <li>Team che non cresce in autonomia</li>
+            <li>Conflitti irrisolti che esplodono</li>
+            <li>Stakeholder frustrati dalla comunicazione</li>
+          </ul>
+        </div>
+        <div class="p-6 bg-green-50 rounded-xl">
+          <h3 class="font-semibold text-slate-900 mb-3">Con un percorso strutturato</h3>
+          <ul class="text-sm text-slate-600 space-y-2">
+            <li>Delegation efficace con trust crescente</li>
+            <li>Focus strategico, non tattico</li>
+            <li>Team autonomo e motivato</li>
+            <li>Conflitti gestiti come opportunita</li>
+            <li>Business alignment naturale</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="py-20 bg-slate-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl font-bold text-slate-900 mb-4">Cosa lavoriamo insieme</h2>
+      </div>
+      <FeatureGrid features={features} columns={3} />
+    </div>
+  </section>
+
+  <!-- Pricing -->
+  <section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl font-bold text-slate-900 mb-4">Pacchetti disponibili</h2>
+        <p class="text-lg text-slate-600">Ogni percorso è personalizzato. Parliamone per trovare la formula giusta.</p>
+      </div>
+      <PricingTable plans={plans} />
+    </div>
+  </section>
+
+  <!-- PDF Omaggio -->
+  <section class="py-16 bg-white">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <div class="p-8 bg-gradient-to-br from-primary-50 to-violet-50 rounded-2xl border border-primary-100">
+        <svg class="w-12 h-12 text-primary-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        <h3 class="text-xl font-bold text-slate-900 mb-2">Scarica la guida gratuita</h3>
+        <p class="text-slate-600 mb-6">Ricevi il PDF con framework, checklist e casi studio reali. Nessuna email richiesta.</p>
+        <a href="/risorse" class="inline-flex items-center px-6 py-3 text-sm font-semibold text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors">
+          Scarica PDF omaggio
+        </a>
+      </div>
+    </div>
+  </section>
+</ServiceLayout>

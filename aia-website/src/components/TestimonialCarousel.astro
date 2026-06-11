@@ -1,0 +1,44 @@
+---
+import Testimonial from './Testimonial.astro';
+
+interface TestimonialData {
+  quote: string;
+  author: string;
+  role: string;
+  company: string;
+}
+
+interface Props {
+  testimonials: TestimonialData[];
+}
+
+const { testimonials } = Astro.props;
+---
+
+<div class="relative">
+  <div class="overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-4 -mx-4 px-4">
+    <div class="inline-flex gap-6 min-w-full">
+      {testimonials.map((t) => (
+        <div class="snap-start shrink-0 w-80 md:w-96">
+          <Testimonial {...t} />
+        </div>
+      ))}
+    </div>
+  </div>
+  <!-- Scroll indicators -->
+  <div class="flex justify-center mt-6 gap-2">
+    {testimonials.map((_, i) => (
+      <div class={`w-2 h-2 rounded-full ${i === 0 ? 'bg-primary-500' : 'bg-slate-300'}`}></div>
+    ))}
+  </div>
+</div>
+
+<style>
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+</style>

@@ -1,0 +1,40 @@
+version: "3.9"
+
+# Development overrides — exposes ports directly, disables Traefik/SSL
+# Usage: docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+
+services:
+  traefik:
+    profiles:
+      - production-only
+    # Traefik is excluded from dev by assigning an unused profile
+
+  postgres:
+    ports:
+      - "5432:5432"
+
+  redis:
+    ports:
+      - "6379:6379"
+
+  qdrant:
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+
+  litellm:
+    ports:
+      - "4000:4000"
+    labels: []
+    environment:
+      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY}
+      DATABASE_URL: ${DATABASE_URL}
+      LITELLM_LOG: DEBUG
+
+  neo4j:
+    ports:
+      - "7474:7474"
+      - "7687:7687"

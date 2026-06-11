@@ -1,0 +1,117 @@
+---
+import ServiceLayout from '@/layouts/ServiceLayout.astro';
+import FeatureGrid from '@/components/FeatureGrid.astro';
+import PricingTable from '@/components/PricingTable.astro';
+
+const features = [
+  { title: 'CI/CD Pipeline', description: 'Pipeline automatizzate che funzionano davvero. Build, test, deploy in minuti, non ore. Zero intervento manuale.', icon: '🔄' },
+  { title: 'Team Topology', description: 'Struttura team ottimale per il tuo contesto. Stream-aligned, platform, enabling, complicated-subsystem.', icon: '👥' },
+  { title: 'Agile Pragmatico', description: 'Metodologia che serve il team, non il contrario. Niente cargo cult Scrum: pratiche che producono risultati.', icon: '🎯' },
+  { title: 'Infrastructure as Code', description: 'Terraform, Ansible, container. Infrastruttura riproducibile, versionata, testabile.', icon: '🏗️' },
+  { title: 'Monitoring & Alerting', description: 'Observability stack completo: metriche, log, trace. Sapere prima dei clienti quando qualcosa non va.', icon: '📊' },
+  { title: 'Developer Experience', description: 'Onboarding in ore, non settimane. Dev environment consistenti. Inner loop veloce. Documentazione viva.', icon: '⚡' },
+];
+
+const plans = [
+  {
+    name: 'Assessment',
+    price: 'Su misura',
+    description: 'Analisi stato attuale',
+    features: [
+      'Analisi pipeline esistenti',
+      'Assessment pratiche team',
+      'DevOps maturity score',
+      'Gap analysis vs best practice',
+      'Roadmap miglioramento',
+      'Quick wins identificati',
+    ],
+    cta: 'Richiedi preventivo',
+    highlighted: false,
+  },
+  {
+    name: 'Implementazione',
+    price: 'Su misura',
+    description: 'Progetto 6-12 settimane',
+    features: [
+      'Assessment incluso',
+      'Setup/ottimizzazione CI/CD',
+      'IaC implementation',
+      'Monitoring stack',
+      'Team coaching agile',
+      'Documentazione processi',
+      'Handover e knowledge transfer',
+    ],
+    cta: 'Parliamone',
+    highlighted: true,
+  },
+];
+---
+
+<ServiceLayout
+  title="Agile & DevOps"
+  description="CI/CD, team topology, metodologia agile pragmatica. Assessment e implementazione per team che vogliono rilasciare piu velocemente e con piu fiducia."
+  heroTitle="DevOps che funziona, Agile che produce"
+  heroSubtitle="Non vendiamo cerimonie o tool. Costruiamo pipeline affidabili, team autonomi e processi che accelerano il delivery senza sacrificare la qualita."
+  breadcrumbs={[
+    { label: 'Home', href: '/' },
+    { label: 'Agile & DevOps' },
+  ]}
+>
+  <!-- Anti-patterns -->
+  <section class="py-20 bg-white">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl font-bold text-slate-900 mb-8 text-center">I problemi che risolvo</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="p-5 bg-slate-50 rounded-lg border border-slate-200">
+          <p class="text-sm text-slate-600"><span class="font-semibold text-slate-900">"Deploy manuale il venerdi sera"</span> — Pipeline CI/CD che automatizzano build, test e deploy. Rilasci frequenti e a basso rischio.</p>
+        </div>
+        <div class="p-5 bg-slate-50 rounded-lg border border-slate-200">
+          <p class="text-sm text-slate-600"><span class="font-semibold text-slate-900">"Scrum ma senza risultati"</span> — Agile pragmatico: teniamo cio che funziona, eliminiamo il teatro organizzativo.</p>
+        </div>
+        <div class="p-5 bg-slate-50 rounded-lg border border-slate-200">
+          <p class="text-sm text-slate-600"><span class="font-semibold text-slate-900">"Sappiamo dei problemi dai clienti"</span> — Monitoring proattivo: alert prima che l'utente se ne accorga.</p>
+        </div>
+        <div class="p-5 bg-slate-50 rounded-lg border border-slate-200">
+          <p class="text-sm text-slate-600"><span class="font-semibold text-slate-900">"Onboarding di 3 settimane"</span> — Developer experience: nuovo dev produttivo dal primo giorno.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="py-20 bg-slate-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl font-bold text-slate-900 mb-4">Aree di intervento</h2>
+      </div>
+      <FeatureGrid features={features} columns={3} />
+    </div>
+  </section>
+
+  <!-- Pricing -->
+  <section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl font-bold text-slate-900 mb-4">Pacchetti disponibili</h2>
+        <p class="text-lg text-slate-600">Ogni percorso è personalizzato. Parliamone per trovare la formula giusta.</p>
+      </div>
+      <PricingTable plans={plans} />
+    </div>
+  </section>
+
+  <!-- PDF Omaggio -->
+  <section class="py-16 bg-white">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <div class="p-8 bg-gradient-to-br from-primary-50 to-violet-50 rounded-2xl border border-primary-100">
+        <svg class="w-12 h-12 text-primary-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        <h3 class="text-xl font-bold text-slate-900 mb-2">Scarica la guida gratuita</h3>
+        <p class="text-slate-600 mb-6">Ricevi il PDF con framework, checklist e casi studio reali. Nessuna email richiesta.</p>
+        <a href="/risorse" class="inline-flex items-center px-6 py-3 text-sm font-semibold text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors">
+          Scarica PDF omaggio
+        </a>
+      </div>
+    </div>
+  </section>
+</ServiceLayout>

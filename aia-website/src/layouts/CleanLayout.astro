@@ -1,0 +1,41 @@
+---
+import SEOHead from '@/components/SEOHead.astro';
+import '@/styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+  ogImage?: string;
+  canonical?: string;
+  noIndex?: boolean;
+}
+
+const { title, description, ogImage, canonical, noIndex = false } = Astro.props;
+const siteUrl = 'https://www.108vision.it';
+const fullTitle = `${title} | 108 Vision`;
+---
+
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+    <SEOHead
+      title={fullTitle}
+      description={description}
+      ogImage={ogImage || `${siteUrl}/og-default.png`}
+      canonical={canonical || Astro.url.href}
+      noIndex={noIndex}
+    />
+  </head>
+  <body class="min-h-screen bg-white text-slate-900 antialiased">
+    <main>
+      <slot />
+    </main>
+  </body>
+</html>

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 90" fill="none">
+  <!-- Proposal G: Weight Contrast — "108" extra-black + "VISION" lighter weight -->
+  <!-- Concept: contrasto tipografico forte, 108 enorme come marchio, VISION elegante -->
+
+  <!-- "108" — extra black, dominante -->
+  <text x="12" y="68" font-family="Inter, 'SF Pro Display', system-ui, sans-serif" font-size="64" font-weight="900" letter-spacing="-3" fill="#0F172A">108</text>
+
+  <!-- "VISION" — lighter, elegant, spaced -->
+  <text x="150" y="60" font-family="Inter, 'SF Pro Display', system-ui, sans-serif" font-size="36" font-weight="400" letter-spacing="8" fill="#0F172A">VISION</text>
+
+  <!-- Violet accent bar connecting the two -->
+  <rect x="12" y="78" width="120" height="4" rx="2" fill="#6D28D9"/>
+</svg>

@@ -1,0 +1,196 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import BreadcrumbNav from '@/components/BreadcrumbNav.astro';
+import CTASection from '@/components/CTASection.astro';
+---
+
+<BaseLayout
+  title="Chi Sono"
+  description="Elios Scoglio - 15+ anni in architettura software, AI e trasformazione digitale. Software & Architecture Manager per enterprise e consulente per PMI."
+>
+  <BreadcrumbNav items={[
+    { label: 'Home', href: '/' },
+    { label: 'Chi Sono' },
+  ]} />
+
+  <!-- Hero -->
+  <section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
+        <!-- Photo Placeholder -->
+        <div class="lg:col-span-1">
+          <div class="aspect-square bg-gradient-to-br from-primary-100 to-primary-200 rounded-2xl flex items-center justify-center">
+            <div class="text-center">
+              <div class="w-32 h-32 bg-primary-300 rounded-full mx-auto mb-4 flex items-center justify-center">
+                <span class="text-4xl font-bold text-primary-800">ES</span>
+              </div>
+              <p class="text-sm text-primary-700 font-medium">Elios Scoglio</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bio -->
+        <div class="lg:col-span-2">
+          <h1 class="text-4xl font-bold text-slate-900 mb-6">Elios Scoglio</h1>
+          <p class="text-xl text-primary-600 font-medium mb-6">
+            Software & Architecture Manager | AI Consultant
+          </p>
+          <div class="prose max-w-none text-slate-600 space-y-4">
+            <p>
+              Da oltre 15 anni progetto e costruisco sistemi software per enterprise e PMI.
+              Il mio lavoro quotidiano e prendere decisioni architetturali difficili su sistemi che gestiscono
+              milioni di transazioni: ticketing, e-commerce, sistemi di compliance fiscale.
+            </p>
+            <p>
+              Come Software & Architecture Manager per TicketOne/Eventim Italy gestisco l'evoluzione
+              di una piattaforma che vende milioni di biglietti l'anno, con vincoli di scalabilita,
+              sicurezza e compliance che non ammettono errori.
+            </p>
+            <p>
+              Parallelamente, supporto PMI e startup italiane nel loro percorso tecnologico:
+              dall'adozione dell'AI alla modernizzazione dei sistemi legacy, dal team building tecnico
+              alla trasformazione digitale. Con lo stesso rigore che applico ai sistemi enterprise.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Skills -->
+  <section class="py-16 bg-slate-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl font-bold text-slate-900 mb-12 text-center">Competenze e specializzazioni</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="p-6 bg-white rounded-xl border border-slate-200">
+          <h3 class="font-semibold text-slate-900 mb-3">Architettura Software</h3>
+          <ul class="text-sm text-slate-600 space-y-1">
+            <li>Microservizi, DDD, Event-Driven</li>
+            <li>.NET, Java, Spring Boot</li>
+            <li>Cloud-Native, Kubernetes</li>
+            <li>API Design (REST, gRPC, GraphQL)</li>
+          </ul>
+        </div>
+        <div class="p-6 bg-white rounded-xl border border-slate-200">
+          <h3 class="font-semibold text-slate-900 mb-3">AI & Machine Learning</h3>
+          <ul class="text-sm text-slate-600 space-y-1">
+            <li>LLM Engineering & RAG</li>
+            <li>Multi-Agent Systems</li>
+            <li>AI Strategy & Adoption</li>
+            <li>MLOps & Production AI</li>
+          </ul>
+        </div>
+        <div class="p-6 bg-white rounded-xl border border-slate-200">
+          <h3 class="font-semibold text-slate-900 mb-3">Leadership & Management</h3>
+          <ul class="text-sm text-slate-600 space-y-1">
+            <li>Engineering Management</li>
+            <li>Team Topology & Structure</li>
+            <li>Technical Governance</li>
+            <li>Stakeholder Communication</li>
+          </ul>
+        </div>
+        <div class="p-6 bg-white rounded-xl border border-slate-200">
+          <h3 class="font-semibold text-slate-900 mb-3">DevOps & SRE</h3>
+          <ul class="text-sm text-slate-600 space-y-1">
+            <li>CI/CD Pipeline Design</li>
+            <li>OpenTelemetry, Prometheus</li>
+            <li>Resilience Engineering</li>
+            <li>Infrastructure as Code</li>
+          </ul>
+        </div>
+        <div class="p-6 bg-white rounded-xl border border-slate-200">
+          <h3 class="font-semibold text-slate-900 mb-3">Domain Expertise</h3>
+          <ul class="text-sm text-slate-600 space-y-1">
+            <li>Ticketing & Live Entertainment</li>
+            <li>E-Commerce & Payments</li>
+            <li>Compliance Fiscale (SIAE)</li>
+            <li>Pubblica Amministrazione</li>
+          </ul>
+        </div>
+        <div class="p-6 bg-white rounded-xl border border-slate-200">
+          <h3 class="font-semibold text-slate-900 mb-3">Metodologie</h3>
+          <ul class="text-sm text-slate-600 space-y-1">
+            <li>Agile (Scrum, Kanban, pragmatic)</li>
+            <li>SOLID, Clean Architecture</li>
+            <li>TDD, BDD</li>
+            <li>ADR, Design Docs</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Philosophy -->
+  <section class="py-16 bg-white">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl font-bold text-slate-900 mb-8 text-center">Il mio approccio</h2>
+      <div class="space-y-6">
+        <div class="p-6 bg-primary-50 rounded-xl border-l-4 border-primary-500">
+          <h3 class="font-semibold text-slate-900 mb-2">Pragmatismo over dogma</h3>
+          <p class="text-sm text-slate-600">La tecnologia e un mezzo, non un fine. La soluzione migliore e quella che il team riesce a mantenere e che il business riesce a sostenere.</p>
+        </div>
+        <div class="p-6 bg-primary-50 rounded-xl border-l-4 border-primary-500">
+          <h3 class="font-semibold text-slate-900 mb-2">Evidence-based decisions</h3>
+          <p class="text-sm text-slate-600">Niente decisioni "a pelle". Dati, metriche, esperimenti. Se non possiamo misurarlo, dobbiamo almeno documentare l'ipotesi.</p>
+        </div>
+        <div class="p-6 bg-primary-50 rounded-xl border-l-4 border-primary-500">
+          <h3 class="font-semibold text-slate-900 mb-2">Autonomia come obiettivo</h3>
+          <p class="text-sm text-slate-600">Il mio lavoro e rendermi non indispensabile. Trasferisco conoscenza, costruisco processi, faccio crescere le persone.</p>
+        </div>
+        <div class="p-6 bg-primary-50 rounded-xl border-l-4 border-primary-500">
+          <h3 class="font-semibold text-slate-900 mb-2">Trasparenza radicale</h3>
+          <p class="text-sm text-slate-600">Dico quello che penso, anche quando non e comodo. Trade-off espliciti, rischi nominati, incertezze dichiarate.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Timeline -->
+  <section class="py-16 bg-slate-50">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl font-bold text-slate-900 mb-12 text-center">Esperienza</h2>
+      <div class="space-y-8">
+        <div class="flex gap-4">
+          <div class="flex flex-col items-center">
+            <div class="w-3 h-3 bg-primary-600 rounded-full"></div>
+            <div class="w-0.5 h-full bg-primary-200"></div>
+          </div>
+          <div class="pb-8">
+            <p class="text-sm text-primary-600 font-medium">2020 - Presente</p>
+            <h3 class="font-semibold text-slate-900">Software & Architecture Manager — TicketOne/Eventim Italy</h3>
+            <p class="text-sm text-slate-600 mt-1">Governance architetturale piattaforma ticketing (93 componenti). Modernizzazione legacy, AI adoption, team leadership.</p>
+          </div>
+        </div>
+        <div class="flex gap-4">
+          <div class="flex flex-col items-center">
+            <div class="w-3 h-3 bg-primary-600 rounded-full"></div>
+            <div class="w-0.5 h-full bg-primary-200"></div>
+          </div>
+          <div class="pb-8">
+            <p class="text-sm text-primary-600 font-medium">2015 - 2020</p>
+            <h3 class="font-semibold text-slate-900">Senior Software Architect — Enterprise</h3>
+            <p class="text-sm text-slate-600 mt-1">Architettura microservizi, cloud migration, DDD. Sistemi ad alta disponibilita e compliance.</p>
+          </div>
+        </div>
+        <div class="flex gap-4">
+          <div class="flex flex-col items-center">
+            <div class="w-3 h-3 bg-primary-600 rounded-full"></div>
+            <div class="w-0.5 h-full bg-primary-200"></div>
+          </div>
+          <div class="pb-8">
+            <p class="text-sm text-primary-600 font-medium">2010 - 2015</p>
+            <h3 class="font-semibold text-slate-900">Full-Stack Developer & Tech Lead</h3>
+            <p class="text-sm text-slate-600 mt-1">Sviluppo applicazioni web enterprise. Primi ruoli di leadership tecnica e mentoring.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <CTASection
+    title="Parliamo del tuo progetto"
+    description="30 minuti per capire come posso aiutarti. Nessun impegno, nessun pitch aggressivo."
+    ctaText="Prenota una call"
+    ctaLink="/contatti"
+  />
+</BaseLayout>

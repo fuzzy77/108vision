@@ -1,0 +1,32 @@
+---
+interface Feature {
+  title: string;
+  description: string;
+  icon: string;
+}
+
+interface Props {
+  features: Feature[];
+  columns?: 2 | 3 | 4;
+}
+
+const { features, columns = 3 } = Astro.props;
+
+const gridCols = {
+  2: 'md:grid-cols-2',
+  3: 'md:grid-cols-2 lg:grid-cols-3',
+  4: 'md:grid-cols-2 lg:grid-cols-4',
+};
+---
+
+<div class={`grid grid-cols-1 ${gridCols[columns]} gap-8`}>
+  {features.map((feature) => (
+    <div class="relative p-6 bg-white rounded-xl border border-slate-100 hover:shadow-md transition-shadow">
+      <div class="w-10 h-10 bg-primary-50 rounded-lg flex items-center justify-center mb-4">
+        <span class="text-xl">{feature.icon}</span>
+      </div>
+      <h3 class="text-base font-semibold text-slate-900 mb-2">{feature.title}</h3>
+      <p class="text-sm text-slate-600 leading-relaxed">{feature.description}</p>
+    </div>
+  ))}
+</div>

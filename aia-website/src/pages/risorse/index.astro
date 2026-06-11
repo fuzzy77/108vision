@@ -1,0 +1,145 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import BreadcrumbNav from '@/components/BreadcrumbNav.astro';
+import CTASection from '@/components/CTASection.astro';
+
+const guides = [
+  {
+    slug: 'guida-ai-pmi',
+    title: 'Come adottare l\'AI nella tua PMI senza bruciare budget',
+    description: 'Framework AI Readiness Assessment in 5 step. Checklist operativa, casi studio con ROI documentato.',
+    tag: 'AI Adoption',
+  },
+  {
+    slug: 'guida-fractional-cto',
+    title: 'Quando (e perché) serve un Fractional CTO',
+    description: 'Framework di governance, gestione vendor e team scaling. Red flag da evitare nel processo di selezione.',
+    tag: 'Fractional CTO',
+  },
+  {
+    slug: 'guida-architettura',
+    title: 'Scalare senza riscrivere: architettura evolutiva',
+    description: 'Modular monolith vs microservizi, bounded context, fitness functions e template ADR pronto all\'uso.',
+    tag: 'Architettura',
+  },
+  {
+    slug: 'guida-trasformazione-digitale',
+    title: 'Trasformazione digitale per PMI: il metodo che funziona',
+    description: 'ROI in 90 giorni, integrazione con gestionali italiani, change management e piano operativo.',
+    tag: 'Trasformazione Digitale',
+  },
+  {
+    slug: 'guida-leadership',
+    title: 'Tech Leadership senza burocrazia',
+    description: 'Framework per delegare, template 1:1, segnali di hiring sbagliato e metriche di performance.',
+    tag: 'Leadership',
+  },
+  {
+    slug: 'guida-agile-devops',
+    title: 'Agile pragmatico: delivery continua senza dogma',
+    description: 'CI/CD pipeline in 2 settimane, sprint structure, 4 metriche che contano, Kanban vs Scrum.',
+    tag: 'Agile & DevOps',
+  },
+  {
+    slug: 'guida-wellbeing',
+    title: 'Prevenire il burnout tech: guida per manager',
+    description: '15 segnali precoci, sustainable pace, retention framework e script per 1:1 sul benessere.',
+    tag: 'Wellbeing',
+  },
+  {
+    slug: 'guida-digital-starter',
+    title: 'Il primo progetto digitale: per chi parte da zero',
+    description: 'MVP mindset, come scegliere il fornitore, budget planning, opzioni no-code e piano 30 giorni.',
+    tag: 'Digital Starter',
+  },
+  {
+    slug: 'guida-sviluppo-progetto',
+    title: 'Progetto software a scope fisso: come non farsi fregare',
+    description: 'Requisiti, milestone, acceptance criteria, modelli contrattuali e 8 red flag da evitare.',
+    tag: 'Sviluppo Progetto',
+  },
+  {
+    slug: 'guida-factory',
+    title: 'Team esterno continuativo: guida alla Development Factory',
+    description: 'Modelli di team, SLA operativi, knowledge transfer, governance quotidiana ed exit strategy.',
+    tag: 'Factory',
+  },
+  {
+    slug: 'guida-compliance-ai',
+    title: 'EU AI Act: cosa deve fare la tua azienda entro il 2025',
+    description: 'Classificazione del rischio, pratiche vietate, documentazione obbligatoria e timeline 2024-2026.',
+    tag: 'Compliance AI Act',
+  },
+  {
+    slug: 'guida-nocode',
+    title: 'Automatizzare senza codice: guida No-Code per PMI',
+    description: 'Process mapping, confronto tool (Make, Zapier, n8n), calcolo ROI e quando passare al custom.',
+    tag: 'No-Code Automation',
+  },
+  {
+    slug: 'guida-data-analytics',
+    title: 'Da dati a decisioni: analytics per PMI italiane',
+    description: 'Data audit, KPI framework, dashboard per il management, BI tools e costruzione della data culture.',
+    tag: 'Data & Analytics',
+  },
+  {
+    slug: 'guida-pa',
+    title: 'Tecnologia per la PA: innovare nella complessità',
+    description: 'Opportunità PNRR, procurement, interoperabilità, integrazione SPID/CIE e compliance AgID/GDPR.',
+    tag: 'Pubblica Amministrazione',
+  },
+];
+---
+
+<BaseLayout
+  title="Risorse Gratuite"
+  description="Guide, template e checklist gratuite su AI, architettura software, DevOps, leadership tech e trasformazione digitale per PMI italiane."
+>
+  <BreadcrumbNav items={[
+    { label: 'Home', href: '/' },
+    { label: 'Risorse' },
+  ]} />
+
+  <section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <p class="text-sm font-semibold text-primary-600 uppercase tracking-wider mb-3">PDF Gratuiti</p>
+        <h1 class="text-4xl font-bold text-slate-900 mb-4">Risorse gratuite per PMI italiane</h1>
+        <p class="text-lg text-slate-600 max-w-2xl mx-auto">
+          Guide pratiche su AI, architettura, leadership e trasformazione digitale.
+          Scaricale gratis — nessuna carta di credito, nessuno spam.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {guides.map((guide) => (
+          <a
+            href={`/risorse/${guide.slug}`}
+            class="group flex flex-col p-6 bg-white border border-slate-200 rounded-xl hover:border-primary-300 hover:shadow-md transition-all duration-200"
+          >
+            <span class="inline-block text-xs font-semibold text-primary-600 bg-primary-50 px-2.5 py-1 rounded-full mb-3 self-start">
+              {guide.tag}
+            </span>
+            <h2 class="text-base font-semibold text-slate-900 mb-2 group-hover:text-primary-700 transition-colors leading-snug">
+              {guide.title}
+            </h2>
+            <p class="text-sm text-slate-500 mb-4 flex-1">{guide.description}</p>
+            <span class="text-sm font-semibold text-primary-600 group-hover:text-primary-700 flex items-center gap-1">
+              Scarica gratis
+              <svg class="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <CTASection
+    title="Hai bisogno di aiuto personalizzato?"
+    description="Le guide sono un ottimo punto di partenza. Se vuoi andare oltre, parliamone."
+    ctaText="Prenota una call"
+    ctaLink="/contatti"
+  />
+</BaseLayout>

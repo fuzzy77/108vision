@@ -1,0 +1,24 @@
+{
+  "nav": {
+    "items": [
+      { "label": "Servizi", "href": "/#servizi" },
+      { "label": "AI Platform", "href": "/ai-platform" },
+      { "label": "Fractional CTO", "href": "/fractional-cto" },
+      { "label": "Chi Siamo", "href": "/chi-siamo" },
+      { "label": "Blog", "href": "/blog" },
+      { "label": "Risorse", "href": "/risorse" }
+    ]
+  },
+  "footer": {
+    "links": [
+      { "label": "Privacy Policy", "href": "/privacy" },
+      { "label": "Cookie Policy", "href": "/cookie" },
+      { "label": "Termini di Servizio", "href": "/termini" }
+    ]
+  },
+  "social": {
+    "linkedin": "https://linkedin.com/in/eliosscoglio",
+    "github": "https://github.com/eliosscoglio",
+    "twitter": "https://twitter.com/eliosscoglio"
+  }
+}

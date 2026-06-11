@@ -1,0 +1,180 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Hero from '@/components/Hero.astro';
+import ServiceCard from '@/components/ServiceCard.astro';
+import TestimonialCarousel from '@/components/TestimonialCarousel.astro';
+import CTASection from '@/components/CTASection.astro';
+
+const services = [
+  {
+    title: 'AI Platform',
+    description: 'Piattaforma AI su misura per PMI. Agenti intelligenti addestrati sui tuoi documenti e processi.',
+    icon: '🤖',
+    link: '/ai-platform',
+  },
+  {
+    title: 'AI Adoption',
+    description: 'Percorso strutturato per adottare l\'AI in azienda. Assessment, strategia, implementazione.',
+    icon: '🧠',
+    link: '/ai-adoption',
+  },
+  {
+    title: 'Fractional CTO',
+    description: 'CTO part-time per startup e PMI. Governance tecnica, team building, architettura.',
+    icon: '👔',
+    link: '/fractional-cto',
+  },
+  {
+    title: 'Trasformazione Digitale',
+    description: 'Digitalizzazione processi, automazione, cloud migration. Focus PMI con ROI misurabile.',
+    icon: '🔄',
+    link: '/trasformazione-digitale',
+  },
+  {
+    title: 'Architettura Software',
+    description: 'Design review, modernizzazione legacy, microservizi, cloud-native. Per team che vogliono scalare.',
+    icon: '🏗️',
+    link: '/architettura',
+  },
+  {
+    title: 'Tech Leadership',
+    description: 'Coaching per tech lead e engineering manager. Da individual contributor a leader.',
+    icon: '🎯',
+    link: '/leadership',
+  },
+  {
+    title: 'Agile & DevOps',
+    description: 'CI/CD, team topology, metodologia agile pragmatica. Assessment e implementazione.',
+    icon: '⚡',
+    link: '/agile-devops',
+  },
+  {
+    title: 'Tech Wellbeing',
+    description: 'Prevenzione burnout tech, sustainable pace, team health. Workshop e consulenza.',
+    icon: '🌱',
+    link: '/wellbeing',
+  },
+  {
+    title: 'Pubblica Amministrazione',
+    description: 'Consulenza digitalizzazione per enti pubblici. PNRR, interoperabilità, sicurezza.',
+    icon: '🏛️',
+    link: '/pubblica-amministrazione',
+  },
+];
+
+const testimonials = [
+  {
+    quote: 'Elios ci ha aiutato a costruire una piattaforma AI interna che ha ridotto del 40% i tempi di risposta al cliente. Competenza tecnica e visione strategica rare da trovare insieme.',
+    author: 'Marco Bianchi',
+    role: 'CEO',
+    company: 'TechStartup Srl',
+  },
+  {
+    quote: 'Il percorso di AI Adoption ha trasformato il modo in cui lavoriamo. Niente hype, solo risultati concreti e misurabili. Un approccio pragmatico e orientato al business.',
+    author: 'Laura Verdi',
+    role: 'COO',
+    company: 'Manifattura Italiana SpA',
+  },
+  {
+    quote: 'Come Fractional CTO ci ha portato una governance tecnica che non avevamo. Il team è cresciuto in autonomia e la qualità del codice è migliorata enormemente.',
+    author: 'Andrea Russo',
+    role: 'Founder',
+    company: 'InnovaDigital',
+  },
+];
+---
+
+<BaseLayout
+  title="AI & Technology Consulting"
+  description="Consulenza AI, Fractional CTO, Architettura Software e Trasformazione Digitale. Aiuto PMI e enterprise a crescere con la tecnologia giusta."
+>
+  <!-- Hero Section -->
+  <Hero
+    title="Trasforma la tua azienda con l'AI e la tecnologia giusta"
+    subtitle="Consulenza strategica e operativa per PMI e enterprise che vogliono innovare senza rischi. 15+ anni di esperienza in architettura software, AI e trasformazione digitale."
+    ctaText="Prenota una call gratuita"
+    ctaLink="/contatti"
+  />
+
+  <!-- Services Section -->
+  <section id="servizi" class="py-20 bg-slate-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+          Come posso aiutarti
+        </h2>
+        <p class="text-lg text-slate-600 max-w-2xl mx-auto">
+          Servizi di consulenza technology-driven per ogni fase della tua crescita aziendale.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {services.map((service) => (
+          <ServiceCard {...service} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Section -->
+  <section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+        <div class="p-8">
+          <div class="text-4xl md:text-5xl font-bold text-primary-600 mb-2">15+</div>
+          <div class="text-sm font-medium text-slate-600 uppercase tracking-wider">Anni di esperienza</div>
+          <p class="text-sm text-slate-500 mt-2">Enterprise systems, startup, PMI</p>
+        </div>
+        <div class="p-8">
+          <div class="text-4xl md:text-5xl font-bold text-primary-600 mb-2">50+</div>
+          <div class="text-sm font-medium text-slate-600 uppercase tracking-wider">Progetti completati</div>
+          <p class="text-sm text-slate-500 mt-2">Architettura, AI, trasformazione</p>
+        </div>
+        <div class="p-8">
+          <div class="text-4xl md:text-5xl font-bold text-primary-600 mb-2">3</div>
+          <div class="text-sm font-medium text-slate-600 uppercase tracking-wider">Settori di focus</div>
+          <p class="text-sm text-slate-500 mt-2">Ticketing, fintech, manufacturing</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials Section -->
+  <section class="py-20 bg-slate-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+          Cosa dicono i clienti
+        </h2>
+        <p class="text-lg text-slate-600">
+          Risultati concreti, non promesse.
+        </p>
+      </div>
+      <TestimonialCarousel testimonials={testimonials} />
+    </div>
+  </section>
+
+  <!-- Wellbeing App Banner -->
+  <section class="py-16 bg-gradient-to-r from-indigo-950 to-violet-900 text-white">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row items-center gap-8">
+        <img src="/app/wellbeing-icon.png" alt="Wellbeing 108" class="w-20 h-20 rounded-2xl shadow-lg flex-shrink-0" />
+        <div class="text-center md:text-left flex-1">
+          <h2 class="text-2xl font-bold mb-2">Wellbeing 108</h2>
+          <p class="text-slate-300">App di benessere guidato con visualizzazioni immersive, respirazione sincronizzata e AI counselor. Un prodotto 108 Vision.</p>
+        </div>
+        <a href="/wellbeing-app" class="inline-flex items-center px-6 py-3 bg-white text-slate-900 font-semibold rounded-lg hover:bg-slate-100 transition-colors flex-shrink-0">
+          Scopri l'app
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <CTASection
+    title="Pronto a iniziare?"
+    description="Prenota una call gratuita di 30 minuti. Analizzeremo insieme la tua situazione e capiremo se posso aiutarti."
+    ctaText="Prenota una call gratuita"
+    ctaLink="/contatti"
+  />
+</BaseLayout>

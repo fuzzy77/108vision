@@ -1,0 +1,123 @@
+---
+import ServiceLayout from '@/layouts/ServiceLayout.astro';
+import FeatureGrid from '@/components/FeatureGrid.astro';
+import PricingTable from '@/components/PricingTable.astro';
+
+const features = [
+  { title: 'Process Mapping', description: 'Mappiamo i tuoi processi attuali, identifichiamo colli di bottiglia e opportunita di automazione.', icon: '🗺️' },
+  { title: 'Automazione Intelligente', description: 'RPA, workflow digitali, integrazioni API. Eliminiamo il lavoro manuale ripetitivo.', icon: '⚙️' },
+  { title: 'Cloud Migration', description: 'Da on-premise a cloud, con strategia lift-and-shift o cloud-native. Sicurezza e compliance garantite.', icon: '☁️' },
+  { title: 'Data Strategy', description: 'Dati sparsi in Excel e silos? Li centralizziamo in un sistema che genera insight azionabili.', icon: '📊' },
+  { title: 'Digital Workplace', description: 'Strumenti di collaborazione, knowledge management, comunicazione interna. Produttivita del team.', icon: '💻' },
+  { title: 'ROI Tracking', description: 'Ogni intervento ha KPI definiti. Misuriamo il ritorno sull\'investimento in modo trasparente.', icon: '📈' },
+];
+
+const plans = [
+  {
+    name: 'Assessment',
+    price: 'Su misura',
+    description: 'Analisi e piano',
+    features: [
+      'Mapping processi as-is',
+      'Gap analysis digitale',
+      'Identificazione quick wins',
+      'Roadmap trasformazione',
+      'Business case con ROI atteso',
+      'Report executive',
+    ],
+    cta: 'Richiedi preventivo',
+    highlighted: false,
+  },
+  {
+    name: 'Trasformazione',
+    price: 'Su misura',
+    description: 'Implementazione completa',
+    features: [
+      'Assessment incluso',
+      'Implementazione soluzioni',
+      'Migrazione e integrazioni',
+      'Formazione utenti',
+      'Change management',
+      'Supporto 3 mesi post-go-live',
+      'Documentazione e procedure',
+    ],
+    cta: 'Parliamone',
+    highlighted: true,
+  },
+];
+---
+
+<ServiceLayout
+  title="Trasformazione Digitale"
+  description="Digitalizzazione processi, automazione, cloud migration per PMI. Focus su ROI misurabile e risultati concreti."
+  heroTitle="Digitalizza con un piano, non con la speranza"
+  heroSubtitle="Trasformazione digitale per PMI manifatturiere e di servizi. Non vendiamo tecnologia: costruiamo efficienza misurabile. Ogni euro investito deve tornare."
+  breadcrumbs={[
+    { label: 'Home', href: '/' },
+    { label: 'Trasformazione Digitale' },
+  ]}
+>
+  <!-- Why Section -->
+  <section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl mx-auto text-center mb-16">
+        <h2 class="text-3xl font-bold text-slate-900 mb-6">Perche trasformarsi ora</h2>
+        <p class="text-lg text-slate-600 leading-relaxed">
+          Il 60% delle PMI italiane ha processi ancora basati su carta, Excel e comunicazioni informali.
+          Ogni giorno di ritardo e efficienza persa, errori evitabili e opportunita mancate.
+        </p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="text-center p-6">
+          <div class="text-4xl font-bold text-primary-600 mb-2">-40%</div>
+          <p class="text-sm text-slate-600">Riduzione tempi operativi medi dopo digitalizzazione processi core</p>
+        </div>
+        <div class="text-center p-6">
+          <div class="text-4xl font-bold text-primary-600 mb-2">-60%</div>
+          <p class="text-sm text-slate-600">Riduzione errori manuali con automazione workflow</p>
+        </div>
+        <div class="text-center p-6">
+          <div class="text-4xl font-bold text-primary-600 mb-2">6-12</div>
+          <p class="text-sm text-slate-600">Mesi per ROI positivo sull'investimento in trasformazione</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="py-20 bg-slate-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl font-bold text-slate-900 mb-4">Aree di intervento</h2>
+      </div>
+      <FeatureGrid features={features} columns={3} />
+    </div>
+  </section>
+
+  <!-- Pricing -->
+  <section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl font-bold text-slate-900 mb-4">Pacchetti disponibili</h2>
+        <p class="text-lg text-slate-600">Ogni percorso è personalizzato. Parliamone per trovare la formula giusta.</p>
+      </div>
+      <PricingTable plans={plans} />
+    </div>
+  </section>
+
+  <!-- PDF Omaggio -->
+  <section class="py-16 bg-white">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <div class="p-8 bg-gradient-to-br from-primary-50 to-violet-50 rounded-2xl border border-primary-100">
+        <svg class="w-12 h-12 text-primary-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        <h3 class="text-xl font-bold text-slate-900 mb-2">Scarica la guida gratuita</h3>
+        <p class="text-slate-600 mb-6">Ricevi il PDF con framework, checklist e casi studio reali. Nessuna email richiesta.</p>
+        <a href="/risorse" class="inline-flex items-center px-6 py-3 text-sm font-semibold text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors">
+          Scarica PDF omaggio
+        </a>
+      </div>
+    </div>
+  </section>
+</ServiceLayout>

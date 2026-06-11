@@ -1,0 +1,169 @@
+---
+import ServiceLayout from '@/layouts/ServiceLayout.astro';
+import FeatureGrid from '@/components/FeatureGrid.astro';
+import PricingTable from '@/components/PricingTable.astro';
+
+const features = [
+  { title: 'Knowledge Base Aziendale', description: 'I tuoi documenti, procedure e know-how trasformati in una base di conoscenza interrogabile dai tuoi agenti AI.', icon: '📚' },
+  { title: 'Agenti Multi-Funzione', description: 'Assistenti AI specializzati per customer service, vendite, HR, operations. Ognuno addestrato sul tuo dominio.', icon: '🤖' },
+  { title: 'Integrazioni Native', description: 'Connessione diretta con email, calendario, file system, CRM, ERP. L\'AI lavora dove lavori tu.', icon: '🔌' },
+  { title: 'Dashboard Consulente', description: 'Pannello di controllo per gestione remota, monitoring performance, aggiornamento knowledge base.', icon: '📊' },
+  { title: 'Privacy & Sicurezza', description: 'I tuoi dati restano tuoi. Deployment on-premise o cloud privato. Nessun dato condiviso con terze parti.', icon: '🔒' },
+  { title: 'Scalabilità Progressiva', description: 'Parti con un agente, scala a tutta l\'organizzazione. Costi proporzionali all\'utilizzo reale.', icon: '📈' },
+];
+
+const plans = [
+  {
+    name: 'A Corpo',
+    price: 'Su misura',
+    description: 'Progetto chiavi in mano',
+    features: [
+      'Analisi requisiti e design',
+      'Sviluppo piattaforma AI personalizzata',
+      'Knowledge base iniziale configurata',
+      'Fino a 3 agenti specializzati',
+      'Formazione team (8 ore)',
+      'Supporto post-lancio (30 giorni)',
+      'Documentazione completa',
+    ],
+    cta: 'Richiedi preventivo',
+    highlighted: false,
+  },
+  {
+    name: 'Factory',
+    price: 'Su misura',
+    description: 'Gestione continuativa',
+    features: [
+      'Tutto il pacchetto A Corpo incluso',
+      'Aggiornamento continuo knowledge base',
+      'Nuovi agenti su richiesta',
+      'Monitoring e ottimizzazione mensile',
+      'Report performance AI',
+      'Supporto prioritario',
+      'Evoluzione continua della piattaforma',
+      'SLA garantito',
+    ],
+    cta: 'Parliamone',
+    highlighted: true,
+  },
+];
+
+const faqs = [
+  { q: 'Quanto tempo serve per avere la piattaforma operativa?', a: 'Da 4 a 8 settimane per il setup iniziale, inclusa la configurazione della knowledge base e il training dei primi agenti.' },
+  { q: 'I miei dati sono al sicuro?', a: 'Assolutamente. Offriamo deployment su cloud privato o on-premise. Nessun dato viene condiviso con provider AI terzi senza il tuo consenso esplicito.' },
+  { q: 'Serve competenza tecnica interna?', a: 'No. La piattaforma è progettata per essere gestita anche da team non tecnici. La dashboard è intuitiva e forniamo formazione completa.' },
+  { q: 'Posso iniziare in piccolo e poi scalare?', a: 'Esattamente il nostro approccio. Partiamo con un caso d\'uso specifico, misuriamo i risultati, e poi estendiamo ad altri processi.' },
+  { q: 'Quali modelli AI utilizzate?', a: 'Selezioniamo il modello migliore per ogni task: Claude, GPT-4, Mistral, modelli open-source. La scelta dipende da performance, costo e requisiti di privacy.' },
+];
+---
+
+<ServiceLayout
+  title="AI Platform per PMI"
+  description="Piattaforma AI su misura per la tua azienda. Agenti intelligenti addestrati sui tuoi documenti, integrati nei tuoi processi."
+  heroTitle="La tua AI aziendale, su misura"
+  heroSubtitle="Una piattaforma di intelligenza artificiale costruita intorno ai tuoi processi, documenti e competenze. Non un chatbot generico: un sistema che conosce la tua azienda."
+  breadcrumbs={[
+    { label: 'Home', href: '/' },
+    { label: 'AI Platform' },
+  ]}
+>
+  <!-- Problem Section -->
+  <section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl mx-auto text-center mb-16">
+        <h2 class="text-3xl font-bold text-slate-900 mb-6">Il problema</h2>
+        <p class="text-lg text-slate-600 leading-relaxed">
+          Le PMI italiane sono tagliate fuori dalla rivoluzione AI. Gli strumenti enterprise costano troppo,
+          quelli consumer sono troppo generici. Il risultato? Le aziende restano indietro mentre i competitor
+          che adottano l'AI guadagnano efficienza ogni giorno.
+        </p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="p-6 bg-red-50 rounded-xl border border-red-100">
+          <h3 class="font-semibold text-slate-900 mb-2">Costi proibitivi</h3>
+          <p class="text-sm text-slate-600">Le soluzioni enterprise partono da 50K+/anno. Budget fuori portata per una PMI da 10-50 dipendenti.</p>
+        </div>
+        <div class="p-6 bg-red-50 rounded-xl border border-red-100">
+          <h3 class="font-semibold text-slate-900 mb-2">Competenze mancanti</h3>
+          <p class="text-sm text-slate-600">Servirebbero data scientist e ML engineer interni. Figure che costano 80K+/anno e sono introvabili.</p>
+        </div>
+        <div class="p-6 bg-red-50 rounded-xl border border-red-100">
+          <h3 class="font-semibold text-slate-900 mb-2">Strumenti generici</h3>
+          <p class="text-sm text-slate-600">ChatGPT non conosce i tuoi processi, clienti, prodotti. Ogni risposta va verificata manualmente.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Solution Section -->
+  <section class="py-20 bg-slate-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl mx-auto text-center mb-16">
+        <h2 class="text-3xl font-bold text-slate-900 mb-6">La soluzione</h2>
+        <p class="text-lg text-slate-600 leading-relaxed">
+          Una piattaforma AI costruita su misura per la tua azienda. Non un prodotto off-the-shelf:
+          un sistema che impara dai tuoi documenti, conosce i tuoi processi e si integra con i tuoi strumenti.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl font-bold text-slate-900 mb-4">Cosa include la piattaforma</h2>
+      </div>
+      <FeatureGrid features={features} columns={3} />
+    </div>
+  </section>
+
+  <!-- Pricing Section -->
+  <section class="py-20 bg-slate-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl font-bold text-slate-900 mb-4">Pacchetti disponibili</h2>
+        <p class="text-lg text-slate-600">
+          Ogni percorso è personalizzato. Parliamone per trovare la formula giusta.
+        </p>
+      </div>
+      <PricingTable plans={plans} />
+    </div>
+  </section>
+
+  <!-- PDF Omaggio -->
+  <section class="py-16 bg-white">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <div class="p-8 bg-gradient-to-br from-primary-50 to-violet-50 rounded-2xl border border-primary-100">
+        <svg class="w-12 h-12 text-primary-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        <h3 class="text-xl font-bold text-slate-900 mb-2">Scarica la guida gratuita</h3>
+        <p class="text-slate-600 mb-6">Ricevi il PDF con framework, checklist e casi studio reali. Nessuna email richiesta.</p>
+        <a href="/risorse" class="inline-flex items-center px-6 py-3 text-sm font-semibold text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors">
+          Scarica PDF omaggio
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section class="py-20 bg-white">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl font-bold text-slate-900 mb-12 text-center">Domande frequenti</h2>
+      <div class="space-y-6">
+        {faqs.map((faq) => (
+          <details class="group p-6 bg-slate-50 rounded-xl border border-slate-200">
+            <summary class="flex items-center justify-between cursor-pointer text-lg font-semibold text-slate-900 list-none">
+              {faq.q}
+              <svg class="w-5 h-5 text-slate-400 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </summary>
+            <p class="mt-4 text-slate-600 leading-relaxed">{faq.a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+</ServiceLayout>

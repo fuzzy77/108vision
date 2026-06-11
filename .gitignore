@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Build output
+aia-website/dist/
+aia-website/.vercel/
+aia-platform/dist/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# TinaCMS local
+aia-website/.tina/__generated__/
+
+# Claude Code session files
+.claude/

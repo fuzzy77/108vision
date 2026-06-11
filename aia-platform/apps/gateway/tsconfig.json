@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "exactOptionalPropertyTypes": false,
+    "paths": {
+      "@aia/shared": ["../../packages/shared/src/index.ts"],
+      "@aia/ai-client": ["../../packages/ai-client/src/index.ts"],
+      "@aia/auth": ["../../packages/auth/src/index.ts"],
+      "@aia/graph": ["../../packages/graph/src/index.ts"],
+      "@aia/integrations": ["../../packages/integrations/src/index.ts"],
+      "@aia/integrations/browser": ["../../packages/integrations/src/browser/index.ts"],
+      "@aia/desktop-bridge": ["../../packages/desktop-bridge/src/index.ts"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}

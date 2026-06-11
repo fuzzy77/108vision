@@ -1,0 +1,66 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import LeadMagnetForm from '@/components/LeadMagnetForm.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  pdfSlug: string;
+  heroTitle: string;
+  heroSubtitle: string;
+  bullets: string[];
+}
+
+const { title, description, pdfSlug, heroTitle, heroSubtitle, bullets } = Astro.props;
+---
+
+<BaseLayout title={title} description={description}>
+  <section class="py-20 bg-gradient-to-b from-slate-50 to-white">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <!-- Left: Value Proposition -->
+        <div>
+          <p class="text-sm font-semibold text-primary-600 uppercase tracking-wider mb-3">PDF Gratuito</p>
+          <h1 class="text-3xl lg:text-4xl font-bold text-slate-900 mb-4 leading-tight">{heroTitle}</h1>
+          <p class="text-lg text-slate-600 mb-8">{heroSubtitle}</p>
+          <ul class="space-y-3">
+            {bullets.map((bullet) => (
+              <li class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                <span class="text-slate-700">{bullet}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <!-- Right: Form -->
+        <div class="bg-white p-8 rounded-2xl shadow-lg border border-slate-100">
+          <h2 class="text-xl font-bold text-slate-900 mb-2 text-center">Scarica gratis</h2>
+          <p class="text-sm text-slate-500 text-center mb-6">Nessun costo. Nessun spam. Solo valore.</p>
+          <LeadMagnetForm pdfTitle={title} pdfSlug={pdfSlug} />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trust signals -->
+  <section class="py-12 bg-white border-t border-slate-100">
+    <div class="max-w-3xl mx-auto px-4 text-center">
+      <div class="flex flex-wrap justify-center gap-8 text-sm text-slate-500">
+        <span class="flex items-center gap-2">
+          <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+          Nessuna carta di credito
+        </span>
+        <span class="flex items-center gap-2">
+          <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+          Cancellazione con un click
+        </span>
+        <span class="flex items-center gap-2">
+          <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+          GDPR compliant
+        </span>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
