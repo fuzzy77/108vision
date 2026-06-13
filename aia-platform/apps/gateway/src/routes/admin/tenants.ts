@@ -76,7 +76,7 @@ adminTenantsRouter.get('/', async (c) => {
       documentsCount: sql<number>`(SELECT count(*)::int FROM shared.kb_documents d WHERE d.tenant_id = ${tenants.id} AND d.status != 'deleted')`,
       usersCount: sql<number>`(SELECT count(*)::int FROM shared.users u WHERE u.tenant_id = ${tenants.id})`,
       lastActivity: sql<string>`(SELECT MAX(c.created_at)::text FROM shared.conversations c WHERE c.tenant_id = ${tenants.id})`,
-      monthlyCostUsd: sql<number>`COALESCE((SELECT SUM(ud.cost_usd::numeric)::float FROM shared.usage_daily ud WHERE ud.tenant_id = ${tenants.id} AND ud.date >= to_char(date_trunc('month', CURRENT_DATE), 'YYYY-MM-DD')), 0)`,
+      monthlyCostUsd: sql<number>`COALESCE((SELECT SUM(ud.cost_usd::numeric)::float FROM shared.usage_daily ud WHERE ud.tenant_id = ${tenants.id} AND ud.date >= date_trunc('month', CURRENT_DATE)::date), 0)`,
     })
     .from(tenants)
     .where(whereClause)
@@ -124,7 +124,7 @@ adminTenantsRouter.get('/:id', async (c) => {
       conversationsCount: sql<number>`(SELECT count(*)::int FROM shared.conversations c WHERE c.tenant_id = ${tenantId})`,
       totalTokens: sql<number>`COALESCE((SELECT SUM(ud.input_tokens + ud.output_tokens)::int FROM shared.usage_daily ud WHERE ud.tenant_id = ${tenantId}), 0)`,
       totalCostUsd: sql<number>`COALESCE((SELECT SUM(ud.cost_usd::numeric)::float FROM shared.usage_daily ud WHERE ud.tenant_id = ${tenantId}), 0)`,
-      monthlyCostUsd: sql<number>`COALESCE((SELECT SUM(ud.cost_usd::numeric)::float FROM shared.usage_daily ud WHERE ud.tenant_id = ${tenantId} AND ud.date >= to_char(date_trunc('month', CURRENT_DATE), 'YYYY-MM-DD')), 0)`,
+      monthlyCostUsd: sql<number>`COALESCE((SELECT SUM(ud.cost_usd::numeric)::float FROM shared.usage_daily ud WHERE ud.tenant_id = ${tenantId} AND ud.date >= date_trunc('month', CURRENT_DATE)::date), 0)`,
     })
     .from(sql`(SELECT 1) AS dummy`);
 

@@ -163,6 +163,17 @@ CREATE TABLE IF NOT EXISTS shared.messages (
 CREATE INDEX IF NOT EXISTS idx_messages_conversation ON shared.messages(conversation_id, created_at);
 
 -- -----------------------------------------------------------
+-- Platform Settings (admin key/value config store)
+-- -----------------------------------------------------------
+CREATE TABLE IF NOT EXISTS shared.platform_settings (
+    key VARCHAR(100) PRIMARY KEY,
+    value TEXT NOT NULL,
+    encrypted BOOLEAN DEFAULT false,
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_by UUID REFERENCES shared.users(id) ON DELETE SET NULL
+);
+
+-- -----------------------------------------------------------
 -- Add FK from tenants to plans (deferred to avoid circular dep)
 -- -----------------------------------------------------------
 DO $$

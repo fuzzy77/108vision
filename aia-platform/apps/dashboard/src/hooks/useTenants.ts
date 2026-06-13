@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api, apiForTenant } from '@/lib/api';
-import type { Tenant, PaginatedResponse, Agent, KnowledgeDocument, KnowledgeCollection, Conversation, Message } from '@/types';
+import type { Tenant, PaginatedResponse, Agent, KnowledgeDocument, KnowledgeCollection, Conversation, Message, TenantUser } from '@/types';
 
 interface TenantFilters {
   status?: string;
@@ -52,8 +52,30 @@ export function useTenant(id: string | undefined) {
   return useQuery({
     queryKey: ['tenants', id],
     queryFn: async () => {
-      const raw = await api.get<Tenant & { stats?: unknown }>(`/admin/tenants/${id}`);
-      return raw;
+      const raw = await api.get<Record<string, unknown>>(`/admin/tenants/${id}`);
+      const stats = (raw.stats ?? {}) as Record<string, unknown>;
+      const config = (raw.config ?? {}) as Record<string, unknown>;
+      return {
+        id: raw.id as string,
+        name: raw.name as string,
+        sector: (config.sector as string) ?? '',
+        plan: (config.plan as string) ?? 'starter',
+        status: raw.status as string,
+        contactName: '',
+        contactEmail: '',
+        agentsCount: (stats.agentsCount as number) ?? (raw.agentsCount as number) ?? 0,
+        documentsCount: (stats.documentsCount as number) ?? (raw.documentsCount as number) ?? 0,
+        conversationsThisMonth: (stats.conversationsCount as number) ?? 0,
+        monthlyCost: (stats.monthlyCostUsd as number) ?? (raw.monthlyCostUsd as number) ?? 0,
+        monthlyRevenue: 0,
+        lastActivity: (raw.lastActivity as string) ?? '',
+        createdAt: raw.createdAt as string,
+        config: {
+          allowedModels: [],
+          maxTokensPerMonth: 0,
+          ...config,
+        },
+      } as Tenant;
     },
     enabled: !!id,
   });
@@ -108,8 +130,19 @@ export function useTenantDocuments(tenantId: string | undefined) {
   return useQuery({
     queryKey: ['tenants', tenantId, 'documents'],
     queryFn: async () => {
-      const r = await apiForTenant<{ items: KnowledgeDocument[] }>(tenantId!, '/knowledge/documents');
-      return r.items;
+      const r = await apiForTenant<{ items: Record<string, unknown>[] }>(tenantId!, '/knowledge/documents');
+      return (r.items ?? []).map((d) => ({
+        id: d.id as string,
+        tenantId: (d.tenantId as string) ?? tenantId!,
+        collectionId: (d.collectionId as string) ?? '',
+        collectionName: (d.collectionName as string) ?? (d.sourceType as string) ?? '—',
+        fileName: (d.fileName as string) ?? (d.title as string) ?? '—',
+        fileSize: (d.sizeBytes as number) ?? (d.fileSize as number) ?? 0,
+        status: (d.status as 'processing' | 'ready' | 'error') ?? 'processing',
+        chunksCount: (d.chunksCount as number) ?? (d.chunkCount as number) ?? 0,
+        uploadedAt: (d.uploadedAt as string) ?? (d.createdAt as string) ?? '',
+        processedAt: (d.processedAt as string) ?? (d.updatedAt as string) ?? null,
+      })) as KnowledgeDocument[];
     },
     enabled: !!tenantId,
   });
@@ -138,6 +171,50 @@ export function useTenantConversations(tenantId: string | undefined, page = 1) {
       return { data: r.items, total: r.total, page: r.page, pageSize: r.pageSize } as PaginatedResponse<Conversation>;
     },
     enabled: !!tenantId,
+  });
+}
+
+export function useTenantUsers(tenantId: string | undefined) {
+  return useQuery({
+    queryKey: ['tenants', tenantId, 'users'],
+    queryFn: async () => {
+      const r = await api.get<{ items: TenantUser[] }>(`/admin/tenants/${tenantId}/users`);
+      return r.items;
+    },
+    enabled: !!tenantId,
+  });
+}
+
+export function useInviteTenantUser(tenantId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: { email: string; name: string; role: string }) =>
+      api.post<TenantUser>(`/admin/tenants/${tenantId}/users`, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tenants', tenantId, 'users'] });
+    },
+  });
+}
+
+export function useUpdateTenantUser(tenantId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ userId, ...data }: { userId: string; name?: string; role?: string }) =>
+      api.put<TenantUser>(`/admin/tenants/${tenantId}/users/${userId}`, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tenants', tenantId, 'users'] });
+    },
+  });
+}
+
+export function useRemoveTenantUser(tenantId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (userId: string) =>
+      api.delete(`/admin/tenants/${tenantId}/users/${userId}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tenants', tenantId, 'users'] });
+    },
   });
 }
 

@@ -322,6 +322,26 @@ export class DesktopBridge {
     );
   }
 
+  /**
+   * Click the mouse at absolute screen coordinates.
+   *
+   * @param x      Horizontal screen coordinate in pixels.
+   * @param y      Vertical screen coordinate in pixels.
+   * @param button Mouse button to press (default: 'left').
+   */
+  async mouseClickAt(
+    x: number,
+    y: number,
+    button: 'left' | 'right' = 'left',
+  ): Promise<ActionResult> {
+    return this._executeAction(
+      'mouseClick',
+      async () => this._provider!.mouseClick(x, y, button),
+      undefined,
+      `mouse click at (${x}, ${y}) button=${button}`,
+    );
+  }
+
   // ---------------------------------------------------------------------------
   // Clipboard
   // ---------------------------------------------------------------------------

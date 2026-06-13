@@ -5,7 +5,7 @@ export interface AuthUser {
   id: string;
   email: string;
   name: string;
-  role: 'admin' | 'consultant';
+  role: string;
   avatar?: string;
 }
 
@@ -13,7 +13,7 @@ interface TokenPayload {
   sub: string;
   email: string;
   name: string;
-  role: 'admin' | 'consultant';
+  role: string;
   exp: number;
   iat: number;
 }
@@ -84,8 +84,10 @@ export async function login(email: string, password: string): Promise<AuthUser> 
     throw new Error(error.error?.message || 'Credenziali non valide');
   }
 
-  const data = await response.json() as { accessToken: string; refreshToken: string };
-  setTokens(data.accessToken, data.refreshToken);
+  const data = await response.json() as { token?: string; accessToken?: string; refreshToken?: string };
+  const token = data.token || data.accessToken || '';
+  const refresh = data.refreshToken || token;
+  setTokens(token, refresh);
   const user = getCurrentUser();
   if (!user) throw new Error('Token non valido ricevuto');
   return user;

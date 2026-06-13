@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useUIStore } from '@/stores/ui.store';
-import { useTenant, useTenantAgents, useTenantDocuments, useTenantConversations, useConversationMessages } from '@/hooks/useTenants';
+import { useTenant, useTenantAgents, useTenantDocuments, useTenantConversations, useConversationMessages, useTenantUsers, useInviteTenantUser, useUpdateTenantUser, useRemoveTenantUser } from '@/hooks/useTenants';
 import { useTenantUsage } from '@/hooks/useUsage';
 import { useGraphEntities } from '@/hooks/useGraph';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs';
@@ -20,9 +21,10 @@ import { Select } from '@/components/ui/Select';
 import { Switch } from '@/components/ui/Switch';
 import { STATUS_COLORS, PLAN_TYPES, type PlanType } from '@/lib/constants';
 import { formatCurrency, formatDate, formatRelative, formatTokens, navigate } from '@/lib/utils';
-import { Bot, FileText, MessageSquare, Plus, Upload, Settings, AlertTriangle, ExternalLink, Pencil, Network, Monitor } from 'lucide-react';
+import { uploadForTenant } from '@/lib/api';
+import { Bot, FileText, MessageSquare, Plus, Upload, Settings, AlertTriangle, ExternalLink, Pencil, Network, Monitor, Loader2, Users, UserPlus, Trash2, Shield } from 'lucide-react';
 import { DesktopMonitor } from '@/components/desktop/DesktopMonitor';
-import type { Message } from '@/types';
+import type { Message, TenantUser } from '@/types';
 
 interface TenantDetailPageProps {
   tenantId: string;
@@ -45,8 +47,30 @@ function TenantDetailPage({ tenantId }: TenantDetailPageProps) {
   const { data: usage, isLoading: usageLoading } = useTenantUsage(tenantId);
   const [loadedMessages, setLoadedMessages] = useState<Record<string, Message[]>>({});
   const [expandedConv, setExpandedConv] = useState<string | undefined>(undefined);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const queryClient = useQueryClient();
 
   const { data: messages } = useConversationMessages(expandedConv);
+
+  async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = e.target.files;
+    if (!files?.length || !tenantId) return;
+    setUploading(true);
+    setUploadError(null);
+    try {
+      for (const file of Array.from(files)) {
+        await uploadForTenant(tenantId, '/knowledge/upload', file);
+      }
+      queryClient.invalidateQueries({ queryKey: ['tenants', tenantId, 'documents'] });
+    } catch (err: unknown) {
+      setUploadError(err instanceof Error ? err.message : 'Errore durante il caricamento');
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  }
 
   useEffect(() => {
     if (messages && expandedConv) {
@@ -122,6 +146,11 @@ function TenantDetailPage({ tenantId }: TenantDetailPageProps) {
           <TabsTrigger value="graph">Grafo</TabsTrigger>
           <TabsTrigger value="conversations">Conversazioni</TabsTrigger>
           <TabsTrigger value="usage">Utilizzo</TabsTrigger>
+          <TabsTrigger value="users">
+            <span className="flex items-center gap-1.5">
+              <Users className="h-3.5 w-3.5" /> Utenti
+            </span>
+          </TabsTrigger>
           <TabsTrigger value="desktop">
             <span className="flex items-center gap-1.5">
               <Monitor className="h-3.5 w-3.5" /> Desktop
@@ -295,12 +324,26 @@ function TenantDetailPage({ tenantId }: TenantDetailPageProps) {
 
         {/* Knowledge Base Tab */}
         <TabsContent value="knowledge">
+          <input
+            ref={fileInputRef}
+            type="file"
+            className="hidden"
+            multiple
+            accept=".txt,.md,.pdf,.docx,.doc,.csv,.json"
+            onChange={handleFileUpload}
+          />
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Knowledge Base</h2>
-            <Button>
-              <Upload className="h-4 w-4" /> Carica documenti
+            <Button onClick={() => fileInputRef.current?.click()} disabled={uploading}>
+              {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+              {uploading ? 'Caricamento...' : 'Carica documenti'}
             </Button>
           </div>
+          {uploadError && (
+            <div className="mb-4 rounded-lg border border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-900/20 p-3 text-sm text-red-700 dark:text-red-300">
+              {uploadError}
+            </div>
+          )}
           {docsLoading ? (
             <div className="space-y-2">
               {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-14 w-full" />)}
@@ -310,7 +353,10 @@ function TenantDetailPage({ tenantId }: TenantDetailPageProps) {
               <CardContent className="py-12 text-center">
                 <FileText className="h-10 w-10 mx-auto mb-3 text-slate-300 dark:text-slate-600" />
                 <p className="text-sm text-slate-500 dark:text-slate-400 mb-3">Nessun documento nella knowledge base</p>
-                <Button><Upload className="h-4 w-4" /> Carica il primo documento</Button>
+                <Button onClick={() => fileInputRef.current?.click()} disabled={uploading}>
+                  {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                  {uploading ? 'Caricamento...' : 'Carica il primo documento'}
+                </Button>
               </CardContent>
             </Card>
           ) : (
@@ -423,6 +469,11 @@ function TenantDetailPage({ tenantId }: TenantDetailPageProps) {
           </div>
         </TabsContent>
 
+        {/* Users Tab */}
+        <TabsContent value="users">
+          <UsersTabContent tenantId={tenantId} />
+        </TabsContent>
+
         {/* Desktop Tab */}
         <TabsContent value="desktop">
           <DesktopMonitor tenantId={tenantId} />
@@ -486,6 +537,236 @@ function TenantDetailPage({ tenantId }: TenantDetailPageProps) {
           </div>
         </TabsContent>
       </Tabs>
+    </div>
+  );
+}
+
+// --- Users Tab Content ---
+
+const ROLE_LABELS: Record<string, string> = {
+  platform_admin: 'Platform Admin',
+  tenant_admin: 'Admin',
+  tenant_operator: 'Operatore',
+  client_user: 'Utente',
+};
+
+const ROLE_COLORS: Record<string, 'emerald' | 'amber' | 'slate' | 'red'> = {
+  platform_admin: 'red',
+  tenant_admin: 'emerald',
+  tenant_operator: 'amber',
+  client_user: 'slate',
+};
+
+function UsersTabContent({ tenantId }: { tenantId: string }) {
+  const { data: users, isLoading } = useTenantUsers(tenantId);
+  const inviteMutation = useInviteTenantUser(tenantId);
+  const updateMutation = useUpdateTenantUser(tenantId);
+  const removeMutation = useRemoveTenantUser(tenantId);
+
+  const [showInviteForm, setShowInviteForm] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteName, setInviteName] = useState('');
+  const [inviteRole, setInviteRole] = useState<'tenant_admin' | 'tenant_operator' | 'client_user'>('client_user');
+  const [inviteError, setInviteError] = useState<string | null>(null);
+
+  const [editingUserId, setEditingUserId] = useState<string | null>(null);
+  const [editRole, setEditRole] = useState<'tenant_admin' | 'tenant_operator' | 'client_user'>('client_user');
+
+  async function handleInvite() {
+    if (!inviteEmail || !inviteName) return;
+    setInviteError(null);
+    try {
+      await inviteMutation.mutateAsync({ email: inviteEmail, name: inviteName, role: inviteRole });
+      setInviteEmail('');
+      setInviteName('');
+      setInviteRole('client_user');
+      setShowInviteForm(false);
+    } catch (err: unknown) {
+      setInviteError(err instanceof Error ? err.message : 'Errore durante l\'invito');
+    }
+  }
+
+  async function handleEditRole(user: TenantUser) {
+    try {
+      await updateMutation.mutateAsync({ userId: user.id, role: editRole });
+      setEditingUserId(null);
+    } catch {
+      // silently ignore — query will not update on failure
+    }
+  }
+
+  async function handleRemove(userId: string) {
+    if (!confirm('Rimuovere questo utente dal tenant?')) return;
+    try {
+      await removeMutation.mutateAsync(userId);
+    } catch {
+      // silently ignore
+    }
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Utenti</h2>
+        <Button onClick={() => setShowInviteForm((v) => !v)}>
+          <UserPlus className="h-4 w-4" /> Invita utente
+        </Button>
+      </div>
+
+      {/* Invite form */}
+      {showInviteForm && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base flex items-center gap-2">
+              <UserPlus className="h-4 w-4" /> Invita nuovo utente
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {inviteError && (
+              <div className="rounded-lg border border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-900/20 p-3 text-sm text-red-700 dark:text-red-300">
+                {inviteError}
+              </div>
+            )}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Input
+                label="Nome"
+                value={inviteName}
+                onChange={(e) => setInviteName(e.target.value)}
+                placeholder="Mario Rossi"
+              />
+              <Input
+                label="Email"
+                type="email"
+                value={inviteEmail}
+                onChange={(e) => setInviteEmail(e.target.value)}
+                placeholder="mario@azienda.it"
+              />
+              <Select
+                label="Ruolo"
+                value={inviteRole}
+                onChange={(e) => setInviteRole(e.target.value as typeof inviteRole)}
+                options={[
+                  { value: 'tenant_admin', label: 'Admin' },
+                  { value: 'tenant_operator', label: 'Operatore' },
+                  { value: 'client_user', label: 'Utente' },
+                ]}
+              />
+            </div>
+            <div className="flex gap-2">
+              <Button onClick={handleInvite} disabled={inviteMutation.isPending || !inviteEmail || !inviteName}>
+                {inviteMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserPlus className="h-4 w-4" />}
+                {inviteMutation.isPending ? 'Invio...' : 'Aggiungi utente'}
+              </Button>
+              <Button variant="outline" onClick={() => { setShowInviteForm(false); setInviteError(null); }}>
+                Annulla
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Users table */}
+      {isLoading ? (
+        <div className="space-y-2">
+          {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-14 w-full" />)}
+        </div>
+      ) : !users?.length ? (
+        <Card>
+          <CardContent className="py-12 text-center">
+            <Users className="h-10 w-10 mx-auto mb-3 text-slate-300 dark:text-slate-600" />
+            <p className="text-sm text-slate-500 dark:text-slate-400 mb-3">Nessun utente in questo tenant</p>
+            <Button onClick={() => setShowInviteForm(true)}>
+              <UserPlus className="h-4 w-4" /> Invita il primo utente
+            </Button>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Nome</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead>Ruolo</TableHead>
+                <TableHead>Ultimo accesso</TableHead>
+                <TableHead>Creato</TableHead>
+                <TableHead className="text-right">Azioni</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {users.map((user) => (
+                <TableRow key={user.id}>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <Avatar name={user.name ?? user.email} size="sm" />
+                      <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{user.name ?? '—'}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-sm text-slate-600 dark:text-slate-400">{user.email}</TableCell>
+                  <TableCell>
+                    {editingUserId === user.id ? (
+                      <div className="flex items-center gap-2">
+                        <Select
+                          value={editRole}
+                          onChange={(e) => setEditRole(e.target.value as typeof editRole)}
+                          options={[
+                            { value: 'tenant_admin', label: 'Admin' },
+                            { value: 'tenant_operator', label: 'Operatore' },
+                            { value: 'client_user', label: 'Utente' },
+                          ]}
+                        />
+                        <Button
+                          size="sm"
+                          onClick={() => handleEditRole(user)}
+                          disabled={updateMutation.isPending}
+                        >
+                          {updateMutation.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : 'Salva'}
+                        </Button>
+                        <Button size="sm" variant="ghost" onClick={() => setEditingUserId(null)}>
+                          Annulla
+                        </Button>
+                      </div>
+                    ) : (
+                      <Badge color={ROLE_COLORS[user.role] ?? 'slate'}>
+                        <Shield className="h-3 w-3 mr-1 inline" />
+                        {ROLE_LABELS[user.role] ?? user.role}
+                      </Badge>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-sm text-slate-500 dark:text-slate-400">
+                    {user.lastLoginAt ? formatRelative(user.lastLoginAt) : 'Mai'}
+                  </TableCell>
+                  <TableCell className="text-sm text-slate-500 dark:text-slate-400">
+                    {formatDate(user.createdAt)}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex items-center justify-end gap-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setEditingUserId(user.id);
+                          setEditRole(user.role as typeof editRole);
+                        }}
+                      >
+                        <Pencil className="h-3.5 w-3.5" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleRemove(user.id)}
+                        disabled={removeMutation.isPending}
+                      >
+                        <Trash2 className="h-3.5 w-3.5 text-red-500" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
     </div>
   );
 }

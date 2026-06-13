@@ -3,10 +3,14 @@ import { createRoot } from 'react-dom/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { RouterProvider, createRouter, createRootRoute, createRoute } from '@tanstack/react-router';
 import { RootLayout } from '@/routes/__root';
+import { LoginPage } from '@/routes/login';
 import { HomePage } from '@/routes/index';
 import { ChatPage } from '@/routes/chat.$conversationId';
 import { KnowledgePage } from '@/routes/knowledge';
 import { SettingsPage } from '@/routes/settings';
+import { AdminUsersPage } from '@/routes/admin/users';
+import { AdminSettingsPage } from '@/routes/admin/settings';
+import { AdminAgentsPage } from '@/routes/admin/agents';
 import './app.css';
 
 const queryClient = new QueryClient({
@@ -20,6 +24,12 @@ const queryClient = new QueryClient({
 
 const rootRoute = createRootRoute({
   component: RootLayout,
+});
+
+const loginRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/login',
+  component: LoginPage,
 });
 
 const indexRoute = createRoute({
@@ -46,11 +56,33 @@ const settingsRoute = createRoute({
   component: SettingsPage,
 });
 
+const adminUsersRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/admin/users',
+  component: AdminUsersPage,
+});
+
+const adminSettingsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/admin/settings',
+  component: AdminSettingsPage,
+});
+
+const adminAgentsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/admin/agents',
+  component: AdminAgentsPage,
+});
+
 const routeTree = rootRoute.addChildren([
+  loginRoute,
   indexRoute,
   chatRoute,
   knowledgeRoute,
   settingsRoute,
+  adminUsersRoute,
+  adminSettingsRoute,
+  adminAgentsRoute,
 ]);
 
 const router = createRouter({

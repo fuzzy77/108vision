@@ -19,6 +19,7 @@ import {
   LogOut,
   Plug,
   ShieldCheck,
+  Cpu,
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -37,6 +38,7 @@ const navItems: NavItem[] = [
   { label: 'Dashboard', href: '/', icon: LayoutDashboard },
   { label: 'Clienti', href: '/tenants', icon: Users },
   { label: 'Marketplace', href: '/marketplace', icon: Store },
+  { label: 'Modelli AI', href: '/models', icon: Cpu },
   { label: 'Billing', href: '/billing', icon: CreditCard },
   { label: 'Integrazioni', href: '/integrations', icon: Plug },
   { label: 'Azioni', href: '/actions', icon: ShieldCheck, badge: true },

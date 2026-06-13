@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { api } from '@/lib/api';
+import { api, type Agent } from '@/lib/api';
 
 export function useAgents() {
   const query = useQuery({
@@ -8,8 +8,11 @@ export function useAgents() {
     staleTime: 5 * 60 * 1000,
   });
 
+  const data = query.data as { items: Agent[] } | Agent[] | undefined;
+  const agents: Agent[] = Array.isArray(data) ? data : (data?.items ?? []);
+
   return {
-    agents: query.data ?? [],
+    agents,
     isLoading: query.isLoading,
     error: query.error,
   };

@@ -36,9 +36,9 @@ const themeOptions: { value: ThemeMode; label: string; icon: typeof Sun }[] = [
 ];
 
 const modelOptions: { value: ModelPreference; label: string; description: string; icon: typeof Zap }[] = [
-  { value: 'fast', label: 'Fast', description: 'Quick responses, lower cost', icon: Zap },
-  { value: 'balanced', label: 'Balanced', description: 'Good balance of speed and quality', icon: Scale },
-  { value: 'powerful', label: 'Powerful', description: 'Best quality, slower responses', icon: Cpu },
+  { value: 'fast-cheap', label: 'Veloce', description: 'Risposte rapide, costo basso', icon: Zap },
+  { value: 'balanced', label: 'Bilanciato', description: 'Buon equilibrio tra velocità e qualità', icon: Scale },
+  { value: 'powerful', label: 'Potente', description: 'Massima qualità, più lento', icon: Cpu },
 ];
 
 export function SettingsPage() {

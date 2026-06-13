@@ -12,9 +12,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg'],
       manifest: {
-        name: 'AIA Assistant',
-        short_name: 'AIA',
-        description: 'AI Assistant Platform for SMEs',
+        name: 'Client 108 AI',
+        short_name: '108 AI',
+        description: 'Piattaforma AI per le PMI',
         theme_color: '#4F46E5',
         background_color: '#0F172A',
         display: 'standalone',
@@ -52,7 +52,7 @@ export default defineConfig({
     },
   },
   server: {
-    port: 5173,
+    port: 5174,
     proxy: {
       '/api': {
         target: 'http://localhost:3000',

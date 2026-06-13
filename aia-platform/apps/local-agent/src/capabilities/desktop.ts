@@ -1,7 +1,11 @@
 /**
  * Desktop Capability — Desktop automation and accessibility actions.
  *
- * Exposes @108ai/desktop-bridge to the gateway via the handler registry.
+ * Exposes @aia/desktop-bridge to the gateway via the handler registry.
+ *
+ * The bridge is initialised lazily on first use via `getOrInitBridge()`.
+ * A single DesktopBridge instance is reused across calls within the
+ * agent's lifetime (one process = one bridge = one provider connection).
  *
  * Risk tiers (enforced by security.ts):
  * - read-only : listWindows, readWindow, readFocused, screenshot, analyzeScreen, getUITree
@@ -11,27 +15,64 @@
  * HIGH-RISK actions require `requireApprovalHighRisk: false` in config.riskPreferences
  * (set via the Desktop Access toggle in the tray) or an explicit approval flag
  * `_approved: true` injected by the gateway into the params before dispatch.
- *
- * All handlers follow the standard pattern used throughout capabilities/:
- *   handlers.set('desktop.XXX', (params, config) => { ... });
  */
 
 import type { AgentConfig } from '../config.js';
+import type { DesktopBridge } from '@aia/desktop-bridge';
 
-// Lazy import: the bridge is optional at build time; absence must not crash
-// the agent when desktop is disabled.
-async function bridge() {
-  try {
-    return await import('@108ai/desktop-bridge');
-  } catch (error) {
-    throw new Error(
-      `@108ai/desktop-bridge is not available: ${error instanceof Error ? error.message : String(error)}. ` +
-      'Ensure desktop capabilities are enabled in config and the package is installed.',
-    );
-  }
+// ---------------------------------------------------------------------------
+// Bridge singleton — lazily initialised
+// ---------------------------------------------------------------------------
+
+let _bridge: DesktopBridge | null = null;
+let _bridgeInitialising: Promise<DesktopBridge> | null = null;
+
+/**
+ * Return the shared DesktopBridge instance, initialising it on first call.
+ * Subsequent calls return the cached instance immediately.
+ *
+ * Throws if `@aia/desktop-bridge` is not installed or the platform is
+ * unsupported (Linux is not yet supported by the bridge).
+ */
+async function getOrInitBridge(): Promise<DesktopBridge> {
+  if (_bridge) return _bridge;
+
+  // Avoid double-init under concurrent calls
+  if (_bridgeInitialising) return _bridgeInitialising;
+
+  _bridgeInitialising = (async () => {
+    let mod: typeof import('@aia/desktop-bridge');
+    try {
+      mod = await import('@aia/desktop-bridge');
+    } catch (error) {
+      throw new Error(
+        `@aia/desktop-bridge is not available: ${error instanceof Error ? error.message : String(error)}. ` +
+        'Ensure desktop capabilities are enabled and the package is installed.',
+      );
+    }
+
+    const bridge = await mod.createDesktopBridge({
+      // Platform is auto-detected; visionEnabled/ocrEnabled default to true
+      screenshotBeforeAction: true,
+      screenshotAfterAction: false, // only pre-action for the agent
+    });
+
+    _bridge = bridge;
+    _bridgeInitialising = null;
+    return bridge;
+  })();
+
+  return _bridgeInitialising;
 }
 
-// --- Type helpers ---
+// ---------------------------------------------------------------------------
+// Type helpers (local — avoids a circular import with index.ts)
+// ---------------------------------------------------------------------------
+
+type ActionHandler = (
+  params: Record<string, unknown>,
+  config: AgentConfig,
+) => Promise<unknown> | unknown;
 
 function requireString(params: Record<string, unknown>, key: string): string {
   const v = params[key];
@@ -51,35 +92,39 @@ function optionalNumber(params: Record<string, unknown>, key: string): number | 
   return typeof v === 'number' ? v : undefined;
 }
 
-function requireWindowId(params: Record<string, unknown>): number | string {
+function requireWindowHandle(params: Record<string, unknown>): number {
   const v = params['windowId'];
   if (typeof v === 'number') return v;
-  if (typeof v === 'string' && v.length > 0) return v;
-  throw new Error('Required parameter "windowId" must be a non-empty string or number');
+  if (typeof v === 'string') {
+    const n = parseInt(v, 10);
+    if (!isNaN(n)) return n;
+  }
+  throw new Error('Required parameter "windowId" must be a number or numeric string');
 }
 
-function optionalWindowId(params: Record<string, unknown>): number | string | undefined {
+function optionalWindowHandle(params: Record<string, unknown>): number | undefined {
   const v = params['windowId'];
   if (typeof v === 'number') return v;
-  if (typeof v === 'string' && v.length > 0) return v;
+  if (typeof v === 'string' && v.length > 0) {
+    const n = parseInt(v, 10);
+    if (!isNaN(n)) return n;
+  }
   return undefined;
 }
 
-/**
- * Guard: throw when desktop is disabled in config.
- */
+// ---------------------------------------------------------------------------
+// Guards
+// ---------------------------------------------------------------------------
+
 function assertDesktopEnabled(config: AgentConfig): void {
   if (!config.desktopEnabled) {
     throw new Error(
-      'Desktop capabilities are disabled. Enable via the Desktop Access toggle in the tray or set desktopEnabled: true in config.',
+      'Desktop capabilities are disabled. Enable via the Desktop Access toggle in the tray ' +
+      'or set desktopEnabled: true in config.',
     );
   }
 }
 
-/**
- * Guard: throw when a high-risk action is not explicitly approved.
- * The gateway injects `_approved: true` into params after obtaining user consent.
- */
 function assertHighRiskApproved(
   params: Record<string, unknown>,
   config: AgentConfig,
@@ -94,15 +139,8 @@ function assertHighRiskApproved(
 }
 
 // ============================================================
-// Handler map — exported so index.ts can merge it
+// Handler map
 // ============================================================
-
-// Re-declare the handler type locally to avoid a circular import
-// (index.ts imports us; we must not import from index.ts).
-type ActionHandler = (
-  params: Record<string, unknown>,
-  config: AgentConfig,
-) => Promise<unknown> | unknown;
 
 export const desktopHandlers = new Map<string, ActionHandler>();
 
@@ -114,46 +152,50 @@ export const desktopHandlers = new Map<string, ActionHandler>();
  */
 desktopHandlers.set('desktop.listWindows', async (_params, config) => {
   assertDesktopEnabled(config);
-  const db = await bridge();
+  const db = await getOrInitBridge();
   const windows = await db.listWindows();
   return { windows };
 });
 
 /**
- * Read the text content of a specific window via accessibility APIs.
+ * Read the text content of a specific window via accessibility / OCR / vision.
  * Params: windowId (number | string)
- * Returns: WindowContent
+ * Returns: { content: string; method: string }
  */
 desktopHandlers.set('desktop.readWindow', async (params, config) => {
   assertDesktopEnabled(config);
-  const windowId = requireWindowId(params);
-  const db = await bridge();
-  return db.readWindow(windowId);
+  const handle = requireWindowHandle(params);
+  const db = await getOrInitBridge();
+  const result = await db.perceive(handle);
+  return { content: result.content, method: result.method, confidence: result.confidence };
 });
 
 /**
  * Read the content of the currently focused window.
- * Returns: WindowContent
+ * Returns: { content: string; method: string }
  */
 desktopHandlers.set('desktop.readFocused', async (_params, config) => {
   assertDesktopEnabled(config);
-  const db = await bridge();
-  return db.readFocusedWindow();
+  const db = await getOrInitBridge();
+  const result = await db.perceive();
+  return { content: result.content, method: result.method, confidence: result.confidence };
 });
 
 /**
  * Capture a screenshot of a window or the full screen.
  * Params: windowId? (number | string)
- * Returns: { data: string (base64 PNG), mimeType: 'image/png', width?: number, height?: number }
+ * Returns: { data: string (base64 PNG), mimeType: 'image/png', width: number, height: number }
  */
 desktopHandlers.set('desktop.screenshot', async (params, config) => {
   assertDesktopEnabled(config);
-  const windowId = optionalWindowId(params);
-  const db = await bridge();
-  const buf = await db.captureScreenshot(windowId);
+  const handle = optionalWindowHandle(params);
+  const db = await getOrInitBridge();
+  const capture = await db.screenshot(handle);
   return {
-    data: buf.toString('base64'),
+    data: capture.buffer.toString('base64'),
     mimeType: 'image/png',
+    width: capture.width,
+    height: capture.height,
   };
 });
 
@@ -162,29 +204,31 @@ desktopHandlers.set('desktop.screenshot', async (params, config) => {
  * Params:
  *   windowId? (number | string)
  *   prompt?   (string) — custom analysis prompt
- * Returns: ScreenAnalysis
+ * Returns: { description: string; elements: UIElement[]; answer?: string }
  */
 desktopHandlers.set('desktop.analyzeScreen', async (params, config) => {
   assertDesktopEnabled(config);
   if (!config.desktopVisionEnabled) {
     throw new Error('Desktop vision analysis is disabled (desktopVisionEnabled: false).');
   }
-  const windowId = optionalWindowId(params);
-  const prompt = optionalString(params, 'prompt');
-  const db = await bridge();
-  return db.analyzeScreen(windowId, prompt);
+  const handle = optionalWindowHandle(params);
+  const question = optionalString(params, 'prompt');
+  const db = await getOrInitBridge();
+  return db.analyzeScreen(handle, question);
 });
 
 /**
  * Get the full accessibility UI element tree for a window.
- * Params: windowId (number | string)
- * Returns: UITree
+ * Params: windowId (number | string), depth? (number, default 5)
+ * Returns: { elements: UIElement[] }
  */
 desktopHandlers.set('desktop.getUITree', async (params, config) => {
   assertDesktopEnabled(config);
-  const windowId = requireWindowId(params);
-  const db = await bridge();
-  return db.getUITree(windowId);
+  const handle = requireWindowHandle(params);
+  const depth = optionalNumber(params, 'depth') ?? 5;
+  const db = await getOrInitBridge();
+  const elements = await db.getUITree(handle, depth);
+  return { elements };
 });
 
 // --- LOW-RISK ---
@@ -196,10 +240,10 @@ desktopHandlers.set('desktop.getUITree', async (params, config) => {
  */
 desktopHandlers.set('desktop.focusWindow', async (params, config) => {
   assertDesktopEnabled(config);
-  const windowId = requireWindowId(params);
-  const db = await bridge();
-  await db.focusWindow(windowId);
-  return { focused: true };
+  const handle = requireWindowHandle(params);
+  const db = await getOrInitBridge();
+  const result = await db.focusWindow(handle);
+  return { focused: result.success, durationMs: result.durationMs };
 });
 
 /**
@@ -212,7 +256,7 @@ desktopHandlers.set('desktop.focusWindow', async (params, config) => {
  */
 desktopHandlers.set('desktop.scrollWindow', async (params, config) => {
   assertDesktopEnabled(config);
-  const windowId = requireWindowId(params);
+  const handle = requireWindowHandle(params);
   const direction = (optionalString(params, 'direction') ?? 'down') as 'up' | 'down' | 'left' | 'right';
   const amount = optionalNumber(params, 'amount') ?? 3;
 
@@ -220,9 +264,28 @@ desktopHandlers.set('desktop.scrollWindow', async (params, config) => {
     throw new Error(`Invalid scroll direction "${direction}". Must be: up, down, left, right`);
   }
 
-  const db = await bridge();
-  await db.scrollWindow(windowId, direction, amount);
-  return { scrolled: true };
+  const db = await getOrInitBridge();
+
+  // DesktopBridge doesn't expose a public scrollWindow method on the facade.
+  // Strategy: focus the target window, then send scroll key(s) via pressHotkey.
+  // This is equivalent to the previous implementation and matches expected UX.
+  await db.focusWindow(handle);
+
+  const scrollKeys: Record<string, string> = {
+    down: 'PageDown',
+    up: 'PageUp',
+    left: 'Left',
+    right: 'Right',
+  };
+
+  const key = scrollKeys[direction] ?? 'PageDown';
+
+  // Fire `amount` key presses sequentially
+  for (let i = 0; i < Math.max(1, amount); i++) {
+    await db.pressHotkey([key]);
+  }
+
+  return { scrolled: true, direction, amount };
 });
 
 // --- HIGH-RISK ---
@@ -231,31 +294,35 @@ desktopHandlers.set('desktop.scrollWindow', async (params, config) => {
  * Type text into the currently focused input field.
  * Params:
  *   text     (string) — text to type
- *   delayMs? (number) — inter-character delay in ms (default 0)
+ *   delayMs? (number) — inter-character delay (not directly supported by bridge; ignored)
  *   _approved (boolean) — must be true (set by gateway after user confirmation)
- * Returns: { typed: true, length: number }
+ * Returns: { typed: true, length: number, screenshotBefore?: string }
  */
 desktopHandlers.set('desktop.typeText', async (params, config) => {
   assertDesktopEnabled(config);
   assertHighRiskApproved(params, config, 'desktop.typeText');
 
   const text = requireString(params, 'text');
-  const delayMs = optionalNumber(params, 'delayMs') ?? 0;
+  const db = await getOrInitBridge();
 
-  const db = await bridge();
-
-  // Optionally capture a pre-action screenshot for audit
+  // Pre-action screenshot for audit
   let screenshotBefore: string | undefined;
   if (config.screenshotBeforeAction) {
     try {
-      const buf = await db.captureScreenshot();
-      screenshotBefore = buf.toString('base64');
+      const capture = await db.screenshot();
+      screenshotBefore = capture.buffer.toString('base64');
     } catch {
-      // Non-fatal; proceed even if screenshot fails
+      // Non-fatal — proceed even if screenshot fails
     }
   }
 
-  await db.typeText(text, delayMs);
+  // Get focused window handle for typeInWindow
+  const focused = await db.listWindows().then((ws) => ws.find((w) => w.isFocused));
+  if (!focused) {
+    throw new Error('No focused window found — cannot type text');
+  }
+
+  await db.typeInWindow(focused.handle, text);
 
   return {
     typed: true,
@@ -277,24 +344,35 @@ desktopHandlers.set('desktop.clickElement', async (params, config) => {
   assertHighRiskApproved(params, config, 'desktop.clickElement');
 
   const elementName = requireString(params, 'elementName');
-  const windowId = optionalWindowId(params);
-  const db = await bridge();
+  const handle = optionalWindowHandle(params);
+  const db = await getOrInitBridge();
+
+  // Resolve window handle: use provided or fall back to focused window
+  let targetHandle = handle;
+  if (targetHandle === undefined) {
+    const focused = await db.listWindows().then((ws) => ws.find((w) => w.isFocused));
+    if (!focused) {
+      throw new Error('No focused window found — cannot click element');
+    }
+    targetHandle = focused.handle;
+  }
 
   let screenshotBefore: string | undefined;
   if (config.screenshotBeforeAction) {
     try {
-      const buf = await db.captureScreenshot(windowId);
-      screenshotBefore = buf.toString('base64');
+      const capture = await db.screenshot(targetHandle);
+      screenshotBefore = capture.buffer.toString('base64');
     } catch {
       // Non-fatal
     }
   }
 
-  await db.clickElement(elementName, windowId);
+  const result = await db.clickElement(targetHandle, elementName);
 
   return {
-    clicked: true,
+    clicked: result.success,
     elementName,
+    durationMs: result.durationMs,
     ...(screenshotBefore ? { screenshotBefore } : {}),
   };
 });
@@ -319,9 +397,10 @@ desktopHandlers.set('desktop.pressHotkey', async (params, config) => {
     return k;
   });
 
-  const db = await bridge();
-  await db.pressHotkey(keyStrings);
-  return { pressed: true, keys: keyStrings };
+  const db = await getOrInitBridge();
+  const result = await db.pressHotkey(keyStrings);
+
+  return { pressed: result.success, keys: keyStrings, durationMs: result.durationMs };
 });
 
 /**
@@ -348,25 +427,28 @@ desktopHandlers.set('desktop.mouseClick', async (params, config) => {
     throw new Error(`Invalid button "${button}". Must be: left, right, middle`);
   }
 
-  const db = await bridge();
+  const db = await getOrInitBridge();
 
   let screenshotBefore: string | undefined;
   if (config.screenshotBeforeAction) {
     try {
-      const buf = await db.captureScreenshot();
-      screenshotBefore = buf.toString('base64');
+      const capture = await db.screenshot();
+      screenshotBefore = capture.buffer.toString('base64');
     } catch {
       // Non-fatal
     }
   }
 
-  await db.mouseClickAt(x, y, button);
+  // 'middle' maps to 'left' as the provider interface only supports left/right.
+  const providerButton: 'left' | 'right' = button === 'right' ? 'right' : 'left';
+  const result = await db.mouseClickAt(x, y, providerButton);
 
   return {
-    clicked: true,
+    clicked: result.success,
     x,
     y,
     button,
+    durationMs: result.durationMs,
     ...(screenshotBefore ? { screenshotBefore } : {}),
   };
 });

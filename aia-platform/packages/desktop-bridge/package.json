@@ -12,8 +12,8 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@aia/shared": "*",
-    "@aia/ai-client": "*",
+    "@aia/shared": "workspace:*",
+    "@aia/ai-client": "workspace:*",
     "koffi": "^2.8.0",
     "screenshot-desktop": "^1.15.0",
     "sharp": "^0.33.0",

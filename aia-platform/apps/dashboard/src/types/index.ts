@@ -153,6 +153,16 @@ export interface OnboardingData {
   users: { email: string; role: string }[];
 }
 
+export interface TenantUser {
+  id: string;
+  email: string;
+  name: string | null;
+  role: string;
+  avatarUrl?: string | null;
+  lastLoginAt: string | null;
+  createdAt: string;
+}
+
 export interface PaginatedResponse<T> {
   data: T[];
   total: number;

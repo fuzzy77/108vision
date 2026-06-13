@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-export type ModelPreference = 'fast' | 'balanced' | 'powerful';
+export type ModelPreference = 'fast-cheap' | 'balanced' | 'powerful';
 
 interface ChatState {
   currentConversationId: string | null;
@@ -24,7 +24,7 @@ interface ChatActions {
 
 const getStoredModel = (): ModelPreference => {
   const stored = localStorage.getItem('aia_model_preference');
-  if (stored === 'fast' || stored === 'balanced' || stored === 'powerful') {
+  if (stored === 'fast-cheap' || stored === 'balanced' || stored === 'powerful') {
     return stored;
   }
   return 'balanced';

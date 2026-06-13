@@ -4,8 +4,10 @@ const HOUR = 60 * MINUTE;
 const DAY = 24 * HOUR;
 const WEEK = 7 * DAY;
 
-export function formatDate(dateInput: string | Date): string {
+export function formatDate(dateInput: string | Date | null | undefined): string {
+  if (!dateInput) return '—';
   const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput;
+  if (isNaN(date.getTime())) return '—';
   const now = new Date();
   const diff = now.getTime() - date.getTime();
 

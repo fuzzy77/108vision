@@ -81,6 +81,7 @@ export const apiKeys = shared.table('api_keys', {
   scopes: text('scopes').array().default(['chat']),
   expiresAt: timestamp('expires_at', { withTimezone: true }),
   lastUsedAt: timestamp('last_used_at', { withTimezone: true }),
+  revokedAt: timestamp('revoked_at', { withTimezone: true }),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
 });
 
@@ -249,6 +250,17 @@ export const emailVerificationTokens = shared.table('email_verification_tokens',
   token: varchar('token', { length: 255 }).notNull().unique(),
   expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+});
+
+// -----------------------------------------------------------
+// Platform Settings (singleton key/value store for admin config)
+// -----------------------------------------------------------
+export const platformSettings = shared.table('platform_settings', {
+  key: varchar('key', { length: 100 }).primaryKey(),
+  value: text('value').notNull(),
+  encrypted: boolean('encrypted').default(false),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
+  updatedBy: uuid('updated_by').references(() => users.id, { onDelete: 'set null' }),
 });
 
 // -----------------------------------------------------------

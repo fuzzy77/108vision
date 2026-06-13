@@ -20,6 +20,7 @@ import { AgentConnection, type AgentMessage } from './connection.js';
 import { executeAction, getRegisteredActions } from './capabilities/index.js';
 import { stopAllWatchers } from './capabilities/filesystem.js';
 import { initializeTray, computeDesktopTrayStatus, type TrayState } from './tray.js';
+import { handleToolCall } from '@aia/desktop-bridge';
 
 // --- Main ---
 
@@ -206,6 +207,10 @@ async function main(): Promise<void> {
 
 /**
  * Handle incoming action requests from the gateway.
+ *
+ * Supports two message types:
+ *   - `request`   : legacy action dispatch via capabilities/index.ts
+ *   - `tool_call` : new tool dispatch via @aia/desktop-bridge handleToolCall
  */
 async function handleIncomingMessage(
   message: AgentMessage,
@@ -213,6 +218,52 @@ async function handleIncomingMessage(
   connection: AgentConnection,
   setTrayState: ((state: TrayState) => void) | null,
 ): Promise<void> {
+  // --- tool_call: route via desktop-bridge dispatcher ---
+  if (message.type === 'tool_call') {
+    if (!message.tool) {
+      connection.sendResponse(message.id, undefined, 'tool_call message missing "tool" field');
+      return;
+    }
+
+    console.log(JSON.stringify({
+      level: 'info',
+      message: 'Executing tool call',
+      tool: message.tool,
+      requestId: message.id,
+    }));
+
+    setTrayState?.('processing');
+
+    const startTime = Date.now();
+    const toolResult = await handleToolCall(
+      message.tool,
+      message.params ?? {},
+      { allowedPaths: config.allowedDirectories },
+    );
+
+    setTrayState?.('connected');
+
+    const durationMs = Date.now() - startTime;
+
+    if (toolResult.ok) {
+      connection.sendResponse(message.id, toolResult.result);
+    } else {
+      connection.sendResponse(message.id, undefined, toolResult.error);
+    }
+
+    console.log(JSON.stringify({
+      level: 'info',
+      message: 'Tool call completed',
+      tool: message.tool,
+      requestId: message.id,
+      success: toolResult.ok,
+      durationMs,
+    }));
+
+    return;
+  }
+
+  // --- request: legacy action dispatch ---
   if (message.type !== 'request' || !message.action) {
     return;
   }

@@ -1,19 +1,24 @@
 const TOKEN_KEY = 'aia_token';
 const REFRESH_TOKEN_KEY = 'aia_refresh_token';
 
+export type UserRole = 'platform_admin' | 'tenant_admin' | 'tenant_operator' | 'client_user';
+
 interface JwtPayload {
   sub: string;
   email: string;
   name: string;
   tenantId: string;
+  role: UserRole;
   exp: number;
   iat: number;
 }
 
 interface AuthResponse {
-  accessToken: string;
-  refreshToken: string;
-  expiresIn: number;
+  token?: string;
+  accessToken?: string;
+  refreshToken?: string;
+  expiresIn?: number;
+  success?: boolean;
 }
 
 function decodeJwt(token: string): JwtPayload {
@@ -84,9 +89,11 @@ export async function login(email: string, password: string): Promise<JwtPayload
   }
 
   const data: AuthResponse = await response.json();
-  setToken(data.accessToken);
-  setRefreshToken(data.refreshToken);
-  return decodeJwt(data.accessToken);
+  const jwt = data.token || data.accessToken || '';
+  if (!jwt) throw new Error('No token in response');
+  setToken(jwt);
+  if (data.refreshToken) setRefreshToken(data.refreshToken);
+  return decodeJwt(jwt);
 }
 
 export async function register(name: string, email: string, password: string): Promise<JwtPayload> {
@@ -102,12 +109,24 @@ export async function register(name: string, email: string, password: string): P
   }
 
   const data: AuthResponse = await response.json();
-  setToken(data.accessToken);
-  setRefreshToken(data.refreshToken);
-  return decodeJwt(data.accessToken);
+  const jwt = data.token || data.accessToken || '';
+  if (!jwt) throw new Error('No token in response');
+  setToken(jwt);
+  if (data.refreshToken) setRefreshToken(data.refreshToken);
+  return decodeJwt(jwt);
 }
 
 export function logout(): void {
   clearTokens();
-  window.location.href = '/';
+  window.location.href = '/login';
+}
+
+export function getUserRole(): UserRole | null {
+  const user = getUser();
+  return user?.role ?? null;
+}
+
+export function isTenantAdmin(): boolean {
+  const role = getUserRole();
+  return role === 'tenant_admin' || role === 'platform_admin';
 }

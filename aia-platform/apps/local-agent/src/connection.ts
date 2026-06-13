@@ -13,8 +13,10 @@ import { nanoid } from 'nanoid';
 
 export interface AgentMessage {
   id: string;
-  type: 'request' | 'response' | 'event' | 'heartbeat' | 'register';
+  type: 'request' | 'response' | 'event' | 'heartbeat' | 'register' | 'tool_call';
   action?: string;
+  /** Tool name for tool_call messages, e.g. "filesystem.readFile" */
+  tool?: string;
   params?: Record<string, unknown>;
   result?: unknown;
   error?: string;

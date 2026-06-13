@@ -2,12 +2,15 @@ import { getToken } from './auth';
 
 export interface Conversation {
   id: string;
-  title: string;
-  agentId: string;
-  agentName: string;
-  lastMessageAt: string;
-  messageCount: number;
+  title?: string;
+  agentId?: string;
+  agentName?: string;
+  lastMessageAt?: string;
+  messageCount?: number;
   createdAt: string;
+  updatedAt?: string;
+  channel?: string;
+  status?: string;
 }
 
 export interface Message {
@@ -22,22 +25,31 @@ export interface Message {
 export interface Agent {
   id: string;
   name: string;
-  description: string;
-  icon: string;
-  capabilities: string[];
-  defaultModel: string;
+  description?: string;
+  icon?: string;
+  capabilities?: string[];
+  defaultModel?: string;
+  model?: string;
+  systemPrompt?: string;
+  temperature?: string;
+  maxTokens?: number;
+  knowledgeBaseIds?: string[];
+  config?: Record<string, unknown>;
 }
 
 export interface Document {
   id: string;
-  name: string;
-  size: number;
-  mimeType: string;
+  title: string;
+  name?: string;
+  sizeBytes?: number;
+  size?: number;
+  sourceType?: string;
+  mimeType?: string;
   status: 'pending' | 'processing' | 'ready' | 'error';
   errorMessage?: string;
   chunkCount?: number;
   createdAt: string;
-  updatedAt: string;
+  updatedAt?: string;
 }
 
 export interface KnowledgeSearchResult {
@@ -46,6 +58,61 @@ export interface KnowledgeSearchResult {
   documentName: string;
   content: string;
   score: number;
+}
+
+export interface TenantUser {
+  id: string;
+  name: string;
+  email: string;
+  role: 'tenant_admin' | 'client_user';
+  lastLoginAt: string | null;
+  createdAt: string;
+}
+
+export interface CreateUserPayload {
+  name: string;
+  email: string;
+  role: 'tenant_admin' | 'client_user';
+}
+
+export interface TenantInfo {
+  id: string;
+  name: string;
+  slug?: string;
+  plan?: string;
+  planId?: string;
+  status?: string;
+  config?: Record<string, unknown>;
+  usageThisMonth?: {
+    conversations: number;
+    tokens: number;
+    estimatedCostUsd: number;
+  };
+}
+
+export interface AgentConfig {
+  id: string;
+  name: string;
+  description?: string;
+  systemPrompt: string;
+  model?: string;
+  modelTier?: string;
+  icon?: string;
+  temperature?: string;
+  maxTokens?: number;
+  config?: Record<string, unknown>;
+}
+
+export interface CreateAgentPayload {
+  name: string;
+  description?: string;
+  systemPrompt: string;
+  model?: string;
+  modelTier?: string;
+}
+
+export interface UpdateAgentPayload extends Partial<CreateAgentPayload> {
+  id: string;
 }
 
 interface ApiError {
@@ -125,7 +192,8 @@ class ApiClient {
   }
 
   async getConversations(): Promise<Conversation[]> {
-    return this.request<Conversation[]>('/conversations');
+    const data = await this.request<{ items: Conversation[] } | Conversation[]>('/conversations');
+    return Array.isArray(data) ? data : (data?.items ?? []);
   }
 
   async getConversation(id: string): Promise<Conversation> {
@@ -159,7 +227,8 @@ class ApiClient {
   }
 
   async getAgents(): Promise<Agent[]> {
-    return this.request<Agent[]>('/agents');
+    const data = await this.request<{ items: Agent[] } | Agent[]>('/agents');
+    return Array.isArray(data) ? data : (data?.items ?? []);
   }
 
   async uploadDocument(file: File): Promise<Document> {
@@ -173,7 +242,8 @@ class ApiClient {
   }
 
   async getDocuments(): Promise<Document[]> {
-    return this.request<Document[]>('/knowledge/documents');
+    const data = await this.request<{ items: Document[] } | Document[]>('/knowledge/documents');
+    return Array.isArray(data) ? data : (data?.items ?? []);
   }
 
   async deleteDocument(id: string): Promise<void> {
@@ -184,6 +254,59 @@ class ApiClient {
     return this.request<KnowledgeSearchResult[]>(
       `/knowledge/search?q=${encodeURIComponent(query)}`,
     );
+  }
+
+  // --- Tenant admin endpoints ---
+
+  async getTenantInfo(): Promise<TenantInfo> {
+    return this.request<TenantInfo>('/tenant/me');
+  }
+
+  async updateTenantName(name: string): Promise<TenantInfo> {
+    return this.request<TenantInfo>('/tenant/me', {
+      method: 'PATCH',
+      body: JSON.stringify({ name }),
+    });
+  }
+
+  async getTenantUsers(): Promise<TenantUser[]> {
+    const data = await this.request<{ items: TenantUser[] } | TenantUser[]>('/tenant/users');
+    return Array.isArray(data) ? data : (data?.items ?? []);
+  }
+
+  async createTenantUser(payload: CreateUserPayload): Promise<TenantUser> {
+    return this.request<TenantUser>('/tenant/users', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  }
+
+  async deleteTenantUser(userId: string): Promise<void> {
+    return this.request<void>(`/tenant/users/${userId}`, { method: 'DELETE' });
+  }
+
+  async getAgentConfigs(): Promise<AgentConfig[]> {
+    const data = await this.request<{ items: AgentConfig[] } | AgentConfig[]>('/agents');
+    return Array.isArray(data) ? data : (data?.items ?? []);
+  }
+
+  async createAgent(payload: CreateAgentPayload): Promise<AgentConfig> {
+    return this.request<AgentConfig>('/agents', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  }
+
+  async updateAgent(payload: UpdateAgentPayload): Promise<AgentConfig> {
+    const { id, ...body } = payload;
+    return this.request<AgentConfig>(`/agents/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(body),
+    });
+  }
+
+  async deleteAgent(agentId: string): Promise<void> {
+    return this.request<void>(`/agents/${agentId}`, { method: 'DELETE' });
   }
 }
 

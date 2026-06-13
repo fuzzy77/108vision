@@ -1,14 +1,16 @@
 import { Link, useNavigate } from '@tanstack/react-router';
-import { Plus, MessageSquare, BookOpen, Settings, X, Trash2 } from 'lucide-react';
+import { Plus, MessageSquare, BookOpen, Settings, X, Trash2, Users, SlidersHorizontal, Bot, ShieldCheck } from 'lucide-react';
 import { useConversations } from '@/hooks/useConversations';
 import { useChatStore } from '@/stores/chat.store';
 import { formatDate, truncate } from '@/lib/format';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { isTenantAdmin } from '@/lib/auth';
 
 export function Sidebar() {
   const { conversations, isLoading, deleteConversation } = useConversations();
   const { sidebarOpen, setSidebarOpen } = useChatStore();
   const navigate = useNavigate();
+  const isAdmin = isTenantAdmin();
 
   const handleNewChat = () => {
     setSidebarOpen(false);
@@ -43,7 +45,7 @@ export function Sidebar() {
       >
         <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700">
           <h1 className="text-lg font-semibold text-primary-600 dark:text-primary-400">
-            AIA
+            108 AI
           </h1>
           <button
             onClick={() => setSidebarOpen(false)}
@@ -87,10 +89,10 @@ export function Sidebar() {
                     <MessageSquare className="w-4 h-4 shrink-0 text-slate-400 dark:text-slate-500" />
                     <div className="flex-1 min-w-0">
                       <p className="font-medium truncate text-slate-700 dark:text-slate-200">
-                        {truncate(conv.title, 30)}
+                        {truncate(conv.title ?? 'New conversation', 30)}
                       </p>
                       <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
-                        {formatDate(conv.lastMessageAt)}
+                        {formatDate(conv.lastMessageAt ?? conv.updatedAt ?? conv.createdAt)}
                       </p>
                     </div>
                     <button
@@ -126,6 +128,44 @@ export function Sidebar() {
             <Settings className="w-4 h-4" />
             Settings
           </Link>
+
+          {isAdmin && (
+            <>
+              <div className="pt-2 pb-1 px-3">
+                <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                  <ShieldCheck className="w-3 h-3" />
+                  Amministrazione
+                </p>
+              </div>
+              <Link
+                to="/admin/users"
+                onClick={() => setSidebarOpen(false)}
+                className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                activeProps={{ className: 'bg-primary-50 dark:bg-primary-950/30 text-primary-700 dark:text-primary-300' }}
+              >
+                <Users className="w-4 h-4" />
+                Utenti
+              </Link>
+              <Link
+                to="/admin/agents"
+                onClick={() => setSidebarOpen(false)}
+                className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                activeProps={{ className: 'bg-primary-50 dark:bg-primary-950/30 text-primary-700 dark:text-primary-300' }}
+              >
+                <Bot className="w-4 h-4" />
+                Agenti
+              </Link>
+              <Link
+                to="/admin/settings"
+                onClick={() => setSidebarOpen(false)}
+                className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                activeProps={{ className: 'bg-primary-50 dark:bg-primary-950/30 text-primary-700 dark:text-primary-300' }}
+              >
+                <SlidersHorizontal className="w-4 h-4" />
+                Impostazioni tenant
+              </Link>
+            </>
+          )}
         </div>
       </aside>
     </>

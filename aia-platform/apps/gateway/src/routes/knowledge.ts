@@ -7,6 +7,7 @@ import { kbDocuments } from '../db/schema.js';
 import { ragService } from '../services/rag.service.js';
 import { ingestionService } from '../services/ingestion.service.js';
 import { getIngestionQueue } from '../jobs/ingestion.worker.js';
+import { extractText, isAllowedMimeType, getAllowedMimeTypes } from '../lib/file-parser.js';
 
 const knowledge = new Hono();
 
@@ -43,26 +44,19 @@ knowledge.post('/upload', async (c) => {
     throw new AppError('FILE_TOO_LARGE', 'File size exceeds 10MB limit', 400);
   }
 
-  // Validate file type
-  const allowedTypes = [
-    'text/plain',
-    'text/markdown',
-    'text/csv',
-    'application/pdf',
-    'application/json',
-    'text/html',
-  ];
+  // Validate file type against the parser-supported set
   const fileType = file.type || 'text/plain';
-  if (!allowedTypes.includes(fileType)) {
+  if (!isAllowedMimeType(fileType)) {
     throw new AppError(
       'FILE_TYPE_NOT_SUPPORTED',
-      `Unsupported file type: ${fileType}. Allowed: ${allowedTypes.join(', ')}`,
+      `Unsupported file type: ${fileType}. Allowed: ${getAllowedMimeTypes().join(', ')}`,
       400,
     );
   }
 
-  // Read file content as text
-  const content = await file.text();
+  // Extract text from the file using the appropriate parser
+  const rawBuffer = Buffer.from(await file.arrayBuffer());
+  const content = await extractText(rawBuffer, fileType);
 
   if (!content.trim()) {
     throw new AppError('FILE_EMPTY', 'File has no content', 400);
@@ -86,10 +80,10 @@ knowledge.post('/upload', async (c) => {
   });
 
   return c.json({
-    message: 'Document queued for processing',
-    jobId: job.id,
-    fileName: file.name,
-    fileSize: file.size,
+    id: job.id,
+    filename: file.name,
+    status: 'processing',
+    chunksQueued: Math.ceil(content.length / 1000),
   }, 202);
 });
 

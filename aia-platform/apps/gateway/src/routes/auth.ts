@@ -10,6 +10,7 @@ import { getDb } from '../lib/db.js';
 import { users, invitations, sessions, passwordResetTokens } from '../db/schema.js';
 import { eq, and } from 'drizzle-orm';
 import { authMiddlewareV2 } from '../middleware/auth-v2.js';
+import { emailService } from '../services/email.service.js';
 
 const auth = new Hono();
 
@@ -444,16 +445,17 @@ auth.post('/forgot-password', async (c) => {
     expiresAt,
   });
 
-  // In production: send email with reset link
-  // For development: include token in response
   const env = getEnv();
+
+  await emailService.sendPasswordReset(user.email, resetToken);
+
   const responseData: Record<string, string> = {
     message: 'If an account with this email exists, a password reset link has been sent.',
   };
 
   if (env.NODE_ENV === 'development') {
     responseData.resetToken = resetToken;
-    responseData.resetUrl = `http://localhost:3000/auth/reset-password?token=${resetToken}`;
+    responseData.resetUrl = `${env.APP_URL}/auth/reset-password?token=${resetToken}`;
   }
 
   return c.json(responseData);

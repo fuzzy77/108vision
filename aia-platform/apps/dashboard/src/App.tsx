@@ -14,6 +14,7 @@ import { SettingsPage } from '@/pages/Settings';
 import { IntegrationsPage } from '@/pages/Integrations';
 import { ActionQueuePage } from '@/pages/ActionQueue';
 import { GraphExplorerPage } from '@/pages/GraphExplorer';
+import { ModelsPage } from '@/pages/Models';
 import { LoginPage } from '@/pages/Login';
 import { Skeleton } from '@/components/ui/Skeleton';
 
@@ -83,6 +84,9 @@ function Router() {
 
     case 'actions':
       return <ActionQueuePage />;
+
+    case 'models':
+      return <ModelsPage />;
 
     case 'settings':
       return <SettingsPage />;

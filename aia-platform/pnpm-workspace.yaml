@@ -1,0 +1,10 @@
+packages:
+  - 'packages/*'
+  - 'apps/*'
+allowBuilds:
+  bcrypt: true
+  esbuild: true
+  koffi: true
+  msgpackr-extract: true
+  sharp: true
+  tesseract.js: true

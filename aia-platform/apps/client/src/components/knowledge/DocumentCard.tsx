@@ -28,10 +28,12 @@ export function DocumentCard({ document, onDelete }: DocumentCardProps) {
 
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate">
-          {document.name}
+          {document.title ?? document.name ?? 'Untitled'}
         </p>
         <div className="flex items-center gap-3 mt-1 text-xs text-slate-400 dark:text-slate-500">
-          <span>{formatFileSize(document.size)}</span>
+          {(document.sizeBytes ?? document.size) != null && (
+            <span>{formatFileSize(document.sizeBytes ?? document.size ?? 0)}</span>
+          )}
           <span>{formatDate(document.createdAt)}</span>
           {document.chunkCount !== undefined && document.status === 'ready' && (
             <span>{document.chunkCount} chunks</span>
@@ -54,7 +56,7 @@ export function DocumentCard({ document, onDelete }: DocumentCardProps) {
           variant="ghost"
           size="sm"
           onClick={() => onDelete(document.id)}
-          aria-label={`Delete ${document.name}`}
+          aria-label={`Delete ${document.title ?? document.name ?? 'document'}`}
         >
           <Trash2 className="w-4 h-4 text-red-500" />
         </Button>

@@ -4,6 +4,7 @@ import { type Result, success, failure, AppError } from '@aia/shared';
 import { getDb } from '../lib/db.js';
 import { tenants, users, agents, invitations, agentTemplates } from '../db/schema.js';
 import { ensureCollection } from '../lib/qdrant.js';
+import { emailService } from './email.service.js';
 
 export interface CreateTenantInput {
   name: string;
@@ -232,7 +233,7 @@ export const onboardingService = {
 
       // Verify tenant exists
       const [tenant] = await db
-        .select({ id: tenants.id })
+        .select({ id: tenants.id, name: tenants.name })
         .from(tenants)
         .where(eq(tenants.id, tenantId))
         .limit(1);
@@ -257,7 +258,8 @@ export const onboardingService = {
 
         createdInvitations.push({ email: invite.email, token });
 
-        // In production, this would send an email via an email service.
+        await emailService.sendInvite(invite.email, tenant.name, token, invitedBy);
+
         console.log(JSON.stringify({
           level: 'info',
           message: 'Invitation created',

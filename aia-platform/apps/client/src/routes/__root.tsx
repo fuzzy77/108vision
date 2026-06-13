@@ -1,8 +1,29 @@
-import { Outlet } from '@tanstack/react-router';
+import { Outlet, useNavigate, useRouterState } from '@tanstack/react-router';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { Header } from '@/components/layout/Header';
+import { isAuthenticated } from '@/lib/auth';
+import { useEffect } from 'react';
 
 export function RootLayout() {
+  const navigate = useNavigate();
+  const routerState = useRouterState();
+  const currentPath = routerState.location.pathname;
+  const authenticated = isAuthenticated();
+
+  useEffect(() => {
+    if (!authenticated && currentPath !== '/login') {
+      navigate({ to: '/login' });
+    }
+  }, [authenticated, currentPath, navigate]);
+
+  if (currentPath === '/login') {
+    return <Outlet />;
+  }
+
+  if (!authenticated) {
+    return null;
+  }
+
   return (
     <div className="flex h-dvh overflow-hidden bg-slate-50 dark:bg-slate-950">
       <Sidebar />

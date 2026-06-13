@@ -10,6 +10,7 @@ import { getRedis, closeRedis } from './lib/redis.js';
 import { closeDb } from './lib/db.js';
 import { errorHandler } from './middleware/error-handler.js';
 import { authMiddlewareV2 } from './middleware/auth-v2.js';
+import { apiKeyAuthMiddleware } from './middleware/api-key-auth.js';
 import { tenantMiddleware } from './middleware/tenant.js';
 import { health } from './routes/health.js';
 import { auth as authRoutes } from './routes/auth.js';
@@ -22,6 +23,7 @@ import { integrationsRouter } from './routes/integrations/index.js';
 import { startIngestionWorker, stopIngestionWorker } from './jobs/ingestion.worker.js';
 import { startGraphExtractionWorker, stopGraphExtractionWorker } from './jobs/graph-ingestion.worker.js';
 import { graph } from './routes/graph.js';
+import { tenantRouter } from './routes/tenant.js';
 import { connect as connectNeo4j, close as closeNeo4j, initializeGraphSchema } from '@aia/graph';
 import {
   getLocalAgentRegistry,
@@ -50,7 +52,7 @@ app.use('*', cors({
     ? (origin) => origin // In production, validate against tenant-configured domains
     : '*',
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowHeaders: ['Content-Type', 'Authorization', 'X-Tenant-ID', 'X-Request-ID'],
+  allowHeaders: ['Content-Type', 'Authorization', 'X-Tenant-ID', 'X-Request-ID', 'X-API-Key'],
   exposeHeaders: ['X-Request-ID'],
   maxAge: 86400,
 }));
@@ -88,7 +90,12 @@ app.route('/api/auth', authRoutes);
 
 // Protected API routes
 const api = new Hono();
-api.use('*', authMiddlewareV2);
+api.use('*', async (c, next) => {
+  if (c.req.header('X-API-Key')) {
+    return apiKeyAuthMiddleware(c, next);
+  }
+  return authMiddlewareV2(c, next);
+});
 
 // Admin routes: auth required, but NO tenant middleware (admin operates cross-tenant)
 api.route('/admin', adminRouter);
@@ -102,6 +109,7 @@ tenantApi.route('/knowledge', knowledge);
 tenantApi.route('/agents', agentsRouter);
 tenantApi.route('/integrations', integrationsRouter);
 tenantApi.route('/graph', graph);
+tenantApi.route('/tenant', tenantRouter);
 
 api.route('/', tenantApi);
 

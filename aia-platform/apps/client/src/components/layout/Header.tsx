@@ -9,12 +9,12 @@ export function Header() {
   const user = getUser();
 
   const modelBadge: Record<string, { label: string; variant: 'info' | 'warning' | 'success' }> = {
-    fast: { label: 'Fast', variant: 'info' },
+    'fast-cheap': { label: 'Fast', variant: 'info' },
     balanced: { label: 'Balanced', variant: 'warning' },
     powerful: { label: 'Powerful', variant: 'success' },
   };
 
-  const current = modelBadge[modelPreference] ?? modelBadge['balanced'];
+  const current = modelBadge[modelPreference] ?? { label: 'Balanced', variant: 'warning' as const };
 
   return (
     <header className="h-14 border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-between px-4 shrink-0">

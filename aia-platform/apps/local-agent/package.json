@@ -14,8 +14,8 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@108ai/shared": "workspace:*",
-    "@108ai/desktop-bridge": "workspace:*",
+    "@aia/shared": "workspace:*",
+    "@aia/desktop-bridge": "workspace:*",
     "chokidar": "^3.6.0",
     "clipboardy": "^4.0.0",
     "nanoid": "^5.0.0",

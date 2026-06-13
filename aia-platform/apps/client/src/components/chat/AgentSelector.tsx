@@ -15,19 +15,25 @@ const iconMap: Record<string, typeof Bot> = {
   sparkles: Sparkles,
 };
 
-function getAgentIcon(icon: string) {
-  const IconComponent = iconMap[icon] ?? Bot;
+const modelLabels: Record<string, string> = {
+  'fast-cheap': 'Veloce',
+  balanced: 'Bilanciato',
+  powerful: 'Potente',
+};
+
+function getAgentIcon(icon?: string) {
+  const IconComponent = iconMap[icon ?? 'bot'] ?? Bot;
   return <IconComponent className="w-6 h-6" />;
 }
 
 export function AgentSelector({ agents }: AgentSelectorProps) {
   const { selectedAgentId, selectAgent } = useChatStore();
 
-  if (agents.length === 0) {
+  if (!agents || agents.length === 0) {
     return (
       <div className="text-center py-8 text-slate-500 dark:text-slate-400">
         <Bot className="w-12 h-12 mx-auto mb-3 opacity-50" />
-        <p className="text-sm">No agents available</p>
+        <p className="text-sm">Nessun agente disponibile</p>
       </div>
     );
   }
@@ -63,18 +69,13 @@ export function AgentSelector({ agents }: AgentSelectorProps) {
               {agent.name}
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">
-              {agent.description}
+              {agent.description || 'AI Assistant'}
             </p>
-            {agent.capabilities.length > 0 && (
-              <div className="flex flex-wrap gap-1 mt-2">
-                {agent.capabilities.slice(0, 3).map((cap) => (
-                  <span
-                    key={cap}
-                    className="px-1.5 py-0.5 bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 text-[10px] rounded"
-                  >
-                    {cap}
-                  </span>
-                ))}
+            {(agent.model || agent.defaultModel) && (
+              <div className="mt-2">
+                <span className="px-1.5 py-0.5 bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 text-[10px] rounded">
+                  {modelLabels[agent.model ?? agent.defaultModel ?? ''] ?? agent.model ?? agent.defaultModel}
+                </span>
               </div>
             )}
           </button>

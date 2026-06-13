@@ -128,14 +128,7 @@ router_settings:
 
 general_settings:
   master_key: os.environ/LITELLM_MASTER_KEY
-  database_url: os.environ/DATABASE_URL
-  alerting:
-    - slack
-  alert_types:
-    - llm_exceptions
-    - llm_too_slow
-    - llm_requests_hanging
-    - budget_alerts
+  disable_spend_logs: true
 
 litellm_settings:
   drop_params: true

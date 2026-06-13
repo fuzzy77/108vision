@@ -96,3 +96,36 @@ export function apiForTenant<T>(
     headers: { 'X-Tenant-ID': tenantId },
   });
 }
+
+export async function uploadForTenant<T>(
+  tenantId: string,
+  endpoint: string,
+  file: File,
+): Promise<T> {
+  const url = `${BASE_URL}${endpoint}`;
+  const token = getToken();
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const headers: Record<string, string> = {
+    'X-Tenant-ID': tenantId,
+  };
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers,
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.json().catch(() => null);
+    const message = errorBody?.error?.message || `Errore ${response.status}`;
+    const code = errorBody?.error?.code;
+    throw new ApiError(message, response.status, code);
+  }
+
+  return response.json() as Promise<T>;
+}

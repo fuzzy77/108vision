@@ -17,7 +17,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@aia/shared": "*"
+    "@aia/shared": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.5.0",

@@ -1,5 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { api } from '@/lib/api';
+import { api, type Conversation } from '@/lib/api';
+
+interface PaginatedConversations {
+  items: Conversation[];
+  total: number;
+  page: number;
+  pageSize: number;
+  hasMore: boolean;
+}
 
 export function useConversations() {
   const queryClient = useQueryClient();
@@ -16,8 +24,13 @@ export function useConversations() {
     },
   });
 
+  const data = query.data as PaginatedConversations | Conversation[] | undefined;
+  const conversations: Conversation[] = Array.isArray(data)
+    ? data
+    : (data?.items ?? []);
+
   return {
-    conversations: query.data ?? [],
+    conversations,
     isLoading: query.isLoading,
     error: query.error,
     deleteConversation: deleteMutation.mutate,

@@ -4,10 +4,14 @@ import { z } from 'zod';
 import { eq, and } from 'drizzle-orm';
 import { AppError, type ModelTier, MODEL_TIERS } from '@aia/shared';
 import { getDb } from '../lib/db.js';
-import { agents } from '../db/schema.js';
+import { agents, tenants, plans } from '../db/schema.js';
 import { conversationService } from '../services/conversation.service.js';
 import { ragService, type RetrievedChunk } from '../services/rag.service.js';
 import { hybridRagService, type HybridRetrievalResult } from '../services/hybrid-rag.service.js';
+import { cacheService } from '../services/cache.service.js';
+import { budgetService } from '../services/budget.service.js';
+import { usageTrackingService } from '../services/usage-tracking.service.js';
+import { webSearchService, type WebSearchResult } from '../services/web-search.service.js';
 import { getEnv } from '../lib/env.js';
 
 const chat = new Hono();
@@ -93,6 +97,43 @@ chat.post('/', async (c) => {
     agentKbIds = (agent.knowledgeBaseIds ?? []) as string[];
   }
 
+  // Step 3b: Budget-aware tier enforcement
+  const budgetStatus = await budgetService.getBudgetStatus(tenantId);
+  modelTier = budgetService.resolveEffectiveTier(modelTier, budgetStatus);
+
+  // Step 3c: Plan-level allowed_models enforcement
+  // Downgrade to the best allowed tier if the effective tier is not permitted.
+  // Tier priority order: most capable first so we pick the best available fallback.
+  const PLAN_TIER_PRIORITY: ModelTier[] = [
+    MODEL_TIERS.POWERFUL as ModelTier,
+    MODEL_TIERS.BALANCED as ModelTier,
+    MODEL_TIERS.FAST_CHEAP as ModelTier,
+  ];
+
+  {
+    const db = getDb();
+    const [tenant] = await db
+      .select({ planId: tenants.planId })
+      .from(tenants)
+      .where(eq(tenants.id, tenantId))
+      .limit(1);
+
+    if (tenant?.planId) {
+      const [plan] = await db
+        .select({ allowedModels: plans.allowedModels })
+        .from(plans)
+        .where(eq(plans.id, tenant.planId))
+        .limit(1);
+
+      const allowed = plan?.allowedModels;
+      if (allowed && allowed.length > 0 && !allowed.includes(modelTier)) {
+        // Downgrade to the best tier that the plan permits
+        const fallback = PLAN_TIER_PRIORITY.find((t) => allowed.includes(t));
+        modelTier = fallback ?? MODEL_TIERS.FAST_CHEAP as ModelTier;
+      }
+    }
+  }
+
   // Step 4: Retrieve context from knowledge base (hybrid: vector + graph)
   const useGraph = input.useGraph !== false; // default true
   let context: RetrievedChunk[] = [];
@@ -118,19 +159,94 @@ chat.post('/', async (c) => {
     }
   }
 
+  // Step 4b: Web search fallback when RAG context is sparse and query needs fresh data
+  let webResults: WebSearchResult[] = [];
+  if (context.length < 2 && webSearchService.queryNeedsWebSearch(input.message)) {
+    webResults = await webSearchService.search(input.message);
+  }
+
   // Step 5: Load conversation history
   const historyResult = await conversationService.getHistory(conversationId, 10);
   const history = historyResult.success ? historyResult.data : [];
 
   // Build prompt (hybrid with graph context or vector-only fallback)
   const graphContext = hybridResult?.graphContext ?? null;
-  const prompt = hybridRagService.buildHybridPrompt(
+  let basePrompt = hybridRagService.buildHybridPrompt(
     systemPrompt,
     context,
     graphContext,
     history,
     input.message,
   );
+
+  // Inject web search results into the system message when available
+  if (webResults.length > 0) {
+    const webBlock = webResults
+      .map((r, i) => `[Result ${i + 1}] ${r.title}\n${r.url}\n${r.snippet}`)
+      .join('\n\n');
+
+    const systemMsg = basePrompt[0];
+    if (systemMsg && systemMsg.role === 'system') {
+      basePrompt = [
+        { ...systemMsg, content: `${systemMsg.content}\n\n---\n**[Web Search Results]**\n${webBlock}` },
+        ...basePrompt.slice(1),
+      ];
+    }
+  }
+
+  const prompt = basePrompt;
+
+  // Step 5b: Check LLM response cache
+  const contextTexts = context.map(c => c.content);
+  const cachedResponse = await cacheService.get(
+    tenantId, modelTier, systemPrompt, input.message, contextTexts,
+  );
+
+  if (cachedResponse) {
+    // Save user message
+    await conversationService.addMessage({
+      conversationId,
+      role: 'user',
+      content: input.message,
+    });
+
+    // Save cached assistant response
+    await conversationService.addMessage({
+      conversationId: conversationId!,
+      role: 'assistant',
+      content: cachedResponse.content,
+      modelUsed: cachedResponse.model,
+      tokensUsed: 0,
+      metadata: { cached: true },
+    });
+
+    // Track as cached (zero-cost to LLM, but record the hit)
+    await usageTrackingService.trackRequest({
+      tenantId,
+      userId,
+      model: cachedResponse.model,
+      inputTokens: 0,
+      outputTokens: 0,
+      cached: true,
+    });
+
+    // Return cached response as SSE
+    return streamSSE(c, async (stream) => {
+      await stream.writeSSE({
+        event: 'metadata',
+        data: JSON.stringify({ conversationId, model: cachedResponse.model, cached: true, budgetAlert: budgetStatus.alert, webSearchUsed: false }),
+      });
+      await stream.writeSSE({
+        event: 'token',
+        data: JSON.stringify({ content: cachedResponse.content }),
+      });
+      await stream.writeSSE({ event: 'done', data: '[DONE]' });
+      await stream.writeSSE({
+        event: 'usage',
+        data: JSON.stringify({ totalTokens: 0, model: cachedResponse.model, cached: true }),
+      });
+    });
+  }
 
   // Save user message
   await conversationService.addMessage({
@@ -148,10 +264,10 @@ chat.post('/', async (c) => {
     let modelUsed = modelTier;
 
     try {
-      // Send conversation ID first
+      // Send conversation ID + budget alert
       await stream.writeSSE({
         event: 'metadata',
-        data: JSON.stringify({ conversationId, model: modelTier }),
+        data: JSON.stringify({ conversationId, model: modelTier, budgetAlert: budgetStatus.alert, budgetUsage: Math.round(budgetStatus.usageRatio * 100), webSearchUsed: webResults.length > 0 }),
       });
 
       // Call LiteLLM with streaming via fetch (the ai-client doesn't support streaming natively)
@@ -244,8 +360,33 @@ chat.post('/', async (c) => {
           graphEntities: hybridResult?.graphContext?.entities.length ?? 0,
           graphAvailable: hybridResult?.graphAvailable ?? false,
           historyMessages: history.length,
+          webSearchUsed: webResults.length > 0,
+          webResultsCount: webResults.length,
         },
       });
+
+      // Track per-request usage and update daily aggregate
+      const estimatedInputTokens = Math.ceil(totalTokens * 0.4);
+      const estimatedOutputTokens = totalTokens - estimatedInputTokens;
+      await usageTrackingService.trackRequest({
+        tenantId,
+        userId,
+        model: String(modelUsed),
+        inputTokens: estimatedInputTokens,
+        outputTokens: estimatedOutputTokens,
+      });
+
+      // Cache the response for future identical requests
+      await cacheService.set(
+        tenantId, modelTier, systemPrompt, input.message, contextTexts,
+        {
+          content: fullResponse,
+          model: String(modelUsed),
+          inputTokens: estimatedInputTokens,
+          outputTokens: estimatedOutputTokens,
+          cachedAt: Date.now(),
+        },
+      );
 
       // Update conversation title if this is the first exchange
       if (!input.conversationId && fullResponse) {
@@ -262,6 +403,10 @@ chat.post('/', async (c) => {
           contextChunks: context.length,
           graphEntities: hybridResult?.graphContext?.entities.length ?? 0,
           graphAvailable: hybridResult?.graphAvailable ?? false,
+          budgetAlert: budgetStatus.alert,
+          budgetUsagePercent: Math.round(budgetStatus.usageRatio * 100),
+          webSearchUsed: webResults.length > 0,
+          webResultsCount: webResults.length,
         }),
       });
     } catch (error) {

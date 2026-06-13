@@ -80,7 +80,7 @@ function GraphStats({ tenantId, collapsible = true }: GraphStatsProps) {
               Per tipo
             </h4>
             <div className="flex flex-wrap gap-1.5">
-              {stats.entitiesByType.map(({ type, count }) => (
+              {(Array.isArray(stats.entitiesByType) ? stats.entitiesByType : []).map(({ type, count }) => (
                 <span
                   key={type}
                   className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium text-white"
@@ -99,7 +99,7 @@ function GraphStats({ tenantId, collapsible = true }: GraphStatsProps) {
                 <Star className="h-3 w-3" /> Piu connesse
               </h4>
               <div className="space-y-1">
-                {stats.mostConnected.slice(0, 5).map((entity) => (
+                {(Array.isArray(stats.mostConnected) ? stats.mostConnected : []).slice(0, 5).map((entity) => (
                   <div key={entity.id} className="flex items-center gap-2 text-sm">
                     <div
                       className="w-2 h-2 rounded-full shrink-0"
@@ -120,7 +120,7 @@ function GraphStats({ tenantId, collapsible = true }: GraphStatsProps) {
                 <FileText className="h-3 w-3" /> Estrazioni recenti
               </h4>
               <div className="space-y-1.5">
-                {stats.recentExtractions.slice(0, 5).map((doc) => (
+                {(Array.isArray(stats.recentExtractions) ? stats.recentExtractions : []).slice(0, 5).map((doc) => (
                   <div key={doc.documentId} className="flex items-center justify-between text-xs">
                     <span className="text-slate-300 truncate max-w-[160px]">{doc.documentTitle}</span>
                     <span className="text-slate-500 shrink-0 ml-2">

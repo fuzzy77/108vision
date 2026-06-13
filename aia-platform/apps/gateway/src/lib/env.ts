@@ -1,4 +1,10 @@
+import { config } from 'dotenv';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { z } from 'zod';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+config({ path: resolve(__dirname, '..', '..', '.env') });
 
 const envSchema = z.object({
   DATABASE_URL: z.string().url(),
@@ -25,6 +31,16 @@ const envSchema = z.object({
     .length(64)
     .regex(/^[0-9a-fA-F]+$/, 'ENCRYPTION_KEY must be 64 hexadecimal characters')
     .optional(),
+  // Web search providers (at most one is required; both default to empty = disabled)
+  BRAVE_SEARCH_API_KEY: z.string().default(''),
+  TAVILY_API_KEY: z.string().default(''),
+  // SMTP — leave SMTP_HOST empty to enable dev-mode email logging
+  SMTP_HOST: z.string().default(''),
+  SMTP_PORT: z.coerce.number().int().positive().default(587),
+  SMTP_USER: z.string().default(''),
+  SMTP_PASS: z.string().default(''),
+  SMTP_FROM: z.string().email().default('noreply@108ai.dev'),
+  APP_URL: z.string().url().default('http://localhost:5173'),
 });
 
 export type Env = z.infer<typeof envSchema>;
