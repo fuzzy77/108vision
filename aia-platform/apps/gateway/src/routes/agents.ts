@@ -5,6 +5,7 @@ import { AppError } from '@aia/shared';
 import { getDb } from '../lib/db.js';
 import { agents } from '../db/schema.js';
 import { requireRole } from '../middleware/auth.js';
+import { principlesService } from '../services/principles.service.js';
 
 const agentsRouter = new Hono();
 
@@ -29,6 +30,14 @@ const updateAgentSchema = z.object({
   knowledgeBaseIds: z.array(z.string().uuid()).optional(),
   config: z.record(z.unknown()).optional(),
   isActive: z.boolean().optional(),
+});
+
+/**
+ * GET /api/agents/principles — List available AI governance principles.
+ */
+agentsRouter.get('/principles', async (c) => {
+  const definitions = principlesService.getPrincipleDefinitions();
+  return c.json({ items: definitions });
 });
 
 /**

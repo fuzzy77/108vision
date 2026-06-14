@@ -60,11 +60,27 @@ export interface AgentConfig {
    * Default: undefined (no processes blocked).
    */
   blockedProcesses?: string[];
+
+  /** Token expiry timestamp (ms since epoch). When expired, re-auth is triggered. */
+  tokenExpiresAt?: number;
+
+  /** Gateway HTTP base URL (derived from gatewayUrl, used for OAuth + updates). */
+  gatewayHttpUrl?: string;
 }
 
 const CONFIG_DIR_NAME = '.108ai';
 const CONFIG_FILE_NAME = 'config.json';
 const AUDIT_FILE_NAME = 'audit.log';
+
+/**
+ * Default gateway URL — embedded at build time.
+ * Override with --gateway-url CLI arg or config.json.
+ */
+const DEFAULT_GATEWAY_URL = process.env['AIA_GATEWAY_URL'] ?? 'http://localhost:3000';
+
+export function getDefaultGatewayUrl(): string {
+  return DEFAULT_GATEWAY_URL;
+}
 
 function getConfigDir(): string {
   return join(homedir(), CONFIG_DIR_NAME);
@@ -210,6 +226,15 @@ Configuration:
 First Run:
   On first run without config, an interactive setup wizard will guide you.
 `);
+}
+
+/**
+ * Check if the stored auth token has expired.
+ */
+export function isTokenExpired(config: AgentConfig): boolean {
+  if (!config.tokenExpiresAt) return false;
+  // Consider expired 5 minutes before actual expiry (buffer for clock drift)
+  return Date.now() > config.tokenExpiresAt - 5 * 60 * 1000;
 }
 
 /**

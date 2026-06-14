@@ -1,6 +1,6 @@
 {
   "name": "@108ai/desktop",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
   "bin": {
@@ -9,6 +9,11 @@
   "scripts": {
     "dev": "tsx src/index.ts",
     "build": "tsc && node scripts/build.js",
+    "build:bin": "node scripts/build.mjs",
+    "build:all": "node scripts/build.mjs --all",
+    "build:windows": "node scripts/build.mjs --platform windows",
+    "build:macos": "node scripts/build.mjs --platform macos",
+    "build:linux": "node scripts/build.mjs --platform linux",
     "start": "node dist/index.js",
     "lint": "eslint src/",
     "test": "vitest run"
@@ -25,6 +30,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.14.0",
+    "@types/node-notifier": "^8.0.0",
     "@types/ws": "^8.5.10",
     "esbuild": "^0.21.0",
     "tsx": "^4.15.0",

@@ -4,8 +4,10 @@ import { MessageSquare } from 'lucide-react';
 import { useChat } from '@/hooks/useChat';
 import { MessageBubble } from '@/components/chat/MessageBubble';
 import { MessageInput } from '@/components/chat/MessageInput';
+import { SmartTip } from '@/components/chat/SmartTip';
 import { StreamingIndicator } from '@/components/chat/StreamingIndicator';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { detectTip } from '@/lib/tip-detector';
 
 export function ChatPage() {
   const { conversationId } = useParams({ from: '/chat/$conversationId' });
@@ -56,9 +58,15 @@ export function ChatPage() {
               </p>
             </div>
           ) : (
-            messages.map((message) => (
-              <MessageBubble key={message.id} message={message} />
-            ))
+            messages.map((message) => {
+              const tip = message.role === 'assistant' ? detectTip(message.content) : null;
+              return (
+                <div key={message.id}>
+                  <MessageBubble message={message} />
+                  {tip && <SmartTip tip={tip} />}
+                </div>
+              );
+            })
           )}
 
           {isStreaming && messages[messages.length - 1]?.role !== 'assistant' && (

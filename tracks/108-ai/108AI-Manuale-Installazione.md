@@ -937,6 +937,248 @@ ss -tlnp
 
 ---
 
+## 10. Desktop Agent — Build Multi-Piattaforma con GitHub Actions
+
+### 10.1 Il problema
+
+Il Desktop Agent è compilato con `bun build --compile` in un singolo eseguibile nativo. Però:
+
+| Target | Cross-compile da Windows? | Serve |
+|--------|--------------------------|-------|
+| Windows x64 (.exe) | Si | Niente di speciale |
+| Linux x64 | Si | Niente di speciale |
+| macOS x64 (Intel) | **No** | Runner macOS |
+| macOS ARM (Apple Silicon) | **No** | Runner macOS ARM |
+
+Apple non permette cross-compilazione dei binari Mach-O da Windows/Linux. Per generare i `.app` macOS serve un runner macOS.
+
+### 10.2 La soluzione: GitHub Actions
+
+GitHub offre runner macOS gratuiti (2000 min/mese per repo privati). Una build del Desktop Agent richiede ~2 minuti = **~$0.16 per release**. Praticamente gratis.
+
+### 10.3 Setup del workflow
+
+#### Passo 1 — Crea il file workflow
+
+Crea `.github/workflows/build-desktop-agent.yml` nella root del repo:
+
+```yaml
+name: Build Desktop Agent
+
+on:
+  push:
+    tags:
+      - 'agent-v*'  # Triggera solo su tag tipo agent-v0.3.0
+  workflow_dispatch:   # Permette trigger manuale dalla UI GitHub
+
+permissions:
+  contents: write    # Per creare la GitHub Release
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            target: bun-windows-x64
+            output: 108ai-agent.exe
+          - os: ubuntu-latest
+            target: bun-linux-x64
+            output: 108ai-agent-linux
+          - os: macos-13          # Intel
+            target: bun-darwin-x64
+            output: 108ai-agent-macos-x64
+          - os: macos-14          # Apple Silicon (M1+)
+            target: bun-darwin-arm64
+            output: 108ai-agent-macos-arm64
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        working-directory: aia-platform/apps/local-agent
+        run: bun install
+
+      - name: Build binary
+        working-directory: aia-platform/apps/local-agent
+        run: |
+          bun build src/index.ts \
+            --compile \
+            --target=${{ matrix.target }} \
+            --outfile=dist/bin/${{ matrix.output }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.output }}
+          path: aia-platform/apps/local-agent/dist/bin/${{ matrix.output }}
+          retention-days: 30
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: binaries/
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: binaries/**/*
+          generate_release_notes: true
+          draft: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
+
+#### Passo 2 — Pusha il workflow
+
+```bash
+git add .github/workflows/build-desktop-agent.yml
+git commit -m "ci: add Desktop Agent multi-platform build workflow"
+git push origin main
+```
+
+#### Passo 3 — Triggera una build
+
+**Opzione A — Tag release (produzione):**
+
+```bash
+git tag agent-v0.3.0
+git push origin agent-v0.3.0
+```
+
+Questo:
+1. Triggera il workflow su 4 runner in parallelo (Win, Linux, macOS Intel, macOS ARM)
+2. Compila i 4 binari (~2 min ciascuno, in parallelo = 2 min totali)
+3. Crea una GitHub Release con tutti e 4 gli eseguibili allegati
+4. Chiunque può scaricarli dalla pagina Releases del repo
+
+**Opzione B — Trigger manuale (test):**
+
+1. Vai su GitHub → il tuo repo → **Actions** → **Build Desktop Agent**
+2. Click **"Run workflow"** → scegli il branch → **Run**
+3. Dopo ~2 min trovi gli artifact nella run (non crea release senza tag)
+
+### 10.4 Come servire i download dal gateway
+
+Il gateway ha già l'endpoint `/api/desktop-agent/download/:filename`. Per collegarlo ai binari buildati:
+
+**Opzione A — Upload manuale (dev/test):**
+
+Dopo che GitHub Actions ha creato la release, scarica i binari e mettili in:
+```
+aia-platform/apps/local-agent/dist/bin/
+├── 108ai-agent.exe
+├── 108ai-agent-linux
+├── 108ai-agent-macos-x64
+└── 108ai-agent-macos-arm64
+```
+
+Il gateway li serve direttamente da questa cartella.
+
+**Opzione B — Deploy automatico (produzione):**
+
+Aggiungi uno step al workflow che fa upload sul tuo server via SCP/rsync:
+
+```yaml
+  deploy-binaries:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: binaries/
+
+      - name: Deploy to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: aia
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          source: "binaries/**/*"
+          target: "/opt/aia-platform/apps/local-agent/dist/bin/"
+          strip_components: 2
+```
+
+Richiede questi secrets nel repo GitHub:
+- `DEPLOY_HOST`: IP del tuo server (es. `123.45.67.89`)
+- `DEPLOY_SSH_KEY`: chiave SSH privata dell'utente `aia` sul server
+
+### 10.5 Costi reali
+
+| Voce | Costo |
+|------|-------|
+| GitHub Actions (repo privato) | 2000 min/mese gratuiti |
+| Una build completa (4 runner × 2 min) | ~8 min = $0 (nei free minutes) |
+| Runner macOS (se superi i free) | $0.08/min |
+| Runner Linux/Windows (se superi) | $0.008-0.016/min |
+| **Costo tipico (1 release/settimana)** | **$0/mese** (entro free tier) |
+
+### 10.6 Firma e notarizzazione macOS (fase 2)
+
+Per distribuire il binario macOS senza warning "sviluppatore non identificato":
+
+1. **Apple Developer Program** — $99/anno
+2. **Code signing** — aggiungi al workflow:
+   ```yaml
+   - name: Sign macOS binary
+     if: runner.os == 'macOS'
+     env:
+       APPLE_CERT_BASE64: ${{ secrets.APPLE_CERT_BASE64 }}
+       APPLE_CERT_PASSWORD: ${{ secrets.APPLE_CERT_PASSWORD }}
+     run: |
+       echo $APPLE_CERT_BASE64 | base64 --decode > cert.p12
+       security create-keychain -p "" build.keychain
+       security import cert.p12 -k build.keychain -P "$APPLE_CERT_PASSWORD" -T /usr/bin/codesign
+       security set-key-partition-list -S apple-tool:,apple: -s -k "" build.keychain
+       codesign --force --deep --sign "Developer ID Application: TUO_NOME (TEAM_ID)" \
+         dist/bin/108ai-agent-macos-*
+   ```
+3. **Notarizzazione** — invia ad Apple per review automatica:
+   ```yaml
+   - name: Notarize
+     if: runner.os == 'macOS'
+     run: |
+       xcrun notarytool submit dist/bin/108ai-agent-macos-* \
+         --apple-id "${{ secrets.APPLE_ID }}" \
+         --password "${{ secrets.APPLE_APP_PASSWORD }}" \
+         --team-id "${{ secrets.APPLE_TEAM_ID }}" \
+         --wait
+   ```
+
+**Senza firma/notarizzazione** l'utente macOS deve fare: tasto destro → Apri → "Apri comunque". Non ideale ma funziona per early adopter. La firma è consigliata per distribuzione a clienti.
+
+### 10.7 Checklist completa
+
+- [ ] Creare `.github/workflows/build-desktop-agent.yml`
+- [ ] Push su main
+- [ ] Verificare che il workflow appaia in GitHub → Actions
+- [ ] Trigger manuale (workflow_dispatch) per test
+- [ ] Verificare che i 4 artifact vengano prodotti
+- [ ] Creare un tag `agent-v0.3.0` per test release
+- [ ] Verificare che la GitHub Release contenga i 4 binari
+- [ ] Scaricare e testare i binari su ogni OS
+- [ ] (Opzionale) Configurare deploy automatico via SCP
+- [ ] (Fase 2) Apple Developer Program + firma + notarizzazione
+
+---
+
 ## Prossimi passi dopo l'installazione
 
 1. **Carica la Knowledge Base**: documenti aziendali, FAQ, procedure

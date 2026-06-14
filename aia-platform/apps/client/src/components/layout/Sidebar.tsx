@@ -1,5 +1,5 @@
 import { Link, useNavigate } from '@tanstack/react-router';
-import { Plus, MessageSquare, BookOpen, Settings, X, Trash2, Users, SlidersHorizontal, Bot, ShieldCheck } from 'lucide-react';
+import { Plus, MessageSquare, BookOpen, Settings, X, Trash2, Users, SlidersHorizontal, Bot, ShieldCheck, Monitor, Brain } from 'lucide-react';
 import { useConversations } from '@/hooks/useConversations';
 import { useChatStore } from '@/stores/chat.store';
 import { formatDate, truncate } from '@/lib/format';
@@ -118,6 +118,24 @@ export function Sidebar() {
           >
             <BookOpen className="w-4 h-4" />
             Knowledge Base
+          </Link>
+          <Link
+            to="/memory"
+            onClick={() => setSidebarOpen(false)}
+            className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            activeProps={{ className: 'bg-primary-50 dark:bg-primary-950/30 text-primary-700 dark:text-primary-300' }}
+          >
+            <Brain className="w-4 h-4" />
+            Memoria
+          </Link>
+          <Link
+            to="/desktop-agent"
+            onClick={() => setSidebarOpen(false)}
+            className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            activeProps={{ className: 'bg-primary-50 dark:bg-primary-950/30 text-primary-700 dark:text-primary-300' }}
+          >
+            <Monitor className="w-4 h-4" />
+            Desktop Agent
           </Link>
           <Link
             to="/settings"

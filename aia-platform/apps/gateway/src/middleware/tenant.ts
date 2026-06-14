@@ -22,8 +22,22 @@ export interface TenantContext {
 export async function tenantMiddleware(c: Context, next: Next): Promise<void | Response> {
   const headerTenantId = c.req.header('X-Tenant-ID');
   const jwtTenantId = c.get('jwtPayload')?.tenantId as string | undefined;
+  const jwtRole = c.get('jwtPayload')?.role as string | undefined;
 
-  const tenantId = headerTenantId || jwtTenantId;
+  let tenantId = headerTenantId || jwtTenantId;
+
+  // Platform admins without a tenant_id: resolve to first active tenant
+  if (!tenantId && jwtRole === 'platform_admin') {
+    const db = getDb();
+    const first = await db
+      .select({ id: tenants.id })
+      .from(tenants)
+      .where(eq(tenants.status, 'active'))
+      .limit(1);
+    if (first.length > 0) {
+      tenantId = first[0]!.id;
+    }
+  }
 
   if (!tenantId) {
     throw new AppError(

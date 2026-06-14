@@ -1,0 +1,17 @@
+[
+  {
+    "pid": 27324,
+    "name": "gateway",
+    "port": 3000
+  },
+  {
+    "pid": 4628,
+    "name": "dashboard",
+    "port": 5173
+  },
+  {
+    "pid": 7104,
+    "name": "client",
+    "port": 5174
+  }
+]

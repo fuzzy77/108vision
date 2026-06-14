@@ -191,17 +191,29 @@ class ApiClient {
     return response;
   }
 
+  async get<T>(path: string): Promise<T> {
+    return this.request<T>(path);
+  }
+
+  async post<T>(path: string, body: Record<string, unknown>): Promise<T> {
+    return this.request<T>(path, {
+      method: 'POST',
+      body: JSON.stringify(body),
+    });
+  }
+
   async getConversations(): Promise<Conversation[]> {
     const data = await this.request<{ items: Conversation[] } | Conversation[]>('/conversations');
     return Array.isArray(data) ? data : (data?.items ?? []);
   }
 
-  async getConversation(id: string): Promise<Conversation> {
-    return this.request<Conversation>(`/conversations/${id}`);
+  async getConversation(id: string): Promise<Conversation & { messages?: Message[] }> {
+    return this.request<Conversation & { messages?: Message[] }>(`/conversations/${id}`);
   }
 
   async getMessages(conversationId: string): Promise<Message[]> {
-    return this.request<Message[]>(`/conversations/${conversationId}/messages`);
+    const data = await this.request<{ messages?: Message[] } & Record<string, unknown>>(`/conversations/${conversationId}`);
+    return data.messages ?? [];
   }
 
   async deleteConversation(id: string): Promise<void> {
@@ -214,15 +226,11 @@ class ApiClient {
     agentId: string,
     model: string,
   ): Promise<Response> {
-    const path = conversationId
-      ? `/conversations/${conversationId}/messages`
-      : '/conversations';
-
-    return this.streamRequest(path, {
-      content: message,
+    return this.streamRequest('/chat', {
+      message,
+      conversationId: conversationId ?? undefined,
       agentId,
       model,
-      stream: true,
     });
   }
 

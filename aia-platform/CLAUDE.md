@@ -185,3 +185,50 @@ make qdrant-health
 - Deploy via `make deploy` or `./scripts/deploy.sh`
 - Zero-downtime: Docker Compose recreates only changed services
 - Backups: Daily automated + pre-deploy snapshots
+
+---
+
+## What's Original About 108 AI
+
+| Feature | Differenziatore | Perche' conta |
+|---------|-----------------|---------------|
+| **Hybrid RAG** | Qdrant (vector) + Neo4j (knowledge graph) | Reasoning multi-hop su conoscenza aziendale — non solo semantic search |
+| **Desktop Agent** | OS-level capabilities con risk classification + shell/grep/edit | L'AI opera sul PC dell'utente come Claude Code/Cursor, ma anche per utenti non-dev |
+| **Persistent Memory** | pgvector semantic search, auto-inject nel prompt | L'AI ricorda preferenze, contesto, decisioni — su ogni dispositivo, ogni sessione |
+| **Model routing cost-optimized** | 5 tier LiteLLM, 70-80% risparmio vs single model | Il 90% dei task usa modelli economici senza perdita di qualita' |
+| **Governance by default** | 9 principi di ownership baked-in (non opzionali) | L'AI chiede, spiega, marca incertezza — non decide per l'utente |
+| **Integrazione verticale** | Consulenza + piattaforma + gestione ongoing | Unico fornitore dalla strategia all'operativita' |
+
+### Cosa NON e' originale (table stakes)
+
+RAG base, chatbot, dashboard multi-tenant, API key management. Sono requisiti minimi — non differenziatori.
+
+## Confronto con i Concorrenti
+
+| Feature | 108 AI | ChatGPT/Claude | Cursor/Claude Code | Assistenti PMI (Tidio, Intercom AI) |
+|---------|--------|----------------|--------------------|------------------------------------|
+| **Memoria persistente cross-device** | ✓ Semantica (pgvector) | ✓ Solo stesso account | ✗ Solo file locali | ✗ |
+| **Desktop Agent (file, shell, gui)** | ✓ Con risk classification | ✗ | ✓ Solo codice | ✗ |
+| **Knowledge Base aziendale** | ✓ Hybrid RAG (vector+graph) | ✓ Basic (solo upload) | ✗ | ✓ Basic |
+| **Governance AI (principi, badge)** | ✓ 9 principi, UI integrata | ✗ | ✗ | ✗ |
+| **Multi-tenant / team** | ✓ Nativo | ✗ (solo Teams plan) | ✓ | ✓ |
+| **Modelli economici (DeepSeek/Qwen)** | ✓ 70-80% risparmio | ✗ (solo modelli propri) | ✗ | ✗ |
+| **Automazione desktop (click, screenshot)** | ✓ | ✗ | ✗ | ✗ |
+| **Eseguibile installabile (no setup dev)** | ✓ Bun compile .exe/.app | ✗ (web only) | ✓ | ✗ |
+| **Target PMI non-tech** | ✓ | Parziale | ✗ (solo dev) | ✓ |
+| **Costo mensile** | Da 29 EUR/mese | 20-30 USD/utente | 20-40 USD/utente | 29-99 EUR/mese |
+
+### Dove 108 AI vince
+
+1. **L'unico che unisce Claude Code + memoria + GUI automation** in un unico prodotto per PMI
+2. **Costo 5-10x inferiore** grazie a DeepSeek/Qwen come provider primari
+3. **Funziona per NON-developer**: l'utente business puo' dire "leggi le email e fammi un riassunto"
+4. **L'AI ti conosce davvero**: memoria persistente = zero ripetizioni, contesto sempre presente
+
+## Positioning
+
+- **AI riduce il lavoro operativo del 30-40%** — NON sostituisce lavoratori
+- **108 Vision costruisce tool** che automatizzano al 100% processi manuali specifici (classificazione documenti, triage email, scheduling)
+- **"Ti ricordo tutto, su ogni dispositivo"** — la memoria persistente e' il differenziatore piu' visibile per l'utente finale
+- **Il rischio principale**: piattaforma troppo sofisticata per il cliente PMI medio, troppo giovane per enterprise
+- **Raccomandazione**: validare con 3 clienti reali paganti PRIMA di completare Phase 4-5. Il feedback vale piu' di 1000 righe di codice speculativo

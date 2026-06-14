@@ -4,9 +4,21 @@
 # Usage: make <target>
 # ============================================================
 
-.PHONY: up down logs psql redis status restart clean build deploy backup
+.PHONY: dev dev-skip dev-stop dev-status up down logs psql redis status restart clean build deploy backup
 
 # --- Development ---
+
+dev:
+	node scripts/dev.mjs
+
+dev-skip:
+	node scripts/dev.mjs --skip-infra
+
+dev-stop:
+	node scripts/dev.mjs --stop
+
+dev-status:
+	node scripts/dev.mjs --status
 
 up:
 	docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
@@ -109,12 +121,18 @@ help:
 	@echo ""
 	@echo "AIA Platform — Available commands:"
 	@echo ""
-	@echo "  Development:"
-	@echo "    make up            Start all services (dev mode)"
-	@echo "    make down          Stop all services"
-	@echo "    make logs          Follow all logs"
-	@echo "    make status        Show service status"
-	@echo "    make restart       Restart all services"
+	@echo "  Quick Start:"
+	@echo "    make dev           Start EVERYTHING (infra + apps) in one command"
+	@echo "    make dev-skip      Start apps only (Docker already running)"
+	@echo "    make dev-stop      Stop all services and apps"
+	@echo "    make dev-status    Show full status with health checks"
+	@echo ""
+	@echo "  Infrastructure only:"
+	@echo "    make up            Start Docker services (dev mode)"
+	@echo "    make down          Stop Docker services"
+	@echo "    make logs          Follow all Docker logs"
+	@echo "    make status        Show Docker container status"
+	@echo "    make restart       Restart Docker services"
 	@echo "    make clean         Stop and remove all data (volumes)"
 	@echo ""
 	@echo "  Database:"
@@ -133,6 +151,8 @@ help:
 	@echo ""
 	@echo "  Build & Deploy:"
 	@echo "    make build         Build all workspaces"
+	@echo "    make lint          Lint all workspaces"
+	@echo "    make test          Test all workspaces"
 	@echo "    make deploy        Deploy to production VPS"
 	@echo "    make backup        Run database backup"
 	@echo ""

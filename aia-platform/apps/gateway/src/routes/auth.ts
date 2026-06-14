@@ -611,4 +611,125 @@ auth.post('/accept-invite', async (c) => {
   }, 201);
 });
 
+/**
+ * GET /api/auth/desktop-agent — Desktop Agent OAuth login page.
+ *
+ * The Desktop Agent opens this URL in the user's browser with a redirect_uri
+ * pointing to its local callback server (e.g., http://127.0.0.1:PORT/callback).
+ * After the user logs in, we redirect back with the token as query params.
+ *
+ * Flow: Agent opens browser → this page → user enters credentials → redirect to agent callback.
+ */
+auth.get('/desktop-agent', async (c) => {
+  const redirectUri = c.req.query('redirect_uri');
+
+  if (!redirectUri) {
+    return c.html(`<!DOCTYPE html>
+<html><head><title>108 AI — Errore</title>
+<style>body{font-family:-apple-system,system-ui,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;background:#f8fafc}.card{text-align:center;padding:3rem;background:white;border-radius:1rem;box-shadow:0 4px 24px rgba(0,0,0,.08);max-width:400px}h1{color:#dc2626;font-size:1.25rem}p{color:#64748b}</style>
+</head><body><div class="card"><h1>Parametro mancante</h1><p>redirect_uri non fornito. Riavvia il Desktop Agent.</p></div></body></html>`, 400);
+  }
+
+  // Validate redirect_uri is localhost (security: only allow local callbacks)
+  try {
+    const url = new URL(redirectUri);
+    if (url.hostname !== '127.0.0.1' && url.hostname !== 'localhost') {
+      return c.html(`<!DOCTYPE html>
+<html><head><title>108 AI — Errore</title>
+<style>body{font-family:-apple-system,system-ui,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;background:#f8fafc}.card{text-align:center;padding:3rem;background:white;border-radius:1rem;box-shadow:0 4px 24px rgba(0,0,0,.08);max-width:400px}h1{color:#dc2626;font-size:1.25rem}p{color:#64748b}</style>
+</head><body><div class="card"><h1>Redirect non consentito</h1><p>Il redirect_uri deve puntare a localhost.</p></div></body></html>`, 400);
+    }
+  } catch {
+    return c.html(`<!DOCTYPE html>
+<html><head><title>108 AI — Errore</title>
+<style>body{font-family:-apple-system,system-ui,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;background:#f8fafc}.card{text-align:center;padding:3rem;background:white;border-radius:1rem;box-shadow:0 4px 24px rgba(0,0,0,.08);max-width:400px}h1{color:#dc2626;font-size:1.25rem}p{color:#64748b}</style>
+</head><body><div class="card"><h1>URL non valido</h1><p>redirect_uri non valido.</p></div></body></html>`, 400);
+  }
+
+  // Render login page with embedded form
+  return c.html(`<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>108 AI — Login Desktop Agent</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, system-ui, 'Segoe UI', sans-serif; background: #f1f5f9; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+    .card { background: white; border-radius: 1rem; box-shadow: 0 4px 24px rgba(0,0,0,.08); padding: 2.5rem; width: 100%; max-width: 380px; }
+    .logo { text-align: center; margin-bottom: 1.5rem; font-size: 1.5rem; font-weight: 700; color: #0f172a; }
+    .logo span { color: #059669; }
+    .subtitle { text-align: center; color: #64748b; font-size: 0.875rem; margin-bottom: 2rem; }
+    label { display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.25rem; }
+    input { width: 100%; padding: 0.625rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 0.875rem; margin-bottom: 1rem; outline: none; transition: border-color 0.2s; }
+    input:focus { border-color: #059669; box-shadow: 0 0 0 3px rgba(5,150,105,0.1); }
+    button { width: 100%; padding: 0.75rem; background: #059669; color: white; border: none; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+    button:hover { background: #047857; }
+    button:disabled { background: #9ca3af; cursor: not-allowed; }
+    .error { background: #fef2f2; color: #dc2626; padding: 0.75rem; border-radius: 0.5rem; font-size: 0.8rem; margin-bottom: 1rem; display: none; }
+    .info { text-align: center; color: #94a3b8; font-size: 0.75rem; margin-top: 1.5rem; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">108 <span>AI</span></div>
+    <div class="subtitle">Accedi per connettere il Desktop Agent</div>
+    <div class="error" id="error"></div>
+    <form id="loginForm">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required autocomplete="email" autofocus>
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" required autocomplete="current-password">
+      <button type="submit" id="submitBtn">Accedi</button>
+    </form>
+    <div class="info">Il token viene inviato in modo sicuro al Desktop Agent locale.</div>
+  </div>
+  <script>
+    const form = document.getElementById('loginForm');
+    const errorEl = document.getElementById('error');
+    const submitBtn = document.getElementById('submitBtn');
+    const redirectUri = ${JSON.stringify(redirectUri)};
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorEl.style.display = 'none';
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Accesso in corso...';
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: document.getElementById('email').value,
+            password: document.getElementById('password').value,
+          }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.detail || data.error?.message || 'Credenziali non valide');
+        }
+
+        // Redirect back to Desktop Agent with token
+        const params = new URLSearchParams({
+          token: data.token,
+          tenant_id: data.user.tenantId || '',
+          expires_at: String(new Date(data.expiresAt).getTime()),
+        });
+
+        window.location.href = redirectUri + '?' + params.toString();
+      } catch (err) {
+        errorEl.textContent = err.message;
+        errorEl.style.display = 'block';
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Accedi';
+      }
+    });
+  </script>
+</body>
+</html>`);
+});
+
 export { auth };

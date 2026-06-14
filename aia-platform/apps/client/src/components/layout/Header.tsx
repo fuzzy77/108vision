@@ -1,12 +1,18 @@
-import { Menu, LogOut } from 'lucide-react';
+import { useState } from 'react';
+import { Menu, LogOut, HelpCircle, Monitor } from 'lucide-react';
+import { Link } from '@tanstack/react-router';
 import { useChatStore } from '@/stores/chat.store';
 import { Avatar } from '@/components/ui/Avatar';
 import { Badge } from '@/components/ui/Badge';
+import { GovernanceDrawer } from '@/components/chat/GovernanceDrawer';
+import { useDesktopAgent } from '@/hooks/useDesktopAgent';
 import { getUser, logout } from '@/lib/auth';
 
 export function Header() {
   const { toggleSidebar, modelPreference, selectedAgentId } = useChatStore();
   const user = getUser();
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const { status: agentStatus } = useDesktopAgent();
 
   const modelBadge: Record<string, { label: string; variant: 'info' | 'warning' | 'success' }> = {
     'fast-cheap': { label: 'Fast', variant: 'info' },
@@ -38,6 +44,25 @@ export function Header() {
       </div>
 
       <div className="flex items-center gap-3">
+        <Link
+          to="/desktop-agent"
+          className={`p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors ${
+            agentStatus?.connected
+              ? 'text-emerald-500 hover:text-emerald-600'
+              : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'
+          }`}
+          title={agentStatus?.connected ? 'Desktop Agent connesso' : 'Desktop Agent non connesso'}
+        >
+          <Monitor className="w-4 h-4" />
+        </Link>
+        <button
+          onClick={() => setDrawerOpen(true)}
+          className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+          aria-label="Come funziona l'AI"
+          title="Come funziona l'AI"
+        >
+          <HelpCircle className="w-4 h-4" />
+        </button>
         {user && (
           <div className="flex items-center gap-2">
             <Avatar name={user.name} size="sm" />
@@ -54,6 +79,8 @@ export function Header() {
           </div>
         )}
       </div>
+
+      <GovernanceDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
     </header>
   );
 }

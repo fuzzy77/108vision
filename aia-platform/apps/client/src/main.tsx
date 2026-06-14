@@ -11,6 +11,8 @@ import { SettingsPage } from '@/routes/settings';
 import { AdminUsersPage } from '@/routes/admin/users';
 import { AdminSettingsPage } from '@/routes/admin/settings';
 import { AdminAgentsPage } from '@/routes/admin/agents';
+import { DesktopAgentPage } from '@/routes/desktop-agent';
+import { MemoryPage } from '@/routes/memory';
 import './app.css';
 
 const queryClient = new QueryClient({
@@ -74,6 +76,18 @@ const adminAgentsRoute = createRoute({
   component: AdminAgentsPage,
 });
 
+const desktopAgentRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/desktop-agent',
+  component: DesktopAgentPage,
+});
+
+const memoryRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/memory',
+  component: MemoryPage,
+});
+
 const routeTree = rootRoute.addChildren([
   loginRoute,
   indexRoute,
@@ -83,6 +97,8 @@ const routeTree = rootRoute.addChildren([
   adminUsersRoute,
   adminSettingsRoute,
   adminAgentsRoute,
+  desktopAgentRoute,
+  memoryRoute,
 ]);
 
 const router = createRouter({

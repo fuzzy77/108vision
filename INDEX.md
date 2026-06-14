@@ -255,6 +255,7 @@ Materiali di studio interni per il consulente. Non per il cliente.
 
 - [108-STUDY-AI-Adoption.md](tracks/study/108-STUDY-AI-Adoption.md) — Teoria e framework adozione AI
 - [108-STUDY-AI-Platform.md](tracks/study/108-STUDY-AI-Platform.md) — Architettura piattaforme AI
+- [108-STUDY-AI-Principi-Operativi.md](tracks/study/108-STUDY-AI-Principi-Operativi.md) — Principi operativi AI: context, ownership, risparmio, controllo, condivisione team
 - [108-STUDY-Agile.md](tracks/study/108-STUDY-Agile.md) — Fondamenti Agile, DevOps, metriche DORA
 - [108-STUDY-Arch.md](tracks/study/108-STUDY-Arch.md) — Pattern architetturali e trade-off
 - [108-STUDY-Digital.md](tracks/study/108-STUDY-Digital.md) — Digital transformation theory

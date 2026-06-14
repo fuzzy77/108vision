@@ -327,6 +327,67 @@ export function getFileInfo(
   };
 }
 
+/**
+ * Edit a file by applying find-and-replace operations.
+ * More surgical than writeFile — doesn't require sending the entire file content.
+ */
+export function editFile(
+  path: string,
+  edits: Array<{ oldText: string; newText: string; replaceAll?: boolean }>,
+  config: AgentConfig,
+): { applied: number; path: string; size: number } {
+  const validatedPath = validatePath(path, config.allowedDirectories);
+  if (!validatedPath) {
+    throw new Error(`Access denied: path "${path}" is outside allowed directories`);
+  }
+
+  if (!existsSync(validatedPath)) {
+    throw new Error(`File not found: ${validatedPath}`);
+  }
+
+  const stats = statSync(validatedPath);
+  if (stats.isDirectory()) {
+    throw new Error(`Path is a directory, not a file: ${validatedPath}`);
+  }
+
+  if (stats.size > MAX_FILE_SIZE) {
+    throw new Error(`File too large for editing: ${stats.size} bytes`);
+  }
+
+  let content = readFileSync(validatedPath, 'utf-8');
+  let applied = 0;
+
+  for (const edit of edits) {
+    if (!edit.oldText) {
+      throw new Error('Each edit must have a non-empty oldText');
+    }
+
+    if (edit.replaceAll) {
+      const before = content;
+      content = content.split(edit.oldText).join(edit.newText);
+      if (content !== before) applied++;
+    } else {
+      const idx = content.indexOf(edit.oldText);
+      if (idx === -1) {
+        throw new Error(
+          `oldText not found in file. First 50 chars of search: "${edit.oldText.slice(0, 50)}"`,
+        );
+      }
+      content = content.slice(0, idx) + edit.newText + content.slice(idx + edit.oldText.length);
+      applied++;
+    }
+  }
+
+  writeFileSync(validatedPath, content, 'utf-8');
+  const newStats = statSync(validatedPath);
+
+  return {
+    applied,
+    path: validatedPath,
+    size: newStats.size,
+  };
+}
+
 // --- Helpers ---
 
 function globToRegex(pattern: string): RegExp {

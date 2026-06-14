@@ -24,6 +24,8 @@ import { startIngestionWorker, stopIngestionWorker } from './jobs/ingestion.work
 import { startGraphExtractionWorker, stopGraphExtractionWorker } from './jobs/graph-ingestion.worker.js';
 import { graph } from './routes/graph.js';
 import { tenantRouter } from './routes/tenant.js';
+import { memoryRouter } from './routes/memory.js';
+import { desktopAgentDownload } from './routes/desktop-agent-download.js';
 import { connect as connectNeo4j, close as closeNeo4j, initializeGraphSchema } from '@aia/graph';
 import {
   getLocalAgentRegistry,
@@ -88,6 +90,9 @@ app.route('/health', health);
 // Auth routes (no auth required — login, register, etc.)
 app.route('/api/auth', authRoutes);
 
+// Desktop Agent download (no auth required — user downloads before login)
+app.route('/api/desktop-agent', desktopAgentDownload);
+
 // Protected API routes
 const api = new Hono();
 api.use('*', async (c, next) => {
@@ -110,6 +115,7 @@ tenantApi.route('/agents', agentsRouter);
 tenantApi.route('/integrations', integrationsRouter);
 tenantApi.route('/graph', graph);
 tenantApi.route('/tenant', tenantRouter);
+tenantApi.route('/memory', memoryRouter);
 
 api.route('/', tenantApi);
 

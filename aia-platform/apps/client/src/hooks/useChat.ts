@@ -71,30 +71,18 @@ export function useChat(conversationId: string | null) {
           modelPreference,
         );
 
-        const contentType = response.headers.get('content-type') ?? '';
+        let newConversationId: string | null = null;
 
-        if (contentType.includes('text/event-stream')) {
-          for await (const token of streamTokens(response)) {
-            if (token.done) break;
+        for await (const token of streamTokens(response)) {
+          if (token.metadata?.conversationId && !conversationId && !newConversationId) {
+            newConversationId = token.metadata.conversationId;
+            setConversationId(newConversationId);
+            navigate({ to: '/chat/$conversationId', params: { conversationId: newConversationId } });
+          }
+          if (token.done) break;
+          if (token.content) {
             appendToken(token.content);
           }
-        } else {
-          const data = await response.json();
-          if (data.conversationId && !conversationId) {
-            setConversationId(data.conversationId);
-            navigate({ to: '/chat/$conversationId', params: { conversationId: data.conversationId } });
-          }
-          if (data.content) {
-            appendToken(data.content);
-          }
-        }
-
-        const newConversationId =
-          response.headers.get('x-conversation-id') ?? conversationId;
-
-        if (newConversationId && newConversationId !== conversationId) {
-          setConversationId(newConversationId);
-          navigate({ to: '/chat/$conversationId', params: { conversationId: newConversationId } });
         }
 
         stopStreaming();

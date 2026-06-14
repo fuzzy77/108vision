@@ -167,7 +167,7 @@ brand: "108 Vision"
 |---|---|---|
 | Piccola, poco IT, vuole risultati rapidi | AI Adoption (Quick Start) | 3.500-5.000 EUR |
 | Media, ha IT interno, vuole governance AI | AI Adoption (CAIO-aaS) | 8.000-15.000 EUR/mese |
-| Vuole infrastruttura AI proprietaria | AI Platform (MCP Server) | 15.000-35.000 EUR setup |
+| Vuole infrastruttura AI proprietaria | AI Platform (SaaS: da 29 EUR/mese, Enterprise: setup dedicato) | da 29 EUR/mese (SaaS) o 5.000-15.000 EUR setup (Enterprise) |
 | Ha debito tecnico, non scala | Architettura | 5.000-15.000 EUR (audit + roadmap) |
 | Non ha CTO, cresce senza guida | Fractional CTO | 3.000-8.000 EUR/mese |
 | Vuole digitalizzare processi | Trasformazione Digitale | 5.000-25.000 EUR |
@@ -213,7 +213,7 @@ brand: "108 Vision"
 | # | Track | Claim | Target | Entry Point | Range Completo |
 |---|---|---|---|---|---|
 | 1 | **Fractional CTO** | La governance tecnica che ti manca | PMI senza CTO, 10-200 dip | Tech Assessment | 3.000-8.000 EUR/mese |
-| 2 | **AI Platform** | L'AI che conosce la tua azienda | PMI che vogliono AI proprietaria | Architecture Review | 15.000-35.000 setup + 800-2.500/mese |
+| 2 | **AI Platform** | L'AI che ti conosce, ti aiuta e ricorda tutto | PMI che vogliono AI proprietaria con memoria + desktop agent | Trial SaaS (29 EUR/mese) | 29-99 EUR/mese (SaaS) o 5.000-15.000 setup (Enterprise) |
 | 3 | **AI Adoption** | Adottare l'AI e una decisione di business | PMI curiose di AI | AI Quick Start | 3.500-15.000 EUR/mese |
 | 4 | **Architettura** | Il debito tecnico ha un costo | PMI con software che non scala | Architecture Audit | 5.000-15.000 EUR |
 | 5 | **Trasformazione Digitale** | Digitalizzare e ripensare come lavori | PMI con processi manuali | Digital Quick Start | 5.000-25.000 EUR |

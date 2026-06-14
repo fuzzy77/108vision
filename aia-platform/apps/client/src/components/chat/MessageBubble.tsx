@@ -7,6 +7,24 @@ interface MessageBubbleProps {
   message: Message;
 }
 
+const CONFIDENCE_BADGES: Record<string, { bg: string; text: string; label: string }> = {
+  '[verificato]': { bg: 'bg-emerald-100 dark:bg-emerald-900/30', text: 'text-emerald-700 dark:text-emerald-400', label: 'verificato' },
+  '[probabile]': { bg: 'bg-amber-100 dark:bg-amber-900/30', text: 'text-amber-700 dark:text-amber-400', label: 'probabile' },
+  '[non verificato]': { bg: 'bg-orange-100 dark:bg-orange-900/30', text: 'text-orange-700 dark:text-orange-400', label: 'non verificato' },
+  '[ignoto]': { bg: 'bg-red-100 dark:bg-red-900/30', text: 'text-red-700 dark:text-red-400', label: 'ignoto' },
+};
+
+function renderConfidenceBadges(html: string): string {
+  for (const [marker, style] of Object.entries(CONFIDENCE_BADGES)) {
+    const escaped = marker.replace(/[[\]]/g, '\\$&');
+    html = html.replace(
+      new RegExp(escaped, 'g'),
+      `<span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium ${style.bg} ${style.text}">${style.label}</span>`,
+    );
+  }
+  return html;
+}
+
 function renderMarkdown(text: string): string {
   let html = text
     .replace(/&/g, '&amp;')
@@ -36,6 +54,8 @@ function renderMarkdown(text: string): string {
   );
 
   html = html.replace(/\n/g, '<br/>');
+
+  html = renderConfidenceBadges(html);
 
   return html;
 }

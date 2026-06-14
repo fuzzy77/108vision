@@ -15,30 +15,167 @@
  * Or configure interactively on first run (writes to ~/.108ai/config.json).
  */
 
-import { loadConfig, parseCliArgs, runSetupWizard, saveConfig, type AgentConfig } from './config.js';
+import { loadConfig, parseCliArgs, saveConfig, isTokenExpired, getDefaultGatewayUrl, type AgentConfig } from './config.js';
+import { performBrowserLogin, gatewayWsToHttp } from './auth.js';
+import { startUpdateLoop, getCurrentVersion } from './updater.js';
 import { AgentConnection, type AgentMessage } from './connection.js';
 import { executeAction, getRegisteredActions } from './capabilities/index.js';
 import { stopAllWatchers } from './capabilities/filesystem.js';
 import { initializeTray, computeDesktopTrayStatus, type TrayState } from './tray.js';
 import { handleToolCall } from '@aia/desktop-bridge';
+import { handleInstall, handleUninstall, handleCliQuery, readStdin } from './cli.js';
+import { startShell } from './shell.js';
+
+// --- Entry Point Router ---
+
+const args = process.argv.slice(2);
+const firstArg = args[0] ?? '';
+
+// Route to appropriate mode based on arguments
+if (firstArg === '--install' || firstArg === 'install') {
+  handleInstall().then(() => process.exit(0)).catch((e) => {
+    process.stderr.write(`Errore: ${e instanceof Error ? e.message : String(e)}\n`);
+    process.exit(1);
+  });
+} else if (firstArg === '--uninstall' || firstArg === 'uninstall') {
+  handleUninstall();
+  process.exit(0);
+} else if (firstArg === '--version' || firstArg === '-v') {
+  process.stdout.write(`108ai v${getCurrentVersion()}\n`);
+  process.exit(0);
+} else if (firstArg === 'agent' || firstArg === '--agent' || firstArg === '--daemon') {
+  // Explicit agent mode
+  startAgent();
+} else if (firstArg === '--help' || firstArg === '-h') {
+  printUsage();
+  process.exit(0);
+} else if (firstArg === '--pipe' || firstArg === '-p') {
+  // Pipe mode: echo "text" | 108ai --pipe Riassumi questo
+  const query = args.slice(1).join(' ') || 'Analizza questo input';
+  readStdin().then((pipeInput) => {
+    if (!pipeInput) {
+      process.stderr.write('Nessun input ricevuto via pipe.\n');
+      process.exit(1);
+    }
+    return handleCliQuery(query, pipeInput);
+  }).then(() => process.exit(0)).catch((e) => {
+    process.stderr.write(`Errore: ${e instanceof Error ? e.message : String(e)}\n`);
+    process.exit(1);
+  });
+} else if (firstArg && !firstArg.startsWith('--')) {
+  // CLI query mode — no quotes needed:
+  //   108ai Cerca nei miei documenti la fattura di marzo
+  const query = args.join(' ');
+  readStdin().then((pipeInput) => {
+    return handleCliQuery(query, pipeInput ?? undefined);
+  }).then(() => process.exit(0)).catch((e) => {
+    process.stderr.write(`Errore: ${e instanceof Error ? e.message : String(e)}\n`);
+    process.exit(1);
+  });
+} else if (firstArg === 'shell' || firstArg === '--shell') {
+  // Explicit shell mode
+  startShell();
+} else {
+  // No args: if TTY (interactive terminal) → shell, otherwise → agent mode
+  if (process.stdin.isTTY) {
+    startShell();
+  } else {
+    startAgent();
+  }
+}
+
+function printUsage(): void {
+  process.stdout.write(`
+  108 AI -- Desktop Agent & CLI
+
+  USO:
+    108ai                        Shell interattiva (come Claude Code)
+    108ai domanda qui            Chiedi qualcosa all'AI (risposta e esci)
+    108ai agent                  Avvia l'agente in background (WebSocket)
+    108ai --install              Installa nel PATH di sistema
+    108ai --pipe istruzione      Leggi da stdin e processa
+    108ai --version              Mostra versione
+
+  ESEMPI:
+    108ai                        Apre la shell interattiva
+    108ai Cerca nei miei documenti la fattura di marzo
+    108ai Che file ho modificato oggi nel progetto?
+    type report.txt | 108ai --pipe Fammi un riassunto
+    git diff | 108ai Spiega queste modifiche
+    108ai agent                  (usa dalla chat web)
+
+  MODALITA':
+    (nessun arg)          Shell interattiva con storico e memoria
+    domanda               One-shot: risponde e esce
+    agent                 Background daemon per chat web
+    shell                 Shell interattiva (esplicito)
+
+  OPZIONI:
+    --gateway-url <url>   URL del gateway (default: ${getDefaultGatewayUrl()})
+    --install             Copia in ~/.108ai/bin/ e aggiunge al PATH
+    --uninstall           Istruzioni per rimuovere
+    --version, -v         Versione
+    --help, -h            Questo messaggio
+
+  DATI LOCALI:
+    ~/.108ai/config.json      Credenziali e preferenze
+    ~/.108ai/cache/           Cache risposte LLM
+    ~/.108ai/scripts/         Script riusabili generati dall'AI
+    ~/.108ai/sessions/        Storico sessioni shell
+    ~/.108ai/history/         Cronologia comandi
+
+`);
+}
 
 // --- Main ---
 
-async function main(): Promise<void> {
-  console.log(JSON.stringify({
-    level: 'info',
-    message: '108 AI — Desktop Agent starting',
-    version: '0.2.0',
-    pid: process.pid,
-    platform: process.platform,
-  }));
+function write(text: string): void {
+  process.stdout.write(text + '\n');
+}
 
-  // Load or create configuration
+function printBanner(): void {
+  const version = getCurrentVersion();
+  write('');
+  write('  \x1b[32m+========================================+\x1b[0m');
+  write('  \x1b[32m|\x1b[0m                                        \x1b[32m|\x1b[0m');
+  write('  \x1b[32m|\x1b[0m   \x1b[1m108 AI\x1b[0m -- Desktop Agent              \x1b[32m|\x1b[0m');
+  write(`  \x1b[32m|\x1b[0m   v${version.padEnd(36)}\x1b[32m|\x1b[0m`);
+  write('  \x1b[32m|\x1b[0m                                        \x1b[32m|\x1b[0m');
+  write('  \x1b[32m+========================================+\x1b[0m');
+  write('');
+}
+
+function status(msg: string): void {
+  write(`  \x1b[36m>\x1b[0m ${msg}`);
+}
+
+function statusOk(msg: string): void {
+  write(`  \x1b[32m[OK]\x1b[0m ${msg}`);
+}
+
+function statusError(msg: string): void {
+  write(`  \x1b[31m[ERR]\x1b[0m ${msg}`);
+}
+
+function startAgent(): void {
+  main().catch((error) => {
+    process.stderr.write(`Errore fatale: ${error instanceof Error ? error.message : String(error)}\n`);
+    process.exit(1);
+  });
+}
+
+async function main(): Promise<void> {
+  printBanner();
+  status('Avvio in corso...');
+
+  status('Caricamento configurazione...');
+
+  // Load or create configuration — no interactive wizard.
+  // First run: create default config and proceed to browser login.
   let config = loadConfig();
 
   if (!config) {
-    // Check if CLI args provide enough info
-    const cliConfig = parseCliArgs({
+    config = {
       gatewayUrl: '',
       authToken: '',
       tenantId: '',
@@ -53,26 +190,62 @@ async function main(): Promise<void> {
       desktopEnabled: false,
       desktopVisionEnabled: true,
       screenshotBeforeAction: true,
-    });
-
-    if (cliConfig.gatewayUrl && cliConfig.authToken && cliConfig.tenantId) {
-      config = cliConfig;
-    } else {
-      // Interactive setup
-      config = await runSetupWizard();
-    }
-  } else {
-    // Override config with CLI args
-    config = parseCliArgs(config);
+    };
   }
 
-  // Validate required config
+  // Override config with CLI args (--gateway-url, --token, --tenant-id)
+  config = parseCliArgs(config);
+
+  // Determine gateway HTTP URL — use default if none configured
+  const gatewayHttpUrl = config.gatewayHttpUrl ??
+    (config.gatewayUrl ? gatewayWsToHttp(config.gatewayUrl) : getDefaultGatewayUrl());
+
+  // If no token or token expired → browser login (automatic, no wizard)
+  if (!config.authToken || isTokenExpired(config)) {
+    const loginGateway = gatewayHttpUrl || getDefaultGatewayUrl();
+
+    status('Autenticazione necessaria -- apertura browser...');
+    write('');
+    write('  \x1b[33m[!] Completa il login nel browser per continuare.\x1b[0m');
+    write(`  \x1b[90m    Gateway: ${loginGateway}\x1b[0m`);
+    write('');
+
+    try {
+      const authResult = await performBrowserLogin(loginGateway);
+      config.authToken = authResult.token;
+      config.tenantId = authResult.tenantId;
+      config.tokenExpiresAt = authResult.expiresAt;
+      config.gatewayHttpUrl = loginGateway;
+
+      // Ensure gateway WS URL is set
+      if (!config.gatewayUrl) {
+        config.gatewayUrl = loginGateway
+          .replace(/^https:\/\//, 'wss://')
+          .replace(/^http:\/\//, 'ws://') + '/ws/local-agent';
+      }
+
+      saveConfig(config);
+      statusOk('Autenticazione completata');
+    } catch (error) {
+      statusError(`Autenticazione fallita: ${error instanceof Error ? error.message : String(error)}`);
+      process.exit(1);
+    }
+  } else {
+    statusOk('Token valido trovato');
+  }
+
+  // Validate required config (post-auth)
   if (!config.gatewayUrl || !config.authToken || !config.tenantId) {
     console.error(JSON.stringify({
       level: 'error',
       message: 'Missing required configuration: gatewayUrl, authToken, and tenantId are required',
     }));
     process.exit(1);
+  }
+
+  // Start auto-update loop
+  if (gatewayHttpUrl) {
+    startUpdateLoop(gatewayHttpUrl);
   }
 
   // Initialize system tray (optional, graceful degradation)
@@ -136,14 +309,8 @@ async function main(): Promise<void> {
   // Get registered capabilities
   const capabilities = getRegisteredActions();
 
-  console.log(JSON.stringify({
-    level: 'info',
-    message: 'Agent configured',
-    tenantId: config.tenantId,
-    capabilities: capabilities.length,
-    allowedDirectories: config.allowedDirectories.length,
-    gateway: config.gatewayUrl,
-  }));
+  status(`${capabilities.length} capabilities registrate`);
+  status(`Connessione a ${config.gatewayUrl}...`);
 
   // Create WebSocket connection
   const connection = new AgentConnection({
@@ -156,10 +323,13 @@ async function main(): Promise<void> {
     },
     onConnect: () => {
       traySetState?.('connected');
-      console.log(JSON.stringify({
-        level: 'info',
-        message: 'Connected to 108 AI Gateway',
-      }));
+      write('');
+      statusOk('\x1b[1mConnesso a 108 AI Gateway\x1b[0m');
+      write('');
+      write('  \x1b[90m-----------------------------------------\x1b[0m');
+      write('  \x1b[90mL\'agent e\' attivo. Premi Ctrl+C per uscire.\x1b[0m');
+      write('  \x1b[90m-----------------------------------------\x1b[0m');
+      write('');
     },
     onDisconnect: () => {
       traySetState?.('disconnected');
@@ -301,13 +471,3 @@ async function handleIncomingMessage(
   }));
 }
 
-// Run
-main().catch((error) => {
-  console.error(JSON.stringify({
-    level: 'error',
-    message: 'Fatal startup error',
-    error: error instanceof Error ? error.message : String(error),
-    stack: error instanceof Error ? error.stack : undefined,
-  }));
-  process.exit(1);
-});

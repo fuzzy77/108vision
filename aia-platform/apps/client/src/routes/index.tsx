@@ -4,6 +4,7 @@ import { useChatStore } from '@/stores/chat.store';
 import { useChat } from '@/hooks/useChat';
 import { AgentSelector } from '@/components/chat/AgentSelector';
 import { MessageInput } from '@/components/chat/MessageInput';
+import { OnboardingCard } from '@/components/chat/OnboardingCard';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 
 export function HomePage() {
@@ -15,6 +16,7 @@ export function HomePage() {
     <div className="flex flex-col h-full">
       <div className="flex-1 overflow-y-auto p-6">
         <div className="max-w-3xl mx-auto">
+          <OnboardingCard />
           <div className="text-center mb-8 pt-8">
             <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
               <Sparkles className="w-8 h-8 text-primary-600 dark:text-primary-400" />

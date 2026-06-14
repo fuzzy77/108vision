@@ -8,12 +8,14 @@
     "apps/*"
   ],
   "scripts": {
-    "dev": "make up",
-    "build": "npm run build --workspaces --if-present",
-    "lint": "npm run lint --workspaces --if-present",
-    "test": "npm run test --workspaces --if-present",
-    "clean": "make clean",
-    "setup": "make setup"
+    "dev": "node scripts/dev.mjs",
+    "dev:skip": "node scripts/dev.mjs --skip-infra",
+    "dev:stop": "node scripts/dev.mjs --stop",
+    "dev:status": "node scripts/dev.mjs --status",
+    "build": "pnpm run --filter './packages/*' build && pnpm run --filter './apps/*' build",
+    "lint": "pnpm run --filter './packages/*' --filter './apps/*' lint",
+    "test": "pnpm run --filter './packages/*' --filter './apps/*' test",
+    "clean": "docker compose down -v --remove-orphans"
   },
   "engines": {
     "node": ">=20.0.0",

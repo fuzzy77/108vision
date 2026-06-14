@@ -14,6 +14,8 @@ import { performSecurityCheck, auditLog, getAllowedActions } from '../security.j
 import * as filesystem from './filesystem.js';
 import * as clipboard from './clipboard.js';
 import * as system from './system.js';
+import * as shell from './shell.js';
+import * as grep from './grep.js';
 import { desktopHandlers } from './desktop.js';
 
 export type ActionHandler = (
@@ -93,6 +95,47 @@ handlers.set('system.showNotification', async (params) => {
 
 handlers.set('system.getSystemInfo', () => {
   return system.getSystemInfo();
+});
+
+// Filesystem: editFile
+handlers.set('filesystem.editFile', (params, config) => {
+  const path = requireString(params, 'path');
+  const edits = params['edits'] as Array<{ oldText: string; newText: string; replaceAll?: boolean }>;
+  if (!Array.isArray(edits) || edits.length === 0) {
+    throw new Error('Required parameter "edits" must be a non-empty array of {oldText, newText} objects');
+  }
+  return filesystem.editFile(path, edits, config);
+});
+
+// Filesystem: grep
+handlers.set('filesystem.grep', (params, config) => {
+  const pattern = requireString(params, 'pattern');
+  const directory = requireString(params, 'directory');
+  return grep.grepFiles({
+    pattern,
+    directory,
+    fileTypes: params['fileTypes'] as string[] | undefined,
+    contextBefore: params['contextBefore'] as number | undefined,
+    contextAfter: params['contextAfter'] as number | undefined,
+    ignoreCase: params['ignoreCase'] as boolean | undefined,
+    maxResults: params['maxResults'] as number | undefined,
+    includeHidden: params['includeHidden'] as boolean | undefined,
+  }, config);
+});
+
+// Shell: execute command
+handlers.set('shell.execute', (params, config) => {
+  const command = requireString(params, 'command');
+  return shell.executeCommand(command, {
+    cwd: params['cwd'] as string | undefined,
+    timeout: params['timeout'] as number | undefined,
+    env: params['env'] as Record<string, string> | undefined,
+  }, config);
+});
+
+// Shell: get info
+handlers.set('shell.getInfo', () => {
+  return shell.getShellInfo();
 });
 
 // Desktop handlers (registered from desktop.ts)

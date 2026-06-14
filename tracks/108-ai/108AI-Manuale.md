@@ -55,9 +55,11 @@ La risposta sarà una di queste: generica, inventata, o "non ho accesso a queste
 
 **Limite 2 — Non si collegano ai tuoi strumenti.** La tua email, il tuo calendario, il tuo gestionale, il tuo CRM — sono mondi separati. ChatGPT non può leggere le tue email, non può cercare nel tuo file server, non può aggiornare il tuo database clienti. È un cervello senza mani e senza occhi.
 
-**Limite 3 — Non hanno memoria aziendale.** Ogni conversazione parte da zero. Non ricorda che la settimana scorsa hai chiesto la stessa cosa. Non impara dai tuoi feedback. Non accumula conoscenza nel tempo.
+**Limite 3 — Non hanno memoria.** Ogni conversazione parte da zero. Non ricorda che la settimana scorsa hai chiesto la stessa cosa. Non impara dai tuoi feedback. Non accumula conoscenza nel tempo. Ogni sessione è un estraneo che conosci per la prima volta.
 
 **Limite 4 — Non hanno governance.** Chi usa cosa? Quanto costa? Quali dati vengono condivisi? Qualcuno sta dando informazioni riservate all'AI senza saperlo? Con i tool generici, non hai visibilità né controllo.
+
+**Limite 5 — Non operano sul tuo PC.** Non possono leggere i tuoi file locali, eseguire un'operazione sul gestionale, cercare nel file system. Sono confinati in una finestra del browser. Per fare qualsiasi cosa di concreto, devi copia-incollare manualmente.
 
 **Limite 5 — Non sono specializzati.** Un unico chatbot per tutto è come avere un solo dipendente per ogni ruolo. L'assistente che scrive post su LinkedIn non è lo stesso che analizza contratti legali. Servono competenze diverse, istruzioni diverse, accesso a informazioni diverse.
 

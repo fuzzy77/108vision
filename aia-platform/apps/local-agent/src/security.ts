@@ -132,10 +132,15 @@ const ACTION_RISK_LEVELS = new Map<string, ActionRiskLevel>([
   // Filesystem
   ['filesystem.readFile',       'read-only'],
   ['filesystem.writeFile',      'low-risk'],
+  ['filesystem.editFile',       'low-risk'],
   ['filesystem.listDirectory',  'read-only'],
   ['filesystem.searchFiles',    'read-only'],
+  ['filesystem.grep',           'read-only'],
   ['filesystem.watchDirectory', 'read-only'],
   ['filesystem.getFileInfo',    'read-only'],
+  // Shell
+  ['shell.execute',             'high-risk'],
+  ['shell.getInfo',             'read-only'],
   // Clipboard
   ['clipboard.read',            'read-only'],
   ['clipboard.write',           'low-risk'],
@@ -296,11 +301,12 @@ export function performSecurityCheck(
     };
   }
 
-  // 3. Path validation for filesystem operations
-  if (action.startsWith('filesystem.')) {
+  // 3. Path validation for filesystem and shell operations
+  if (action.startsWith('filesystem.') || action === 'shell.execute') {
     const path = params['path'] as string | undefined;
     const directory = params['directory'] as string | undefined;
-    const targetPath = path ?? directory;
+    const cwd = params['cwd'] as string | undefined;
+    const targetPath = path ?? directory ?? cwd;
 
     if (targetPath) {
       if (isSystemPath(targetPath)) {

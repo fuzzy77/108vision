@@ -133,6 +133,37 @@ export class AppError extends Error {
   }
 }
 
+// --- AI Governance Principles ---
+
+export const PRINCIPLE_IDS = [
+  'ownership_markers',
+  'ask_before_proceed',
+  'explain_reasoning',
+  'declare_uncertainty',
+  'checkpoint_irreversible',
+  'no_decide_for_user',
+  'act_only_when_needed',
+  'evaluate_risk_benefit',
+  'persistent_memory',
+] as const;
+
+export type PrincipleId = (typeof PRINCIPLE_IDS)[number];
+
+export interface PrincipleDefinition {
+  id: PrincipleId;
+  label: string;
+  description: string;
+  riskWarning: string;
+  defaultEnabled: boolean;
+}
+
+export type PrincipleOverrides = Partial<Record<PrincipleId, boolean>>;
+
+export interface AgentConfig {
+  principlesOverrides?: PrincipleOverrides;
+  [key: string]: unknown;
+}
+
 // --- Utility Types ---
 
 export type Result<T, E = AppError> =

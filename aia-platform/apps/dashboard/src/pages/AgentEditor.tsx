@@ -16,6 +16,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api, apiForTenant } from '@/lib/api';
 import type { Agent } from '@/types';
 import { Save, X, Bot } from 'lucide-react';
+import { PrinciplesPanel } from '@/components/PrinciplesPanel';
 
 interface AgentEditorPageProps {
   agentId?: string;
@@ -65,6 +66,7 @@ function AgentEditorPage({ agentId, tenantId }: AgentEditorPageProps) {
   const [selectedCollections, setSelectedCollections] = useState<string[]>([]);
   const [enabledTools, setEnabledTools] = useState<string[]>([]);
   const [isActive, setIsActive] = useState(true);
+  const [principlesOverrides, setPrinciplesOverrides] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     if (agent) {
@@ -77,6 +79,10 @@ function AgentEditorPage({ agentId, tenantId }: AgentEditorPageProps) {
       setSelectedCollections(agent.knowledgeCollections);
       setEnabledTools(agent.tools);
       setIsActive(agent.isActive);
+      const config = (agent as unknown as { config?: { principlesOverrides?: Record<string, boolean> } }).config;
+      if (config?.principlesOverrides) {
+        setPrinciplesOverrides(config.principlesOverrides);
+      }
     }
   }, [agent]);
 
@@ -129,7 +135,8 @@ function AgentEditorPage({ agentId, tenantId }: AgentEditorPageProps) {
       knowledgeCollections: selectedCollections,
       tools: enabledTools,
       isActive,
-    });
+      config: { principlesOverrides },
+    } as Partial<Agent>);
   };
 
   const handleTestMessage = async (message: string): Promise<string> => {
@@ -242,6 +249,11 @@ function AgentEditorPage({ agentId, tenantId }: AgentEditorPageProps) {
             </CardContent>
           </Card>
 
+          <PrinciplesPanel
+            overrides={principlesOverrides}
+            onChange={setPrinciplesOverrides}
+          />
+
           <Card>
             <CardHeader>
               <CardTitle className="text-base">System Prompt</CardTitle>
@@ -255,6 +267,9 @@ function AgentEditorPage({ agentId, tenantId }: AgentEditorPageProps) {
                 maxLength={8000}
                 showCount
               />
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
+                I principi di governance vengono automaticamente preposti al tuo system prompt.
+              </p>
             </CardContent>
           </Card>
 

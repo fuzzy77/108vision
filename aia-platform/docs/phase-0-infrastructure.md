@@ -71,56 +71,91 @@ This document describes the foundational infrastructure for the AIA Platform. Ph
 ### Prerequisites
 
 1. **Docker Desktop** (or Docker Engine + Compose v2)
-2. **Node.js 20+** and **npm 10+**
-3. API keys for at least one AI provider
+2. **Node.js 20+** and **pnpm**
+3. API keys for at least one AI provider (minimum: `DEEPSEEK_API_KEY`)
 
-### Step-by-Step
+### Quick Start — One Command
 
 ```bash
-# 1. Clone the repository
+# 1. Clone and enter
 git clone <repo-url> aia-platform
 cd aia-platform
 
-# 2. Create environment file
+# 2. Create .env
 cp .env.example .env
+# Edit: DEEPSEEK_API_KEY=sk-... and LITELLM_MASTER_KEY=sk-aia-local-dev-123
 
-# 3. Edit .env — minimum required:
-#    - DEEPSEEK_API_KEY (cheapest to start)
-#    - LITELLM_MASTER_KEY (any random string, e.g.: sk-aia-local-dev-123)
-#    Leave POSTGRES_PASSWORD as-is for local dev
+# 3. Start EVERYTHING
+make dev
+```
 
-# 4. Start all services
+This single command:
+- Runs pre-flight checks (Docker, Node, .env, API keys)
+- Starts Docker infrastructure (PostgreSQL, Redis, Qdrant, LiteLLM, Neo4j)
+- Waits for all services to be healthy
+- Installs pnpm dependencies (if needed)
+- Builds shared packages (@aia/shared, @aia/ai-client, @aia/auth, @aia/graph)
+- Starts Gateway API (port 3000), Dashboard (port 5173), Client (port 5174)
+
+### Other dev commands
+
+```bash
+make dev-status   # Full status with health checks
+make dev-stop     # Stop everything (Docker + apps)
+make dev-skip     # Start apps only (Docker already running)
+```
+
+### Manual Step-by-Step (if you prefer control)
+
+```bash
+# 1. Start Docker infrastructure only
 make up
-# Or explicitly:
-docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
 
-# 5. Verify services are running
+# 2. Verify services
 make status
+make llm-health
+curl http://localhost:6333/healthz
 
-# 6. Test database
+# 3. Install and build
+pnpm install
+pnpm --filter @aia/shared build
+pnpm --filter @aia/ai-client build
+
+# 4. Start gateway
+cd apps/gateway && pnpm dev
+
+# 5. Start dashboard (separate terminal)
+cd apps/dashboard && pnpm dev
+
+# 6. Start client (separate terminal)
+cd apps/client && pnpm dev
+```
+
+### Verify everything works
+
+```bash
+# Database
 make psql
-# In psql:
 #   \dn           -- should show 'shared' schema
 #   \dt shared.*  -- should show all tables
 #   SELECT * FROM shared.plans;  -- should show 3 plans
 #   \q
 
-# 7. Test Redis
+# Redis
 make redis
-# In redis-cli:
 #   PING     -- should return PONG
-#   exit
 
-# 8. Test Qdrant
+# Qdrant
 curl http://localhost:6333/healthz
-# Should return: {"title":"qdrant - vectorass engine","version":"..."}
 
-# 9. Test LiteLLM
+# LiteLLM
 make llm-health
-# Should return: {"status":"healthy",...}
 
-# 10. Test AI model (requires valid API key)
+# AI model test (requires valid API key)
 make llm-test
+
+# Gateway API
+curl http://localhost:3000/health
 ```
 
 ### Troubleshooting

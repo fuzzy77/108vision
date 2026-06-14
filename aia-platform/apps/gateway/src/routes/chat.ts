@@ -13,6 +13,8 @@ import { budgetService } from '../services/budget.service.js';
 import { usageTrackingService } from '../services/usage-tracking.service.js';
 import { webSearchService, type WebSearchResult } from '../services/web-search.service.js';
 import { getEnv } from '../lib/env.js';
+import { principlesService } from '../services/principles.service.js';
+import { memoryService } from '../services/memory.service.js';
 
 const chat = new Hono();
 
@@ -97,6 +99,15 @@ chat.post('/', async (c) => {
     agentKbIds = (agent.knowledgeBaseIds ?? []) as string[];
   }
 
+  // Step 3a: Prepend AI governance principles to system prompt
+  const agentConfig = input.agentId
+    ? (await getDb().select().from(agents).where(and(eq(agents.id, input.agentId), eq(agents.tenantId, tenantId))).limit(1))[0]?.config ?? {}
+    : {};
+  const principlesBlock = principlesService.compilePrinciplesPrompt(agentConfig as Record<string, unknown>);
+  if (principlesBlock) {
+    systemPrompt = principlesBlock + '\n\n---\n\n' + systemPrompt;
+  }
+
   // Step 3b: Budget-aware tier enforcement
   const budgetStatus = await budgetService.getBudgetStatus(tenantId);
   modelTier = budgetService.resolveEffectiveTier(modelTier, budgetStatus);
@@ -159,7 +170,15 @@ chat.post('/', async (c) => {
     }
   }
 
-  // Step 4b: Web search fallback when RAG context is sparse and query needs fresh data
+  // Step 4b: Retrieve persistent memories relevant to this message
+  let memoryBlock: string | null = null;
+  try {
+    memoryBlock = await memoryService.getRelevantForChat(tenantId, input.message);
+  } catch {
+    // Memory retrieval is non-critical
+  }
+
+  // Step 4c: Web search fallback when RAG context is sparse and query needs fresh data
   let webResults: WebSearchResult[] = [];
   if (context.length < 2 && webSearchService.queryNeedsWebSearch(input.message)) {
     webResults = await webSearchService.search(input.message);
@@ -178,6 +197,17 @@ chat.post('/', async (c) => {
     history,
     input.message,
   );
+
+  // Inject persistent memories into the system message
+  if (memoryBlock) {
+    const systemMsg = basePrompt[0];
+    if (systemMsg && systemMsg.role === 'system') {
+      basePrompt = [
+        { ...systemMsg, content: `${systemMsg.content}\n\n---\n${memoryBlock}` },
+        ...basePrompt.slice(1),
+      ];
+    }
+  }
 
   // Inject web search results into the system message when available
   if (webResults.length > 0) {
@@ -428,6 +458,106 @@ chat.post('/', async (c) => {
       });
     }
   });
+});
+
+/**
+ * POST /api/chat/quick — One-shot (non-streaming) chat for CLI usage.
+ *
+ * Returns a plain text response without SSE.
+ * Used by: 108ai CLI ("108ai 'domanda qui'")
+ */
+chat.post('/quick', async (c) => {
+  const tenantId = c.get('tenantId') as string;
+  const userId = c.get('userId') as string;
+
+  const body = await c.req.json();
+  const input = z.object({ message: z.string().min(1).max(32000) }).parse(body);
+
+  // Load default agent system prompt + principles
+  let systemPrompt = DEFAULT_SYSTEM_PROMPT;
+  const principlesBlock = principlesService.compilePrinciplesPrompt({});
+  if (principlesBlock) {
+    systemPrompt = principlesBlock + '\n\n---\n\n' + systemPrompt;
+  }
+
+  // Retrieve context from knowledge base
+  let context: RetrievedChunk[] = [];
+  const ragResult = await hybridRagService.retrieveHybridContext(input.message, tenantId, {
+    vectorTopK: 5,
+    minVectorScore: 0.65,
+    useGraph: true,
+  });
+
+  if (ragResult.success) {
+    context = ragResult.data.vectorChunks;
+  }
+
+  // Retrieve persistent memories
+  let memoryBlock: string | null = null;
+  try {
+    memoryBlock = await memoryService.getRelevantForChat(tenantId, input.message);
+  } catch { /* non-critical */ }
+
+  // Build prompt (no history for one-shot)
+  const prompt = hybridRagService.buildHybridPrompt(
+    systemPrompt,
+    context,
+    ragResult.success ? ragResult.data.graphContext : null,
+    [],
+    input.message,
+  );
+
+  // Inject memory
+  if (memoryBlock && prompt[0]?.role === 'system') {
+    prompt[0] = { ...prompt[0], content: `${prompt[0].content}\n\n---\n${memoryBlock}` };
+  }
+
+  // Call LiteLLM (non-streaming)
+  const env = getEnv();
+  const modelTier = 'fast-cheap';
+
+  const response = await fetch(`${env.LITELLM_URL}/v1/chat/completions`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${env.LITELLM_MASTER_KEY}`,
+    },
+    body: JSON.stringify({
+      model: modelTier,
+      messages: prompt,
+      temperature: 0.7,
+      max_tokens: 4096,
+      stream: false,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.text();
+    throw new AppError('LLM_ERROR', `LLM request failed: ${errorBody}`, 502);
+  }
+
+  const data = await response.json() as {
+    choices?: Array<{ message?: { content?: string } }>;
+    usage?: { total_tokens?: number };
+    model?: string;
+  };
+
+  const content = data.choices?.[0]?.message?.content ?? '';
+  const totalTokens = data.usage?.total_tokens ?? 0;
+  const modelUsed = data.model ?? modelTier;
+
+  // Track usage
+  const estimatedInputTokens = Math.ceil(totalTokens * 0.4);
+  const estimatedOutputTokens = totalTokens - estimatedInputTokens;
+  await usageTrackingService.trackRequest({
+    tenantId,
+    userId,
+    model: modelUsed,
+    inputTokens: estimatedInputTokens,
+    outputTokens: estimatedOutputTokens,
+  });
+
+  return c.json({ content, model: modelUsed, tokens: totalTokens });
 });
 
 export { chat };

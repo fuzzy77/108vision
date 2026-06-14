@@ -14,10 +14,10 @@ brand: "108 Vision"
 
 ## 1. Hero
 
-### La tua AI conosce la tua azienda.
+### L'AI che ti conosce, ti aiuta e ricorda tutto.
 
-ChatGPT no. La differenza non e nel modello — e nel contesto.
-Costruiamo piattaforme AI personalizzate su processi reali: knowledge base aziendale, agenti specializzati, integrazioni con i tuoi strumenti. Operative in 4-7 settimane.
+ChatGPT non sa nulla della tua azienda. Cursor funziona solo per sviluppatori. Claude dimentica tutto ogni sessione.
+108 AI e diverso: memoria persistente, Desktop Agent che opera sul tuo PC, governance che ti protegge. Il tutto a 5-10x meno di ChatGPT Teams.
 
 **Prenota una call strategica gratuita.**
 
@@ -124,13 +124,34 @@ Non e per te se:
 
 ---
 
+## 5b. Confronto con i concorrenti
+
+| Feature | 108 AI | ChatGPT/Claude | Cursor/Claude Code | Assistenti PMI (Tidio, Intercom) |
+|---------|--------|----------------|--------------------|----|
+| **Memoria persistente cross-device** | Semantica (pgvector) | Solo stesso account | Solo file locali | No |
+| **Desktop Agent (file, shell, GUI)** | Con risk classification | No | Solo codice (dev) | No |
+| **Knowledge Base aziendale** | Hybrid RAG (vector + graph) | Upload base | No | Base |
+| **Governance AI (principi, guardrail)** | 9 principi, UI integrata | No | No | No |
+| **Multi-utente / team** | Nativo | Solo Teams plan (costoso) | Si | Si |
+| **Modelli economici** | 70-80% risparmio via routing | Solo propri (costosi) | Solo propri | No |
+| **Eseguibile installabile** | Bun compile .exe/.app | Solo web | Si | No |
+| **Target PMI non-tech** | Si | Parziale | No (solo dev) | Si |
+| **Costo mensile** | Da 29 EUR/mese | 20-30 USD/utente | 20-40 USD/utente | 29-99 EUR/mese |
+
+### Dove 108 AI vince nettamente
+
+1. **L'unico che unisce la potenza di Claude Code + la memoria + l'automazione desktop** in un prodotto per non-developer
+2. **Costo 5-10x inferiore** grazie a DeepSeek/Qwen come motori primari (stesse performance per il 90% dei task)
+3. **Funziona per utenti business**: dire "leggi le email e fammi un riassunto" non richiede competenze tecniche
+4. **L'AI ti conosce davvero**: memoria persistente = zero ripetizioni, contesto sempre presente, su ogni dispositivo
+
+---
+
 ## 6. FAQ
 
 **In cosa e diverso da ChatGPT Teams o Microsoft Copilot?**
 
-ChatGPT e Copilot sanno tutto in generale e niente della tua azienda. Sono strumenti orizzontali costruiti per milioni di casi d'uso diversi.
-La piattaforma AIA conosce le tue procedure, i tuoi clienti, il tuo modo di lavorare. E la differenza tra chiedere indicazioni a un passante e chiedere a qualcuno che conosce il quartiere da anni.
-Stessa domanda. Risposta completamente diversa.
+Tre differenze fondamentali: 1) **Memoria persistente** — 108 AI ricorda le tue preferenze, decisioni e contesto su ogni dispositivo e sessione. ChatGPT dimentica tutto. 2) **Desktop Agent** — 108 AI opera sul tuo PC: legge file, esegue comandi, cerca informazioni. ChatGPT vive solo nel browser. 3) **Costo** — Il routing intelligente su modelli economici rende 108 AI 5-10x meno costoso a parita di risultati.
 
 **I miei dati sono al sicuro?**
 

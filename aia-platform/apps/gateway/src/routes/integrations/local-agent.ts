@@ -177,6 +177,39 @@ localAgent.get('/history', async (c) => {
   });
 });
 
+/**
+ * GET /api/integrations/local-agent/setup — Setup info for the local agent.
+ * Returns download links and gateway connection details.
+ * The new flow: download exe → double-click → OAuth login via browser → auto-connect.
+ */
+localAgent.get('/setup', async (c) => {
+  const tenantId = c.get('tenantId') as string;
+
+  const host = c.req.header('host') ?? 'localhost:3000';
+  const wsProtocol = c.req.header('x-forwarded-proto') === 'https' ? 'wss' : 'ws';
+  const httpProtocol = c.req.header('x-forwarded-proto') === 'https' ? 'https' : 'http';
+  const gatewayUrl = `${wsProtocol}://${host}/ws/local-agent`;
+  const downloadBaseUrl = `${httpProtocol}://${host}/api/desktop-agent`;
+
+  return c.json({
+    gatewayUrl,
+    tenantId,
+    version: '0.3.0',
+    downloads: {
+      windows: `${downloadBaseUrl}/download/108ai-agent.exe`,
+      macosIntel: `${downloadBaseUrl}/download/108ai-agent-macos-x64`,
+      macosArm: `${downloadBaseUrl}/download/108ai-agent-macos-arm64`,
+      linux: `${downloadBaseUrl}/download/108ai-agent-linux`,
+    },
+    instructions: [
+      'Scarica l\'eseguibile per il tuo sistema operativo',
+      'Avvia con doppio click (si apre in background nella system tray)',
+      'Si apre il browser per il login — usa le stesse credenziali di 108 AI',
+      'Pronto! L\'agente si connette automaticamente',
+    ],
+  });
+});
+
 // --- Helpers ---
 
 function addToHistory(tenantId: string, entry: ActionHistoryEntry): void {

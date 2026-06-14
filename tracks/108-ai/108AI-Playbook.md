@@ -24,29 +24,38 @@ brand: "108 Vision"
 
 Costruisco un sistema AI personalizzato che conosce l'azienda del cliente, parla con i suoi strumenti, e lavora per lui 24/7 — non un chatbot generico, ma un'infrastruttura intelligente calata nel contesto operativo specifico.
 
-### 1.2 Perche e diverso da ChatGPT/Copilot
+### 1.2 Perche e diverso da ChatGPT/Copilot/Cursor
 
-| Aspetto | ChatGPT Teams / Copilot | La mia piattaforma |
-|---|---|---|
-| **Conoscenza aziendale** | Zero. Deve essere istruito ogni volta. | Knowledge base costruita sui documenti, processi, email, manuali del cliente |
-| **Agenti specializzati** | Un chatbot generico per tutto | Agenti dedicati per ruolo: email, vendita, HR, legale, finanza |
-| **Integrazioni** | Copy-paste manuale | Collegato a email, file system, calendario, ERP, CRM |
-| **Privacy** | I dati vanno su server terzi | Architettura controllata, possibilita di modelli self-hosted |
-| **Personalizzazione** | Prompt di sistema generico | Ogni agente ha KB, prompt, tool e limiti calibrati sul contesto |
-| **Governance** | Nessuna | Dashboard con metriche, costi, audit, permessi per ruolo |
-| **Evoluzione** | L'utente si arrangia | Io governo l'evoluzione continua del sistema |
+| Aspetto | ChatGPT Teams / Copilot | Cursor / Claude Code | 108 AI Platform |
+|---|---|---|---|
+| **Conoscenza aziendale** | Zero. Deve essere istruito ogni volta. | Solo codebase locale | Knowledge base costruita sui documenti, processi, email, manuali del cliente |
+| **Memoria persistente** | Solo stesso account, limitata | Solo file locali (.claude/) | Semantica cross-device (pgvector), auto-inject nel contesto |
+| **Desktop Agent** | No, solo browser | Si ma solo per dev/codice | Si, con risk classification — anche per utenti business |
+| **Target utente** | Generico | Solo sviluppatori | PMI, team non-tecnici, manager, operativi |
+| **Agenti specializzati** | Un chatbot per tutto | No (singolo copilot) | Agenti dedicati per ruolo: email, vendita, HR, legale, finanza |
+| **Integrazioni** | Copy-paste manuale | File system locale | Email, calendario, file system, ERP, CRM, 200+ connettori MCP |
+| **Privacy** | Dati su server US | Locale | Cloud EU privato, possibilita self-hosted |
+| **Governance** | Nessuna | Nessuna | 9 principi baked-in, dashboard con metriche, audit, permessi |
+| **Costo** | 20-30 USD/utente/mese | 20-40 USD/utente/mese | Da 29 EUR/mese per il team (routing economico) |
+| **Evoluzione** | L'utente si arrangia | L'utente si arrangia | Governance continua inclusa nel factory |
 
 ### 1.3 Il mio vantaggio competitivo
 
 1. **Esperienza su sistemi reali in produzione.** Non sono un appassionato che ha scoperto ChatGPT ieri. Ho costruito agenti AI in produzione su piattaforme con milioni di transazioni. So cosa significa orchestrare agenti, gestire fallback, monitorare costi e qualita.
 
-2. **Approccio consulenziale, non tecnico.** Non vendo software. Arrivo in azienda, capisco i processi, identifico dove l'AI crea valore reale, e costruisco la soluzione. Il cliente compra risultati, non tecnologia.
+2. **L'unico che unisce Claude Code + memoria + automazione desktop per non-developer.** Nessun concorrente offre questo mix: la potenza di uno strumento da sviluppatore (shell, grep, edit file) resa accessibile a utenti business con guardrail espliciti.
 
-3. **Multi-modello fin dal giorno 1.** Non sono legato a un provider. Uso Claude per il ragionamento complesso, modelli open-source per il volume, GPT dove serve. Questo significa costi ottimizzati e nessun lock-in su un singolo fornitore.
+3. **Memoria persistente cross-device.** L'AI ricorda preferenze, decisioni, contesto — su ogni dispositivo, in ogni sessione. Il cliente non ripete mai le stesse cose. Questo crea un valore che cresce esponenzialmente nel tempo.
 
-4. **Framework consulenziale completo.** Ho gia tutto il portfolio di servizi intorno (architettura, trasformazione digitale, leadership) — la piattaforma AI si innesta in un percorso di crescita piu ampio, non e un prodotto isolato.
+4. **Costo 5-10x inferiore.** Routing intelligente su DeepSeek/Qwen (stesse performance per il 90% dei task). Il cliente paga 29-99 EUR/mese per il team, non 200+ USD come ChatGPT Teams per 5 utenti.
 
-5. **Capacita di creare lock-in positivo.** La KB aziendale e gli agenti personalizzati creano un valore che cresce nel tempo. Il sistema diventa piu intelligente ogni mese. Uscire costa piu di restare — non per vincoli contrattuali, ma per valore accumulato.
+5. **Approccio consulenziale, non tecnico.** Non vendo software. Arrivo in azienda, capisco i processi, identifico dove l'AI crea valore reale, e costruisco la soluzione. Il cliente compra risultati, non tecnologia.
+
+6. **Multi-modello fin dal giorno 1.** Non sono legato a un provider. DeepSeek per il volume, Qwen per i task complessi, Claude/GPT come fallback premium. Nessun lock-in su un singolo fornitore.
+
+7. **Framework consulenziale completo.** Ho gia tutto il portfolio di servizi intorno (architettura, trasformazione digitale, leadership) — la piattaforma AI si innesta in un percorso di crescita piu ampio, non e un prodotto isolato.
+
+8. **Lock-in positivo.** La KB aziendale + la memoria persistente + gli agenti personalizzati creano un valore che cresce nel tempo. Il sistema diventa piu intelligente ogni mese. Uscire costa piu di restare — non per vincoli contrattuali, ma per valore accumulato.
 
 ### 1.4 Cosa NON faccio
 

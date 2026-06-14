@@ -54,6 +54,15 @@ export async function* parseSSEStream(
 export interface StreamToken {
   content: string;
   done: boolean;
+  metadata?: ChatMetadata;
+}
+
+export interface ChatMetadata {
+  conversationId?: string;
+  model?: string;
+  cached?: boolean;
+  budgetAlert?: string | null;
+  webSearchUsed?: boolean;
 }
 
 export async function* streamTokens(
@@ -66,6 +75,16 @@ export async function* streamTokens(
       }
       yield { content: '', done: true };
       return;
+    }
+
+    if (event.event === 'metadata') {
+      try {
+        const metadata = JSON.parse(event.data) as ChatMetadata;
+        yield { content: '', done: false, metadata };
+      } catch {
+        // skip malformed metadata
+      }
+      continue;
     }
 
     try {
