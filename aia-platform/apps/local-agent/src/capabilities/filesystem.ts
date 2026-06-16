@@ -19,7 +19,7 @@ import {
   existsSync,
   mkdirSync,
 } from 'node:fs';
-import { join, dirname, extname, resolve, normalize, basename } from 'node:path';
+import { join, dirname, extname, basename } from 'node:path';
 import { watch } from 'chokidar';
 import { validatePath } from '../security.js';
 import type { AgentConfig } from '../config.js';
@@ -198,19 +198,20 @@ export function searchFiles(
   function walk(dir: string, depth: number): void {
     if (depth > 10 || results.length >= MAX_SEARCH_RESULTS) return;
 
-    let items: ReturnType<typeof readdirSync>;
+    let items: import('node:fs').Dirent[];
     try {
-      items = readdirSync(dir, { withFileTypes: true });
+      items = readdirSync(dir, { withFileTypes: true, encoding: 'utf8' });
     } catch {
       return;
     }
 
     for (const item of items) {
-      if (item.name.startsWith('.') || item.name === 'node_modules') continue;
+      const name = String(item.name);
+      if (name.startsWith('.') || name === 'node_modules') continue;
 
-      const fullPath = join(dir, item.name);
+      const fullPath = join(dir, name);
 
-      if (item.isFile() && regex.test(item.name)) {
+      if (item.isFile() && regex.test(name)) {
         results.push(fullPath);
       }
 

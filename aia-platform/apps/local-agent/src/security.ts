@@ -10,6 +10,7 @@
 
 import { appendFileSync, existsSync, mkdirSync } from 'node:fs';
 import { resolve, normalize, dirname } from 'node:path';
+import { rotateAuditLogIfNeeded } from './hardening/audit-rotation.js';
 import type { AgentConfig } from './config.js';
 import { getAuditLogPath } from './config.js';
 
@@ -19,26 +20,31 @@ interface RateLimitEntry {
   timestamps: number[];
 }
 
-const rateLimitState: RateLimitEntry = { timestamps: [] };
+const tenantRateLimitState = new Map<string, RateLimitEntry>();
 
 /**
  * Check if an action is allowed under the rate limit.
  * Returns true if allowed, false if rate limited.
  */
 export function checkRateLimit(config: AgentConfig): boolean {
+  const tenantId = config.tenantId?.trim() || 'default';
   const now = Date.now();
   const windowMs = 60_000; // 1 minute window
 
+  const state = tenantRateLimitState.get(tenantId) ?? { timestamps: [] };
+
   // Remove timestamps outside the window
-  rateLimitState.timestamps = rateLimitState.timestamps.filter(
+  state.timestamps = state.timestamps.filter(
     (ts) => now - ts < windowMs,
   );
 
-  if (rateLimitState.timestamps.length >= config.maxActionsPerMinute) {
+  if (state.timestamps.length >= config.maxActionsPerMinute) {
+    tenantRateLimitState.set(tenantId, state);
     return false;
   }
 
-  rateLimitState.timestamps.push(now);
+  state.timestamps.push(now);
+  tenantRateLimitState.set(tenantId, state);
   return true;
 }
 
@@ -219,6 +225,7 @@ interface AuditEntry {
  * Format: one JSON object per line (JSONL).
  */
 export function auditLog(entry: AuditEntry): void {
+  rotateAuditLogIfNeeded();
   const logPath = getAuditLogPath();
 
   // Ensure directory exists

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>108ai — Extensions</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="brand">
+      <span class="logo">108</span>
+      <span class="title">Extensions Dashboard</span>
+    </div>
+    <div class="meta">
+      <span id="active-agent" class="badge">agent: …</span>
+      <span id="updated-at" class="muted"></span>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button class="tab active" data-tab="commands">Commands</button>
+    <button class="tab" data-tab="skills">Skills</button>
+    <button class="tab" data-tab="agents">Agents</button>
+    <button class="tab" data-tab="mcp">MCP</button>
+    <button class="tab" data-tab="store">Store</button>
+  </nav>
+
+  <div class="toolbar">
+    <input id="search" type="search" placeholder="Cerca… (Ctrl+K)" autocomplete="off" />
+    <button id="refresh" type="button">Aggiorna</button>
+  </div>
+
+  <main id="content" class="content"></main>
+
+  <footer class="footer muted">
+  108 Vision — locale only · <code id="api-base"></code>
+  </footer>
+
+  <script src="/app.js"></script>
+</body>
+</html>

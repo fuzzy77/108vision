@@ -228,6 +228,20 @@ npm run build
 npm start
 ```
 
+### Interactive shell & extensions
+
+The REPL shell (`pnpm dev`) supports custom commands, skills, persona agents, and MCP servers under `~/.108ai/`.
+
+| Feature | CLI |
+|---------|-----|
+| Terminal dashboard | `/ui dashboard` |
+| Command palette | `/palette [query]` |
+| Web dashboard | `/ui web` → `http://127.0.0.1:7891` |
+| Persona agents | `/agent use <name>` |
+| Daily triage | `/triage`, `/morning` |
+
+See [docs/USER-GUIDE.md](./docs/USER-GUIDE.md) and [docs/SECURITY-RUNBOOK.md](./docs/SECURITY-RUNBOOK.md).
+
 ## AI Model Routing
 
 The 108 AI platform routes requests through LiteLLM with the following tiers:

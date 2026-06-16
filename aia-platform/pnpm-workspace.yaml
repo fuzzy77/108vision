@@ -6,5 +6,6 @@ allowBuilds:
   esbuild: true
   koffi: true
   msgpackr-extract: true
+  protobufjs: set this to true or false
   sharp: true
   tesseract.js: true

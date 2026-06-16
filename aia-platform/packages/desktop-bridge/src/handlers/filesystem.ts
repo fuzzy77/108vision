@@ -283,9 +283,9 @@ export function searchFiles(
     if (depth > MAX_SEARCH_DEPTH) return;
     if (results.length >= MAX_SEARCH_RESULTS) return;
 
-    let items: ReturnType<typeof readdirSync>;
+    let items: import('node:fs').Dirent[];
     try {
-      items = readdirSync(dir, { withFileTypes: true });
+      items = readdirSync(dir, { withFileTypes: true, encoding: 'utf8' });
     } catch {
       return; // Permission denied
     }
@@ -293,12 +293,12 @@ export function searchFiles(
     for (const item of items) {
       if (results.length >= MAX_SEARCH_RESULTS) break;
 
-      // Skip hidden dirs and node_modules
-      if (item.name.startsWith('.') || item.name === 'node_modules') continue;
+      const name = String(item.name);
+      if (name.startsWith('.') || name === 'node_modules') continue;
 
-      const fullPath = join(dir, item.name);
+      const fullPath = join(dir, name);
 
-      if (item.isFile() && regex.test(item.name)) {
+      if (item.isFile() && regex.test(name)) {
         results.push(fullPath);
       }
 

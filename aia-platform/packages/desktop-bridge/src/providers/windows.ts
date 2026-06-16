@@ -17,34 +17,8 @@ import type { DesktopProvider, WindowInfo, UIElement, ScreenCapture, Bounds } fr
 const execFileAsync = promisify(execFile);
 
 // ---------------------------------------------------------------------------
-// koffi — lazy import so the module still loads on non-Windows at test time
+// Win32 helpers — enumeration via PowerShell (see enumerateWindows)
 // ---------------------------------------------------------------------------
-
-type KoffiLib = {
-  func(sig: string): KoffiFn;
-};
-type KoffiFn = (...args: unknown[]) => unknown;
-
-let _user32: KoffiLib | null = null;
-
-async function getUser32(): Promise<KoffiLib> {
-  if (_user32) return _user32;
-  // Dynamic import so TypeScript does not choke on missing types
-  const koffi = await import('koffi');
-  _user32 = koffi.default.load('user32.dll') as KoffiLib;
-  return _user32;
-}
-
-// ---------------------------------------------------------------------------
-// Win32 helpers
-// ---------------------------------------------------------------------------
-
-interface RectStruct {
-  left: number;
-  top: number;
-  right: number;
-  bottom: number;
-}
 
 /**
  * Call EnumWindows and collect all HWNDs that pass IsWindowVisible.
@@ -122,7 +96,15 @@ async function getWindowInfoForHandle(handle: number): Promise<WindowInfo | null
     const { stdout } = await execFileAsync('powershell', ['-NoProfile', '-Command', script]);
     const parts = stdout.trim().split('|');
     if (parts.length < 9) return null;
-    const [title, className, pidStr, processName, left, top, right, bottom, focusedStr] = parts;
+    const title = (parts[0] ?? '').trim();
+    const className = (parts[1] ?? '').trim();
+    const pidStr = parts[2] ?? '0';
+    const processName = (parts[3] ?? '').trim();
+    const left = parts[4] ?? '0';
+    const top = parts[5] ?? '0';
+    const right = parts[6] ?? '0';
+    const bottom = parts[7] ?? '0';
+    const focusedStr = parts[8] ?? 'false';
     const x = parseInt(left, 10);
     const y = parseInt(top, 10);
     const width = parseInt(right, 10) - x;
@@ -130,13 +112,13 @@ async function getWindowInfoForHandle(handle: number): Promise<WindowInfo | null
     if (width <= 0 || height <= 0) return null;
     return {
       handle,
-      title: title.trim(),
-      processName: processName.trim(),
+      title,
+      processName,
       processId: parseInt(pidStr, 10),
       bounds: { x, y, width, height },
       isVisible: true,
       isFocused: focusedStr.trim().toLowerCase() === 'true',
-      className: className.trim(),
+      className,
     };
   } catch {
     return null;
@@ -464,9 +446,13 @@ export class WindowsProvider implements DesktopProvider {
   }
 
   async mouseScroll(x: number, y: number, delta: number): Promise<void> {
-    const { mouse, Point, scroll } = await getNutJs();
+    const { mouse, Point } = await getNutJs();
     await mouse.setPosition(new Point(x, y));
-    // nut-js scroll: positive = down
-    await mouse.scroll(scroll(delta));
+    const steps = Math.abs(Math.round(delta));
+    if (delta > 0) {
+      await mouse.scrollDown(steps);
+    } else if (delta < 0) {
+      await mouse.scrollUp(steps);
+    }
   }
 }

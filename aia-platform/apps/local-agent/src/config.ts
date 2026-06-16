@@ -16,6 +16,11 @@ export interface AgentConfig {
   tenantId: string;
   allowedDirectories: string[];
   autoStart: boolean;
+  /**
+   * Optional online store catalog URL for /ui store (downloaded on startup).
+   * When missing, the agent falls back to bundled + local cached catalog.json.
+   */
+  storeCatalogOnlineUrl?: string;
   riskPreferences: {
     autoApproveReadOnly: boolean;
     autoApproveLowRisk: boolean;
@@ -115,6 +120,7 @@ const DEFAULT_CONFIG: AgentConfig = {
   tenantId: '',
   allowedDirectories: [],
   autoStart: false,
+  storeCatalogOnlineUrl: undefined,
   riskPreferences: {
     autoApproveReadOnly: true,
     autoApproveLowRisk: true,
@@ -271,6 +277,19 @@ export async function runSetupWizard(): Promise<AgentConfig> {
     allowedDirectories.push(...extra);
   }
 
+  const storeCatalogOnlineUrlRaw = await ask('Online store catalog URL (optional, press Enter to skip): ');
+  const storeCatalogOnlineUrl = storeCatalogOnlineUrlRaw.trim() || undefined;
+
+  const allowedProcessesRaw = await ask('Allowed desktop processes (optional, comma-separated, Enter=skip): ');
+  const allowedProcesses = allowedProcessesRaw.trim()
+    ? allowedProcessesRaw.split(',').map((p) => p.trim()).filter(Boolean)
+    : undefined;
+
+  const blockedProcessesRaw = await ask('Blocked desktop processes (optional, comma-separated, Enter=skip): ');
+  const blockedProcesses = blockedProcessesRaw.trim()
+    ? blockedProcessesRaw.split(',').map((p) => p.trim()).filter(Boolean)
+    : undefined;
+
   rl.close();
 
   const config: AgentConfig = {
@@ -279,6 +298,7 @@ export async function runSetupWizard(): Promise<AgentConfig> {
     tenantId,
     allowedDirectories,
     autoStart: false,
+    storeCatalogOnlineUrl,
     riskPreferences: {
       autoApproveReadOnly: true,
       autoApproveLowRisk: true,
@@ -288,6 +308,8 @@ export async function runSetupWizard(): Promise<AgentConfig> {
     desktopEnabled: false,
     desktopVisionEnabled: true,
     screenshotBeforeAction: true,
+    allowedProcesses,
+    blockedProcesses,
   };
 
   saveConfig(config);

@@ -19,10 +19,55 @@ import { homedir } from 'node:os';
 import { loadConfig, saveConfig, getDefaultGatewayUrl, type AgentConfig } from './config.js';
 import { performBrowserLogin } from './auth.js';
 import { tryLocalExecution } from './local-router.js';
-import { initCache, getCached, setCached, getCacheStats, flushToDisk } from './local-cache.js';
+import { initCache, getCached, getSemanticCached, setCached, getCacheStats, flushToDisk } from './local-cache.js';
 import { findScript, executeScript, updateUsage, listScripts, saveScript } from './script-store.js';
 import { initClipboardHistory, stopClipboardHistory, getHistory as getClipHistory, searchHistory as searchClip, pinEntry, clearHistory as clearClip, getStats as getClipStats } from './clipboard-history.js';
+import { startHotkeyListener, stopHotkeyListener, onHotkey, renderClipboardSelector, selectAndPasteEntry } from './clipboard-hotkey.js';
+import { listProviders, addProvider, removeProvider, testProvider, getProviderTemplates } from './provider-keys.js';
+import { handleTriageCommand, handleMorningCommand, handleStandupCommand } from './triage/cli.js';
+import { startTriageScheduler, stopTriageScheduler, getScheduleStatus, setSchedule, enableSchedule } from './triage/scheduler.js';
+import { handleJobCommand } from './jobs/cli.js';
+import { startJobScheduler, stopJobScheduler } from './jobs/scheduler.js';
+import { handleTelegramCommand, handleWhatsAppCommand, handleNotifyCommand } from './integrations/messaging-cli.js';
+import { handleResourceCommand, handleHealthCommand } from './resources/cli.js';
+import { startResourceMonitor, stopResourceMonitor } from './resources/monitor.js';
+import { runAutoHealing } from './resources/auto-healer.js';
+import { isLLMBlocked, isModelDowngraded } from './resources/auto-healer.js';
+import { trackTokens } from './resources/config.js';
 import { getCurrentVersion } from './updater.js';
+import {
+  initExtensions,
+  tryExecuteCustomCommand,
+  tryExecuteSkillExplicit,
+  tryExecuteSkillImplicit,
+  handleCommandCli,
+  handleSkillCli,
+  handleAgentCli,
+  handleMcpCli,
+  handleExtCli,
+  handleImportCli,
+  handleExportCli,
+  handleUiCli,
+  tryExecutePersonaOneShot,
+  getActivePersona,
+  formatActivePersonaLabel,
+  type ExtensionShellContext,
+} from './extensions/index.js';
+import {
+  appendPersonaHistory,
+} from './extensions/agents/history.js';
+import {
+  applyPersonaRestrictions,
+  buildPersonaUserMessage,
+  getPersonaLlmOptions,
+} from './extensions/agents/context.js';
+import { sanitizeLlmInput } from './hardening/llm-sanitize.js';
+import { scanAndRedactPii, formatPiiNotice } from './hardening/pii-guard.js';
+import { readSseTextStream } from './hardening/sse-stream.js';
+import { rotateAuditLogIfNeeded } from './hardening/audit-rotation.js';
+import { ensureAuthFresh } from './hardening/token-refresh.js';
+import { compressAssistantOutput } from './hardening/response-compress.js';
+import { checkRateLimit } from './security.js';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -72,6 +117,18 @@ let inMultiline = false;
 export async function startShell(): Promise<void> {
   initCache();
   initClipboardHistory();
+  startHotkeyListener();
+  startTriageScheduler();
+  startJobScheduler();
+  startResourceMonitor(async (snapshot, changed) => {
+    if (changed && snapshot.overall !== 'normal') {
+      await runAutoHealing(snapshot);
+    }
+  });
+  onHotkey(() => {
+    process.stdout.write('\n' + renderClipboardSelector(10) + '\n');
+    rl.prompt();
+  });
 
   // Ensure directories exist
   for (const dir of [SHELL_DIR, HISTORY_DIR, SESSIONS_DIR]) {
@@ -107,6 +164,22 @@ export async function startShell(): Promise<void> {
     totalTokens: 0,
     tokensSaved: 0,
   };
+
+  const extInit = initExtensions();
+  rotateAuditLogIfNeeded();
+  if (
+    extInit.commandsLoaded > 0 ||
+    extInit.skillsLoaded > 0 ||
+    extInit.agentsLoaded > 0 ||
+    extInit.mcpLoaded > 0
+  ) {
+    process.stdout.write(
+      `  \x1b[90mExtensions: ${extInit.commandsLoaded} command, ${extInit.skillsLoaded} skill, ${extInit.agentsLoaded} agent, ${extInit.mcpLoaded} mcp (~/.108ai/)\x1b[0m\n`,
+    );
+  }
+  for (const warning of extInit.warnings) {
+    process.stdout.write(`  \x1b[33m[!]\x1b[0m Extension load: ${warning}\n`);
+  }
 
   // Print banner
   printShellBanner();
@@ -158,6 +231,10 @@ export async function startShell(): Promise<void> {
   });
 
   rl.on('close', () => {
+    stopResourceMonitor();
+    stopJobScheduler();
+    stopTriageScheduler();
+    stopHotkeyListener();
     stopClipboardHistory();
     saveSession();
     flushToDisk();
@@ -167,6 +244,10 @@ export async function startShell(): Promise<void> {
 
   // Graceful shutdown
   process.on('SIGINT', () => {
+    stopResourceMonitor();
+    stopJobScheduler();
+    stopTriageScheduler();
+    stopHotkeyListener();
     stopClipboardHistory();
     saveSession();
     flushToDisk();
@@ -183,6 +264,39 @@ async function processInput(input: string): Promise<void> {
   // Slash commands
   if (input.startsWith('/')) {
     await handleSlashCommand(input);
+    return;
+  }
+
+  // One-shot @agent query (e.g. @accountant qual è l'IVA al 10%?)
+  const personaShot = await tryExecutePersonaOneShot(input, getExtensionShellContext());
+  if (personaShot.handled) {
+    session.messages.push({
+      role: 'user',
+      content: input,
+      timestamp: Date.now(),
+      source: 'llm',
+    });
+    process.stdout.write('\n');
+    if (personaShot.agentName) {
+      process.stdout.write(`  \x1b[36m>\x1b[0m Agent: @${personaShot.agentName}\n\n`);
+    }
+    if (personaShot.output) {
+      process.stdout.write(personaShot.output);
+      if (!personaShot.output.endsWith('\n')) process.stdout.write('\n');
+    }
+    if (personaShot.tokens && personaShot.tokens > 0) {
+      printSource('llm', personaShot.tokens);
+    } else {
+      process.stdout.write('  \x1b[35m[agent]\x1b[0m\n\n');
+    }
+    session.messages.push({
+      role: 'assistant',
+      content: personaShot.output ?? '',
+      timestamp: Date.now(),
+      source: 'llm',
+      tokens: personaShot.tokens,
+    });
+    if (personaShot.tokens) session.totalTokens += personaShot.tokens;
     return;
   }
 
@@ -208,6 +322,31 @@ async function processInput(input: string): Promise<void> {
     return;
   }
 
+  // 1b. Implicit skill match (e.g. "scrivi una email a Mario")
+  const skillResult = await tryExecuteSkillImplicit(input, getExtensionShellContext());
+  if (skillResult.handled && skillResult.output) {
+    process.stdout.write('\n');
+    if (skillResult.skillName) {
+      process.stdout.write(`  \x1b[36m>\x1b[0m Skill: ${skillResult.skillName}\n\n`);
+    }
+    process.stdout.write(skillResult.output);
+    if (!skillResult.output.endsWith('\n')) process.stdout.write('\n');
+    if (skillResult.tokens && skillResult.tokens > 0) {
+      printSource('llm', skillResult.tokens);
+    } else {
+      process.stdout.write('  \x1b[35m[skill]\x1b[0m\n\n');
+    }
+    session.messages.push({
+      role: 'assistant',
+      content: skillResult.output,
+      timestamp: Date.now(),
+      source: 'llm',
+      tokens: skillResult.tokens,
+    });
+    if (skillResult.tokens) session.totalTokens += skillResult.tokens;
+    return;
+  }
+
   // 2. Saved scripts
   const script = findScript(input);
   if (script) {
@@ -223,8 +362,8 @@ async function processInput(input: string): Promise<void> {
     return;
   }
 
-  // 3. Cache
-  const cached = getCached(input);
+  // 3. Cache (exact + semantic lite)
+  const cached = getCached(input) ?? getSemanticCached(input);
   if (cached) {
     process.stdout.write('\n');
     process.stdout.write(cached.response);
@@ -245,7 +384,45 @@ async function processInput(input: string): Promise<void> {
 // ---------------------------------------------------------------------------
 
 async function callLLM(input: string): Promise<void> {
-  // TODO: pass session.messages.slice(-10) as conversation context when gateway supports it
+  const sanitize = sanitizeLlmInput(input);
+  if (!sanitize.safe) {
+    process.stdout.write(`  \x1b[31m[ERR]\x1b[0m ${sanitize.warnings[0] ?? 'Input bloccato'}\n`);
+    return;
+  }
+
+  if (!checkRateLimit(config)) {
+    process.stdout.write(
+      `  \x1b[31m[ERR]\x1b[0m Rate limit exceeded (max ${config.maxActionsPerMinute} actions/minute)\n`,
+    );
+    return;
+  }
+
+  if (isLLMBlocked()) {
+    process.stdout.write('  \x1b[33m[!]\x1b[0m LLM bloccato per emergenza token (auto-healer).\n');
+    return;
+  }
+
+  await ensureAuthFresh(config, gatewayHttp, (auth) => {
+    config.authToken = auth.token;
+    config.tenantId = auth.tenantId;
+    config.tokenExpiresAt = auth.expiresAt;
+    saveConfig(config);
+  });
+
+  const persona = getActivePersona();
+  const llmMessage = persona
+    ? buildPersonaUserMessage(persona, sanitize.sanitized, true)
+    : sanitize.sanitized;
+  const llmOpts = persona ? getPersonaLlmOptions(persona) : undefined;
+
+  const effectiveModel = isModelDowngraded()
+    ? 'fast-cheap'
+    : llmOpts?.model ?? 'fast-cheap';
+
+  const requestBody: Record<string, unknown> = { message: llmMessage };
+  if (llmOpts?.systemPrompt) requestBody['system_prompt'] = llmOpts.systemPrompt;
+  requestBody['model'] = effectiveModel;
+  if (llmOpts?.maxTokens) requestBody['max_tokens'] = llmOpts.maxTokens;
 
   try {
     const response = await fetch(`${gatewayHttp}/api/chat/quick`, {
@@ -255,7 +432,7 @@ async function callLLM(input: string): Promise<void> {
         'Authorization': `Bearer ${config.authToken}`,
         'X-Tenant-ID': config.tenantId,
       },
-      body: JSON.stringify({ message: input }),
+      body: JSON.stringify(requestBody),
       signal: AbortSignal.timeout(120_000),
     });
 
@@ -284,62 +461,74 @@ async function callLLM(input: string): Promise<void> {
 
     // Handle response
     let fullResponse = '';
+    let tokensUsed = 0;
+    const isStreaming = response.body !== null;
 
-    if (response.body) {
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        const chunk = decoder.decode(value, { stream: true });
-        const lines = chunk.split('\n');
-
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            const data = line.slice(6);
-            if (data === '[DONE]') continue;
-            try {
-              const parsed = JSON.parse(data) as { content?: string; text?: string };
-              const text = parsed.content ?? parsed.text ?? '';
-              if (text) {
-                process.stdout.write(text);
-                fullResponse += text;
-              }
-            } catch {
-              process.stdout.write(data);
-              fullResponse += data;
-            }
-          } else if (line.trim() && !line.startsWith('event:') && !line.startsWith(':')) {
-            process.stdout.write(line);
-            fullResponse += line;
-          }
-        }
-      }
+    if (isStreaming) {
+      const res = await readSseTextStream(response, (t) => process.stdout.write(t));
+      fullResponse = res.content;
+      tokensUsed = res.tokensUsed;
     } else {
       const data = await response.json() as { content?: string; model?: string; tokens?: number };
       fullResponse = data.content ?? '';
       process.stdout.write(fullResponse);
 
-      const tokens = data.tokens ?? 0;
-      session.totalTokens += tokens;
-      setCached(input, fullResponse, data.model ?? 'fast-cheap', tokens);
+      tokensUsed = data.tokens ?? 0;
+      session.totalTokens += tokensUsed;
+      if (tokensUsed > 0) trackTokens(tokensUsed);
+      if (!persona) {
+        setCached(input, fullResponse, data.model ?? llmOpts?.model ?? 'fast-cheap', tokensUsed);
+      }
+    }
+
+    if (isStreaming) {
+      session.totalTokens += tokensUsed;
+      if (tokensUsed > 0) trackTokens(tokensUsed);
     }
 
     if (!fullResponse.endsWith('\n')) process.stdout.write('\n');
+
+    let finalResponse = fullResponse;
+    if (persona) {
+      const restricted = applyPersonaRestrictions(persona, fullResponse);
+      if (restricted.output !== fullResponse) {
+        const extra = restricted.output.slice(fullResponse.length);
+        if (extra) process.stdout.write(extra);
+        finalResponse = restricted.output;
+      }
+      appendPersonaHistory(persona.definition.name, sanitize.sanitized, finalResponse);
+      if (persona.definition.name !== 'assistant') {
+        process.stdout.write(`  \x1b[36m[agent:${persona.definition.name}]\x1b[0m`);
+      }
+    }
+
+    const piiScan = scanAndRedactPii(
+      finalResponse,
+      persona?.definition.restrictions?.no_pii_in_output === true,
+    );
+    if (piiScan.hasPii) {
+      const notice = formatPiiNotice(piiScan.types);
+      if (persona?.definition.restrictions?.no_pii_in_output) {
+        finalResponse = piiScan.redacted;
+      }
+      if (notice && !finalResponse.includes('PII')) {
+        process.stdout.write(notice);
+        finalResponse += notice;
+      }
+    }
+
     printSource('llm', session.totalTokens);
 
     session.messages.push({
       role: 'assistant',
-      content: fullResponse,
+      content: finalResponse,
       timestamp: Date.now(),
       source: 'llm',
     });
 
-    // Cache for next time
-    if (fullResponse) {
-      setCached(input, fullResponse, 'fast-cheap', 0);
+    // Cache for next time (generic input only when no persona context)
+    if (finalResponse && !persona) {
+      setCached(input, compressAssistantOutput(finalResponse), effectiveModel, tokensUsed);
     }
 
   } catch (err) {
@@ -355,10 +544,101 @@ async function callLLM(input: string): Promise<void> {
 // Slash Commands
 // ---------------------------------------------------------------------------
 
+function getExtensionShellContext(): ExtensionShellContext {
+  return {
+    gatewayHttp,
+    authToken: config.authToken,
+    tenantId: config.tenantId,
+    config,
+  };
+}
+
 async function handleSlashCommand(input: string): Promise<void> {
   const parts = input.slice(1).split(/\s+/);
   const cmd = parts[0]?.toLowerCase() ?? '';
   const args = parts.slice(1);
+
+  if (cmd === 'command' || cmd === 'commands') {
+    const output = await handleCommandCli(args);
+    process.stdout.write(output);
+    return;
+  }
+
+  if (cmd === 'skill' || cmd === 'skills') {
+    const output = await handleSkillCli(args, getExtensionShellContext());
+    process.stdout.write(output);
+    return;
+  }
+
+  if (cmd === 'agent' || cmd === 'agents') {
+    const output = await handleAgentCli(args, getExtensionShellContext());
+    process.stdout.write(output);
+    return;
+  }
+
+  if (cmd === 'mcp') {
+    const output = await handleMcpCli(args);
+    process.stdout.write(output);
+    return;
+  }
+
+  if (cmd === 'ext' || cmd === 'extensions') {
+    const output = await handleExtCli(args, getExtensionShellContext());
+    process.stdout.write(output);
+    return;
+  }
+
+  if (cmd === 'import') {
+    const output = await handleImportCli(args);
+    process.stdout.write(output);
+    return;
+  }
+
+  if (cmd === 'export') {
+    const output = await handleExportCli(args);
+    process.stdout.write(output);
+    return;
+  }
+
+  if (cmd === 'ui') {
+    const output = await handleUiCli(args);
+    process.stdout.write(output);
+    return;
+  }
+
+  if (cmd === 'palette') {
+    const output = await handleUiCli(['palette', ...args]);
+    process.stdout.write(output);
+    return;
+  }
+
+  const skillExplicit = await tryExecuteSkillExplicit(
+    cmd,
+    args,
+    args.join(' '),
+    getExtensionShellContext(),
+  );
+  if (skillExplicit.handled) {
+    if (skillExplicit.output) {
+      process.stdout.write('\n');
+      process.stdout.write(skillExplicit.output);
+      if (!skillExplicit.output.endsWith('\n')) process.stdout.write('\n');
+    }
+    return;
+  }
+
+  const custom = await tryExecuteCustomCommand(cmd, args, getExtensionShellContext());
+  if (custom.handled) {
+    if (custom.output) {
+      process.stdout.write('\n');
+      process.stdout.write(custom.output);
+      if (!custom.output.endsWith('\n')) process.stdout.write('\n');
+      if (custom.tokens !== undefined && custom.tokens > 0) {
+        printSource('llm', custom.tokens);
+      }
+    }
+    return;
+  }
 
   switch (cmd) {
     case 'help':
@@ -493,10 +773,123 @@ async function handleSlashCommand(input: string): Promise<void> {
       break;
     }
 
+    case 'clip-pick': {
+      const pickIdx = parseInt(args[0] ?? '', 10);
+      if (isNaN(pickIdx)) {
+        process.stdout.write(renderClipboardSelector(10).rendered);
+        process.stdout.write('\n  Uso: /clip-pick <indice>\n');
+        break;
+      }
+      const picked = await selectAndPasteEntry(pickIdx);
+      if (picked) {
+        process.stdout.write(`  \x1b[32m[OK]\x1b[0m Copiato in clipboard: ${picked.slice(0, 60)}${picked.length > 60 ? '...' : ''}\n`);
+      } else {
+        process.stdout.write('  Indice non valido.\n');
+      }
+      break;
+    }
+
     case 'clip-clear':
       clearClip();
       process.stdout.write('  \x1b[32m[OK]\x1b[0m Clipboard history cancellata (pin mantenuti).\n');
       break;
+
+    case 'providers': {
+      await handleProviders(args);
+      break;
+    }
+
+    case 'telegram': {
+      const output = await handleTelegramCommand(args);
+      process.stdout.write(output);
+      break;
+    }
+
+    case 'whatsapp':
+    case 'wa': {
+      const output = await handleWhatsAppCommand(args);
+      process.stdout.write(output);
+      break;
+    }
+
+    case 'notify':
+    case 'notification': {
+      const output = await handleNotifyCommand(args);
+      process.stdout.write(output);
+      break;
+    }
+
+    case 'job':
+    case 'jobs': {
+      const output = await handleJobCommand(args);
+      process.stdout.write(output);
+      break;
+    }
+
+    case 'triage': {
+      const output = await handleTriageCommand(args);
+      process.stdout.write(output);
+      break;
+    }
+
+    case 'morning': {
+      const output = await handleMorningCommand(args);
+      process.stdout.write(output);
+      break;
+    }
+
+    case 'standup': {
+      const output = await handleStandupCommand(args);
+      process.stdout.write(output);
+      break;
+    }
+
+    case 'schedule': {
+      const sub = args[0]?.toLowerCase();
+      if (!sub || sub === 'status') {
+        const status = getScheduleStatus();
+        process.stdout.write(`\n  \x1b[1mTriage Scheduler:\x1b[0m\n`);
+        process.stdout.write(`  Attivo:     ${status.enabled ? '\x1b[32msi\x1b[0m' : '\x1b[90mno\x1b[0m'}\n`);
+        process.stdout.write(`  Cron:       ${status.cron}\n`);
+        process.stdout.write(`  Ultimo run: ${status.lastRun ?? 'mai'}\n`);
+        process.stdout.write(`  Prossimo:   ${status.nextRun ?? 'n/a'}\n\n`);
+      } else if (sub === 'on') {
+        enableSchedule(true);
+        process.stdout.write('  \x1b[32m[OK]\x1b[0m Scheduler attivato.\n');
+      } else if (sub === 'off') {
+        enableSchedule(false);
+        process.stdout.write('  \x1b[32m[OK]\x1b[0m Scheduler disattivato.\n');
+      } else if (sub === 'set') {
+        const cron = args.slice(1).join(' ');
+        if (!cron) {
+          process.stdout.write('  Uso: /schedule set <cron-expression>\n');
+          process.stdout.write('  Es: /schedule set 0 7 * * 1-5  (lun-ven ore 7:00)\n');
+          break;
+        }
+        try {
+          setSchedule(cron);
+          process.stdout.write(`  \x1b[32m[OK]\x1b[0m Schedule impostato: ${cron}\n`);
+        } catch (err) {
+          process.stdout.write(`  \x1b[31m[ERR]\x1b[0m ${err instanceof Error ? err.message : String(err)}\n`);
+        }
+      } else {
+        process.stdout.write('  Sub-comandi: status, on, off, set <cron>\n');
+      }
+      break;
+    }
+
+    case 'resources':
+    case 'risorse': {
+      const output = await handleResourceCommand(args);
+      process.stdout.write(output);
+      break;
+    }
+
+    case 'health': {
+      const output = await handleHealthCommand(args);
+      process.stdout.write(output);
+      break;
+    }
 
     case 'connect': {
       const service = args[0]?.toLowerCase();
@@ -520,6 +913,80 @@ async function handleSlashCommand(input: string): Promise<void> {
 }
 
 // ---------------------------------------------------------------------------
+// Provider Management
+// ---------------------------------------------------------------------------
+
+async function handleProviders(args: string[]): Promise<void> {
+  const sub = args[0]?.toLowerCase();
+
+  if (!sub || sub === 'list') {
+    const providers = listProviders();
+    if (providers.length === 0) {
+      process.stdout.write('  Nessun provider configurato. Usa /providers add\n');
+      return;
+    }
+    process.stdout.write('\n  \x1b[1mProvider LLM configurati:\x1b[0m\n\n');
+    for (const p of providers) {
+      const status = p.enabled ? '\x1b[32m●\x1b[0m' : '\x1b[90m○\x1b[0m';
+      const key = p.apiKey ? `${p.apiKey.slice(0, 8)}...` : '(nessuna)';
+      process.stdout.write(`  ${status} ${p.name} \x1b[90m(${p.type})\x1b[0m prio:${p.priority} key:${key}\n`);
+    }
+    process.stdout.write('\n');
+    return;
+  }
+
+  if (sub === 'add') {
+    const typeName = args[1];
+    const apiKey = args[2];
+    if (!typeName) {
+      const templates = getProviderTemplates();
+      process.stdout.write('  Uso: /providers add <tipo> [api_key]\n');
+      process.stdout.write(`  Tipi: ${templates.map(t => t.type).join(', ')}\n`);
+      return;
+    }
+    const templates = getProviderTemplates();
+    const template = templates.find(t => t.type === typeName);
+    if (!template) {
+      process.stdout.write(`  Tipo "${typeName}" non riconosciuto.\n`);
+      return;
+    }
+    const newProvider = addProvider({
+      ...template,
+      apiKey: apiKey ?? '',
+      enabled: !!apiKey,
+    });
+    process.stdout.write(`  \x1b[32m[OK]\x1b[0m Provider aggiunto: ${newProvider.name} (${newProvider.id})\n`);
+    if (!apiKey) {
+      process.stdout.write('  \x1b[33m[!]\x1b[0m Nessuna API key — provider disabilitato. Usa /providers key <id> <key>\n');
+    }
+    return;
+  }
+
+  if (sub === 'remove') {
+    const id = args[1];
+    if (!id) { process.stdout.write('  Uso: /providers remove <id>\n'); return; }
+    const removed = removeProvider(id);
+    process.stdout.write(removed ? '  \x1b[32m[OK]\x1b[0m Rimosso.\n' : '  ID non trovato.\n');
+    return;
+  }
+
+  if (sub === 'test') {
+    const id = args[1];
+    if (!id) { process.stdout.write('  Uso: /providers test <id>\n'); return; }
+    process.stdout.write('  Testing...');
+    const result = await testProvider(id);
+    if (result.ok) {
+      process.stdout.write(`\r  \x1b[32m[OK]\x1b[0m Connesso (${result.latencyMs}ms)\n`);
+    } else {
+      process.stdout.write(`\r  \x1b[31m[ERR]\x1b[0m ${result.error}\n`);
+    }
+    return;
+  }
+
+  process.stdout.write('  Sub-comandi: list, add, remove, test\n');
+}
+
+// ---------------------------------------------------------------------------
 // Display Helpers
 // ---------------------------------------------------------------------------
 
@@ -536,6 +1003,10 @@ function printShellBanner(): void {
   process.stdout.write('\n');
   process.stdout.write('  \x1b[90mScrivi una domanda o un comando. /help per i comandi.\x1b[0m\n');
   process.stdout.write('  \x1b[90mUsa ``` per scrivere testo multi-riga. Ctrl+C per uscire.\x1b[0m\n');
+  const activeAgent = formatActivePersonaLabel();
+  if (activeAgent) {
+    process.stdout.write(`  \x1b[90mAgent attivo: ${activeAgent} — /agent list | @nome domanda\x1b[0m\n`);
+  }
   if (stats.entries > 0) {
     process.stdout.write(`  \x1b[90mCache: ${stats.entries} risposte | Token risparmiati: ${stats.savedTokens}\x1b[0m\n`);
   }
@@ -572,9 +1043,118 @@ function printHelp(): void {
   \x1b[1mClipboard:\x1b[0m
 
   /clipboard, /clip  Mostra ultimi 10 elementi clipboard
+  /clip-pick <i>     Seleziona e copia in clipboard per indice
   /clip-search <q>   Cerca nella clipboard history
   /clip-pin <i>      Pinna/spinna elemento per indice
   /clip-clear        Cancella history (mantiene pin)
+                     Hotkey: Ctrl+Shift+V (mostra selettore)
+
+  \x1b[1mProvider LLM:\x1b[0m
+
+  /providers         Lista provider configurati
+  /providers add <t> Aggiungi provider (deepseek, openai, anthropic...)
+  /providers test <i>Testa connessione provider
+  /providers remove  Rimuovi provider
+
+  \x1b[1mExtensions (Commands):\x1b[0m
+
+  /command list      Lista command custom (~/.108ai/commands/)
+  /command create <n> Crea scaffold YAML command
+  /command info <n>  Dettaglio command
+  /command reload    Ricarica command + skill da disco
+  /summarize-email   Riassunto email (alias /se)
+
+  \x1b[1mExtensions (Skills):\x1b[0m
+
+  /skill list        Lista skill installate
+  /skill run <nome>  Esegui skill con messaggio
+  /skill info <nome> Dettaglio skill
+  /write-email       Skill email-writer (alias /email)
+  Linguaggio naturale: "scrivi una email a..."
+
+  \x1b[1mExtensions (Agents):\x1b[0m
+
+  /agent list        Lista persona agents (~/.108ai/agents/)
+  /agent use <nome>  Imposta agent attivo per la sessione
+  /agent info <nome> Dettaglio agent (model, history, restrictions)
+  /agent test <n>    Test rapido senza persistere history
+  /agent ask a,b "q" Query multi-agent parallela
+  /agent clone s t   Clona definizione YAML
+  @accountant ...    One-shot verso un agent specifico
+
+  \x1b[1mExtensions (MCP):\x1b[0m
+
+  /mcp list          Server MCP configurati (~/.108ai/mcp.yml)
+  /mcp start <nome>  Avvia server stdio
+  /mcp tools <nome>  Lista tool esposti
+  /mcp test <s> <t>  Invoca tool (args JSON)
+  /mcp add <nome> --command "..."  Aggiungi server
+
+  \x1b[1mExtensions (Import/Export):\x1b[0m
+
+  /ext status        Overview commands/skills/agents/mcp
+  /import claude <path>  Import da .claude/ o settings.json
+  /import n8n <path>     Import workflow n8n → command stub
+  /import chatgpt <path> Import GPT export → agent YAML
+  /import restore <dir>  Ripristina backup extensions
+  /export backup     Backup ~/.108ai extensions
+  /export restore <dir>  Alias restore backup
+
+  \x1b[1mExtensions (UI):\x1b[0m
+
+  /ui dashboard      Panoramica commands/skills/agents/mcp
+  /ui commands [q]   Palette command (terminale)
+  /palette [q]       Alias palette command
+  /ui agents         Lista persona agents
+  /ui mcp            Stato server MCP
+  /ui store [tipo]   Catalogo locale (command/skill/agent)
+  /ui web [porta]    Dashboard web su 127.0.0.1:7891
+  /ui web-stop       Ferma server web UI
+
+  \x1b[1mJob Engine:\x1b[0m
+
+  /job               Lista job configurati
+  /job run <nome>    Esegui un job ora
+  /job run <n> --dry-run  Simula senza eseguire
+  /job create <nome> Crea nuovo job (vuoto)
+  /job status <nome> Stato dettagliato di un job
+  /job history <nome>Storico esecuzioni
+  /job pause/resume  Sospendi/riprendi scheduling
+  /job budget        Overview budget tutti i job
+  /job stats         Statistiche aggregate
+  /job delete <nome> Elimina un job
+
+  \x1b[1mTriage Giornaliero:\x1b[0m
+
+  /triage            Triage completo (email, calendar, PEC, sistema)
+  /morning           Briefing mattutino con saluto e data
+  /standup           Formato standup (fatto/da fare/blocchi)
+  /schedule          Mostra stato scheduler automatico
+  /schedule on|off   Attiva/disattiva triage automatico
+  /schedule set <c>  Imposta cron (es: 0 7 * * 1-5)
+
+  \x1b[1mMessaging & Notifiche:\x1b[0m
+
+  /telegram          Stato bot Telegram
+  /telegram setup <t>Configura token bot
+  /telegram test     Invia messaggio di test
+  /whatsapp          Stato connessioni WA
+  /whatsapp connect  Connetti via Baileys (QR)
+  /whatsapp business Setup WA Business API
+  /notify            Stato canali notifica
+  /notify test <ch>  Testa un canale
+  /notify quiet on/off  Ore silenziose
+
+  \x1b[1mRisorse & Health:\x1b[0m
+
+  /resources         Dashboard risorse (RAM, disco, token)
+  /resources memory  Dettaglio memoria (--gc per force GC)
+  /resources disk    Dettaglio disco (--clean / --purge)
+  /resources tokens  Budget token (--today / --month / --top)
+  /resources config  Mostra configurazione soglie
+  /resources reset   Reset downgrade modello / blocco LLM
+  /health            Health check compatto
+  /health --fix      Auto-healing immediato
 
   \x1b[1mIntegrazioni:\x1b[0m
 

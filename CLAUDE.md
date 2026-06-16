@@ -64,6 +64,13 @@ Vision/
 │   ├── study/                 ← Manuali studio per il consulente
 │   └── Curriculum/            ← CV professionali
 ├── aia-platform/               ← Codice sorgente piattaforma AI (monorepo TS)
+│   └── apps/local-agent/src/
+│       ├── integrations/       ← 11 adapter (chrome, gmail, calendar, imap, excel, word, outlook, ui-automation, vision-llm, telegram, whatsapp-business, whatsapp-baileys)
+│       ├── triage/             ← Daily Triage Engine (engine, cli, scheduler)
+│       ├── jobs/               ← Job Execution Engine (types, store, executor, scheduler, cli, templates)
+│       ├── multi-agent/        ← Multi-Agent Orchestration (orchestrator, plan builder)
+│       ├── notifications/      ← Unified Notification Channel (7 canali, routing, quiet hours)
+│       └── resources/          ← Resource Management (monitor RAM/disk/token, auto-healing, CLI)
 └── aia-website/                ← Sito web (Astro + TinaCMS)
 ```
 

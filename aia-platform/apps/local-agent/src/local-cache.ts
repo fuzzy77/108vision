@@ -247,6 +247,56 @@ export function getCached(query: string): CachedResponse | null {
   return entry;
 }
 
+const SEMANTIC_MIN_SCORE = 0.82;
+const SEMANTIC_MIN_TOKENS = 3;
+
+function queryTokenSet(query: string): Set<string> {
+  const normalized = normalizeQuery(query);
+  return new Set(normalized.split(' ').filter((t) => t.length > 2));
+}
+
+function jaccardSimilarity(a: Set<string>, b: Set<string>): number {
+  if (a.size === 0 || b.size === 0) return 0;
+  let intersection = 0;
+  for (const t of a) {
+    if (b.has(t)) intersection++;
+  }
+  const union = a.size + b.size - intersection;
+  return union === 0 ? 0 : intersection / union;
+}
+
+/**
+ * Fuzzy cache lookup via token Jaccard similarity (lite semantic cache).
+ * Call only after exact `getCached` miss to avoid double miss accounting.
+ */
+export function getSemanticCached(
+  query: string,
+  minScore = SEMANTIC_MIN_SCORE,
+): CachedResponse | null {
+  const qTokens = queryTokenSet(query);
+  if (qTokens.size < SEMANTIC_MIN_TOKENS) return null;
+
+  const now = Date.now();
+  let best: { entry: CachedResponse; score: number } | null = null;
+
+  for (const entry of cache.values()) {
+    if (now >= entry.cachedAt + entry.ttl) continue;
+    if (isTimeSensitive(query) !== isTimeSensitive(entry.query)) continue;
+
+    const score = jaccardSimilarity(qTokens, queryTokenSet(entry.query));
+    if (score >= minScore && (!best || score > best.score)) {
+      best = { entry, score };
+    }
+  }
+
+  if (!best) return null;
+
+  best.entry.hits++;
+  stats.hits++;
+  stats.savedTokens += best.entry.tokens;
+  return best.entry;
+}
+
 /**
  * Stores a response in the cache.
  *
