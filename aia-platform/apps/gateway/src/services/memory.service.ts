@@ -78,7 +78,7 @@ class MemoryService {
 
     // Generate embedding
     const embeddingResult = await ragService.generateEmbeddings([input.content]);
-    const embedding = embeddingResult[0] ?? null;
+    const embedding = embeddingResult.success ? (embeddingResult.data[0] ?? null) : null;
 
     const embeddingStr = embedding ? `[${embedding.join(',')}]` : null;
 
@@ -114,8 +114,8 @@ class MemoryService {
     const minScore = options.minScore ?? 0.5;
 
     // Generate query embedding
-    const embeddings = await ragService.generateEmbeddings([query]);
-    const queryEmbedding = embeddings[0];
+    const embeddingsResult = await ragService.generateEmbeddings([query]);
+    const queryEmbedding = embeddingsResult.success ? (embeddingsResult.data[0] ?? null) : null;
     if (!queryEmbedding) {
       return [];
     }

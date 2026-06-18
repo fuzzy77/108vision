@@ -64,7 +64,10 @@ tenantRouter.post('/users', async (c) => {
     throw new AppError('EMAIL_EXISTS', 'Email already in use', 409);
   }
 
-  const passwordHash = await bcrypt.hash(input.password ?? 'changeme108!', 10);
+  if (!input.password) {
+    throw new AppError('VALIDATION_ERROR', 'Password is required', 400);
+  }
+  const passwordHash = await bcrypt.hash(input.password, 10);
 
   const [newUser] = await db
     .insert(users)

@@ -41,6 +41,10 @@ Mascheramento in UI/log; install guard per path non consentiti.
 
 Lista deny per comandi shell pericolosi.
 
+**Job Engine:** gli step `shell` sono soggetti alla stessa validazione (`validateShellCommand`) e sono bloccati se:
+- `commands.allow_shell: deny` in `~/.108ai/permissions.yml`
+- `shellEnabled: false` in `~/.108ai/config.json`
+
 ### Rate limiting (`extensions/security/rate-limit.ts`)
 
 Limite azioni/minuto configurabile.
@@ -60,6 +64,27 @@ Rotazione automatica (`hardening/audit-rotation.ts`).
 - Eseguire solo server MCP da fonti fidate
 - Ogni server stdio eredita permessi utente OS
 - Verificare tool esposti con `/mcp tools` prima dell'uso in produzione
+- Preferire `/mcp install` (npm/git/preset) con sorgenti HTTPS e pinning `--ref` quando possibile
+
+## Store
+
+### Firma autore (publisher attestation)
+
+I pacchetti scaricati dal catalogo possono includere una firma HMAC sul payload:
+
+```
+author|name|version|sha256(content)
+```
+
+**Chiave:** `AIA_STORE_SIGNING_KEY` (globale) o `AIA_STORE_KEY_<AUTHOR>` per publisher.
+
+**Policy consigliata:**
+- pacchetti `verified=true` bundled → consentiti anche senza firma (trust locale)
+- pacchetti da `installUrl` → richiedere firma valida (o `force` solo in debug)
+
+### Audit install
+
+Ogni install scrive una entry in `~/.108ai/extensions-lock.json` con checksum + timestamp.
 
 ## WhatsApp / Telegram
 

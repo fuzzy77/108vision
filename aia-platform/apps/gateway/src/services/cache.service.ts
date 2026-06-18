@@ -28,7 +28,7 @@ function buildCacheKey(
 ): string {
   const payload = JSON.stringify({
     model,
-    systemPrompt: systemPrompt.slice(0, 500),
+    systemPromptHash: createHash('md5').update(systemPrompt).digest('hex'),
     userMessage,
     context: contextChunks.slice(0, 5).map(c => c.slice(0, 200)),
   });
@@ -83,10 +83,15 @@ export const cacheService = {
   async invalidateTenant(tenantId: string): Promise<void> {
     const redis = getRedis();
     try {
-      const keys = await redis.keys(`${CACHE_PREFIX}:${tenantId}:*`);
-      if (keys.length > 0) {
-        await redis.del(...keys);
-      }
+      const pattern = `${CACHE_PREFIX}:${tenantId}:*`;
+      let cursor = '0';
+      do {
+        const [nextCursor, keys] = await redis.scan(cursor, 'MATCH', pattern, 'COUNT', 100);
+        cursor = nextCursor;
+        if (keys.length > 0) {
+          await redis.del(...keys);
+        }
+      } while (cursor !== '0');
     } catch {
       // Non-critical
     }

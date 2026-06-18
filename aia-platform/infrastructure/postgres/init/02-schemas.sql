@@ -199,12 +199,51 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- -----------------------------------------------------------
+-- Memories (persistent AI memory per tenant)
+-- -----------------------------------------------------------
+CREATE TABLE IF NOT EXISTS shared.memories (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    tenant_id UUID NOT NULL REFERENCES shared.tenants(id) ON DELETE CASCADE,
+    user_id UUID REFERENCES shared.users(id) ON DELETE SET NULL,
+    content TEXT NOT NULL,
+    tags TEXT[] DEFAULT '{}',
+    category VARCHAR(30) DEFAULT 'general',
+    source VARCHAR(20) DEFAULT 'user',
+    conversation_id UUID,
+    embedding vector(1536),
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_memories_tenant ON shared.memories(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_memories_category ON shared.memories(tenant_id, category);
+
+-- -----------------------------------------------------------
+-- Action Requests (desktop agent action approval queue)
+-- -----------------------------------------------------------
+CREATE TABLE IF NOT EXISTS shared.action_requests (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    tenant_id UUID NOT NULL REFERENCES shared.tenants(id) ON DELETE CASCADE,
+    user_id UUID REFERENCES shared.users(id) ON DELETE SET NULL,
+    action_type VARCHAR(100) NOT NULL,
+    risk_level VARCHAR(20) DEFAULT 'low',
+    params JSONB DEFAULT '{}',
+    status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected', 'expired')),
+    result JSONB,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_action_requests_tenant ON shared.action_requests(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_action_requests_status ON shared.action_requests(status);
+
 -- Apply trigger to tables with updated_at
 DO $$
 DECLARE
     t TEXT;
 BEGIN
-    FOR t IN SELECT unnest(ARRAY['tenants', 'users', 'kb_documents', 'conversations'])
+    FOR t IN SELECT unnest(ARRAY['tenants', 'users', 'kb_documents', 'conversations', 'memories', 'action_requests'])
     LOOP
         EXECUTE format(
             'DROP TRIGGER IF EXISTS trg_update_%I ON shared.%I; CREATE TRIGGER trg_update_%I BEFORE UPDATE ON shared.%I FOR EACH ROW EXECUTE FUNCTION shared.update_updated_at();',

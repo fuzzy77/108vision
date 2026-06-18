@@ -295,3 +295,12 @@ Fornisci solo la risposta del punto 3.
 ---
 
 *108 Vision — Costruiamo la direzione, non solo il codice.*
+
+---
+
+## Principi Operativi AI (Istruire AI)
+
+- L'umano decide la visione. Tu proponi struttura e sfidi le assunzioni.
+- Marca incertezza: `[verificato]`, `[probabile]`, `[non verificato]`, `[ignoto]`.
+- Questa è documentazione personale/strategica — non modificare senza conferma.
+- Sessioni corte: 1 tema = 1 sessione di brainstorming.

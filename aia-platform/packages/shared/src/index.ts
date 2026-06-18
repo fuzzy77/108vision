@@ -145,6 +145,8 @@ export const PRINCIPLE_IDS = [
   'act_only_when_needed',
   'evaluate_risk_benefit',
   'persistent_memory',
+  'context_awareness',
+  'token_efficiency',
 ] as const;
 
 export type PrincipleId = (typeof PRINCIPLE_IDS)[number];

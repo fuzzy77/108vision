@@ -67,6 +67,55 @@ Costruisco un sistema AI personalizzato che conosce l'azienda del cliente, parla
 
 ---
 
+## SEZIONE 1B — Governance AI integrata — I Principi come Feature
+
+### Perché è un differenziatore
+
+Nessun competitor ha governance AI built-in come feature di prodotto:
+- ChatGPT/Claude: zero governance, l'utente è solo
+- Tidio/Intercom AI: chatbot senza trasparenza
+- 108 AI: 9 principi implementati nel runtime, visibili in UI, configurabili per tenant
+
+### I 9 principi implementati
+
+| # | Principio | Implementazione tecnica | Cosa vede l'utente |
+|---|-----------|------------------------|-------------------|
+| 1 | Marcatori di certezza | LLM istruito + parsing badge in MessageBubble | Badge colorati inline |
+| 2 | Chiedi prima di procedere | Principio nel system prompt | L'AI fa domande invece di assumere |
+| 3 | Spiega cosa fai e perché | Principio nel system prompt | Risposte con "Perché" esplicito |
+| 4 | Dichiara incertezza | Principio + uncertainty header CLI | Header ⚠️ se c'è incertezza |
+| 5 | Checkpoint irreversibili | Gateway _approved flag + ProportionalityCard | Card rischio/beneficio pre-azione |
+| 6 | Non decidere per l'utente | Principio nel system prompt | Opzioni con trade-off, mai imposizioni |
+| 7 | Agisci solo quando necessario | Principio nel system prompt | Niente azioni superflue |
+| 8 | Valuta rischi e benefici | ProportionalityCard + principio | Dichiarazione esplicita rischi |
+| 9 | Memoria persistente | pgvector semantic memory | L'AI ricorda tra sessioni |
+| + | Gestione contesto | Session boundary monitor | Suggerimento nuova chat |
+| + | Efficienza token | LiteLLM cost routing + auto-healer | Costi ottimizzati automaticamente |
+
+### Come usarlo nella vendita
+
+**Script per il cliente:**
+"A differenza di ChatGPT dove non sai mai quanto l'AI sia sicura di quello che dice, 108 AI ti mostra sempre il livello di certezza. Se non sa qualcosa, te lo dice. Se sta per fare qualcosa di importante, si ferma e ti chiede il permesso. È come avere un collaboratore che è onesto sulle proprie capacità."
+
+**Red flag del cliente:** "Ma non rallenta il lavoro?" → "No, le azioni a basso rischio vengono eseguite immediatamente. Si ferma solo quando il rischio è alto — esattamente quando TU vorresti che si fermasse."
+
+### Configurabilità per tenant
+
+Ogni principio è attivabile/disattivabile via dashboard admin (route `/admin/agents` → Principles panel). Questo permette:
+- Tenant tecnico: disattiva "spiega cosa fai" (sa già)
+- Tenant non-tech: tutti i principi attivi (massima guida)
+- Demo: tutti attivi per mostrare il differenziatore
+
+### Metriche di governance
+
+Track da implementare (Phase 5):
+- Quante volte l'AI dichiara [ignoto] vs produce risposta
+- Quante volte il checkpoint viene accettato vs rifiutato
+- Quante sessioni vengono suggerite come "troppo lunghe"
+- Feedback utente su utilità dei badge
+
+---
+
 ## SEZIONE 2 — Target e Segmentazione
 
 ### 2.1 Il cliente ideale

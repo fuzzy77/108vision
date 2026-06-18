@@ -24,9 +24,7 @@ import { findScript, executeScript, updateUsage, listScripts, saveScript } from 
 import { initClipboardHistory, stopClipboardHistory, getHistory as getClipHistory, searchHistory as searchClip, pinEntry, clearHistory as clearClip, getStats as getClipStats } from './clipboard-history.js';
 import { startHotkeyListener, stopHotkeyListener, onHotkey, renderClipboardSelector, selectAndPasteEntry } from './clipboard-hotkey.js';
 import { listProviders, addProvider, removeProvider, testProvider, getProviderTemplates } from './provider-keys.js';
-import { handleTriageCommand, handleMorningCommand, handleStandupCommand } from './triage/cli.js';
-import { startTriageScheduler, stopTriageScheduler, getScheduleStatus, setSchedule, enableSchedule } from './triage/scheduler.js';
-import { handleJobCommand } from './jobs/cli.js';
+import { startTriageScheduler, stopTriageScheduler } from './triage/scheduler.js';
 import { startJobScheduler, stopJobScheduler } from './jobs/scheduler.js';
 import { handleTelegramCommand, handleWhatsAppCommand, handleNotifyCommand } from './integrations/messaging-cli.js';
 import { handleResourceCommand, handleHealthCommand } from './resources/cli.js';
@@ -109,6 +107,7 @@ let session: Session;
 let gatewayHttp: string;
 let multilineBuffer: string[] = [];
 let inMultiline = false;
+let sessionModel: string | undefined;
 
 // ---------------------------------------------------------------------------
 // Entry Point
@@ -417,7 +416,7 @@ async function callLLM(input: string): Promise<void> {
 
   const effectiveModel = isModelDowngraded()
     ? 'fast-cheap'
-    : llmOpts?.model ?? 'fast-cheap';
+    : sessionModel ?? llmOpts?.model ?? 'fast-cheap';
 
   const requestBody: Record<string, unknown> = { message: llmMessage };
   if (llmOpts?.systemPrompt) requestBody['system_prompt'] = llmOpts.systemPrompt;
@@ -664,6 +663,19 @@ async function handleSlashCommand(input: string): Promise<void> {
       printStats();
       break;
 
+    case 'model': {
+      if (args.length === 0) {
+        const current = sessionModel ?? '(default gateway / persona)';
+        process.stdout.write(`  Modello sessione: ${current}\n`);
+        process.stdout.write('  Tier: fast-cheap | balanced | powerful\n');
+        process.stdout.write('  Uso: /model <tier>\n');
+        break;
+      }
+      sessionModel = args[0];
+      process.stdout.write(`  Modello impostato: ${sessionModel}\n`);
+      break;
+    }
+
     case 'scripts':
       printScripts();
       break;
@@ -816,65 +828,6 @@ async function handleSlashCommand(input: string): Promise<void> {
     case 'notification': {
       const output = await handleNotifyCommand(args);
       process.stdout.write(output);
-      break;
-    }
-
-    case 'job':
-    case 'jobs': {
-      const output = await handleJobCommand(args);
-      process.stdout.write(output);
-      break;
-    }
-
-    case 'triage': {
-      const output = await handleTriageCommand(args);
-      process.stdout.write(output);
-      break;
-    }
-
-    case 'morning': {
-      const output = await handleMorningCommand(args);
-      process.stdout.write(output);
-      break;
-    }
-
-    case 'standup': {
-      const output = await handleStandupCommand(args);
-      process.stdout.write(output);
-      break;
-    }
-
-    case 'schedule': {
-      const sub = args[0]?.toLowerCase();
-      if (!sub || sub === 'status') {
-        const status = getScheduleStatus();
-        process.stdout.write(`\n  \x1b[1mTriage Scheduler:\x1b[0m\n`);
-        process.stdout.write(`  Attivo:     ${status.enabled ? '\x1b[32msi\x1b[0m' : '\x1b[90mno\x1b[0m'}\n`);
-        process.stdout.write(`  Cron:       ${status.cron}\n`);
-        process.stdout.write(`  Ultimo run: ${status.lastRun ?? 'mai'}\n`);
-        process.stdout.write(`  Prossimo:   ${status.nextRun ?? 'n/a'}\n\n`);
-      } else if (sub === 'on') {
-        enableSchedule(true);
-        process.stdout.write('  \x1b[32m[OK]\x1b[0m Scheduler attivato.\n');
-      } else if (sub === 'off') {
-        enableSchedule(false);
-        process.stdout.write('  \x1b[32m[OK]\x1b[0m Scheduler disattivato.\n');
-      } else if (sub === 'set') {
-        const cron = args.slice(1).join(' ');
-        if (!cron) {
-          process.stdout.write('  Uso: /schedule set <cron-expression>\n');
-          process.stdout.write('  Es: /schedule set 0 7 * * 1-5  (lun-ven ore 7:00)\n');
-          break;
-        }
-        try {
-          setSchedule(cron);
-          process.stdout.write(`  \x1b[32m[OK]\x1b[0m Schedule impostato: ${cron}\n`);
-        } catch (err) {
-          process.stdout.write(`  \x1b[31m[ERR]\x1b[0m ${err instanceof Error ? err.message : String(err)}\n`);
-        }
-      } else {
-        process.stdout.write('  Sub-comandi: status, on, off, set <cron>\n');
-      }
       break;
     }
 
@@ -1055,14 +1008,20 @@ function printHelp(): void {
   /providers add <t> Aggiungi provider (deepseek, openai, anthropic...)
   /providers test <i>Testa connessione provider
   /providers remove  Rimuovi provider
+  /model [tier]      Imposta modello LLM per la sessione (fast-cheap, balanced, powerful)
 
   \x1b[1mExtensions (Commands):\x1b[0m
 
-  /command list      Lista command custom (~/.108ai/commands/)
+  /command list      Lista command (~/.108ai/commands/)
   /command create <n> Crea scaffold YAML command
-  /command info <n>  Dettaglio command
+  /command info <n>  Dettaglio command (prompt o builtin)
   /command reload    Ricarica command + skill da disco
   /summarize-email   Riassunto email (alias /se)
+  /triage            Triage giornaliero (YAML builtin)
+  /morning           Morning briefing (alias /mattina)
+  /standup           Formato standup team
+  /schedule          Scheduler triage (on|off|set|status)
+  /job               Job engine (list|run|status|… alias /jobs)
 
   \x1b[1mExtensions (Skills):\x1b[0m
 
@@ -1110,28 +1069,6 @@ function printHelp(): void {
   /ui store [tipo]   Catalogo locale (command/skill/agent)
   /ui web [porta]    Dashboard web su 127.0.0.1:7891
   /ui web-stop       Ferma server web UI
-
-  \x1b[1mJob Engine:\x1b[0m
-
-  /job               Lista job configurati
-  /job run <nome>    Esegui un job ora
-  /job run <n> --dry-run  Simula senza eseguire
-  /job create <nome> Crea nuovo job (vuoto)
-  /job status <nome> Stato dettagliato di un job
-  /job history <nome>Storico esecuzioni
-  /job pause/resume  Sospendi/riprendi scheduling
-  /job budget        Overview budget tutti i job
-  /job stats         Statistiche aggregate
-  /job delete <nome> Elimina un job
-
-  \x1b[1mTriage Giornaliero:\x1b[0m
-
-  /triage            Triage completo (email, calendar, PEC, sistema)
-  /morning           Briefing mattutino con saluto e data
-  /standup           Formato standup (fatto/da fare/blocchi)
-  /schedule          Mostra stato scheduler automatico
-  /schedule on|off   Attiva/disattiva triage automatico
-  /schedule set <c>  Imposta cron (es: 0 7 * * 1-5)
 
   \x1b[1mMessaging & Notifiche:\x1b[0m
 

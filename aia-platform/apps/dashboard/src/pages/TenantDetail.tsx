@@ -24,6 +24,8 @@ import { formatCurrency, formatDate, formatRelative, formatTokens, navigate } fr
 import { uploadForTenant } from '@/lib/api';
 import { Bot, FileText, MessageSquare, Plus, Upload, Settings, AlertTriangle, ExternalLink, Pencil, Network, Monitor, Loader2, Users, UserPlus, Trash2, Shield } from 'lucide-react';
 import { DesktopMonitor } from '@/components/desktop/DesktopMonitor';
+import { TriagePanel } from '@/components/desktop/TriagePanel';
+import { JobListPanel } from '@/components/desktop/JobListPanel';
 import type { Message, TenantUser } from '@/types';
 
 interface TenantDetailPageProps {
@@ -476,7 +478,13 @@ function TenantDetailPage({ tenantId }: TenantDetailPageProps) {
 
         {/* Desktop Tab */}
         <TabsContent value="desktop">
-          <DesktopMonitor tenantId={tenantId} />
+          <div className="space-y-6">
+            <div className="grid gap-6 lg:grid-cols-2">
+              <TriagePanel tenantId={tenantId} />
+              <JobListPanel tenantId={tenantId} />
+            </div>
+            <DesktopMonitor tenantId={tenantId} />
+          </div>
         </TabsContent>
 
         {/* Settings Tab */}

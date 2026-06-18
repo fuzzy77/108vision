@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import { Copy, Check } from 'lucide-react';
+import DOMPurify from 'dompurify';
 import { formatDate } from '@/lib/format';
 import type { Message } from '@/lib/api';
+import { WhyButton } from './WhyButton';
 
 interface MessageBubbleProps {
   message: Message;
+  onAskWhy?: () => void;
 }
 
 const CONFIDENCE_BADGES: Record<string, { bg: string; text: string; label: string }> = {
@@ -60,7 +63,7 @@ function renderMarkdown(text: string): string {
   return html;
 }
 
-export function MessageBubble({ message }: MessageBubbleProps) {
+export function MessageBubble({ message, onAskWhy }: MessageBubbleProps) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -95,7 +98,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
       >
         <div
           className="text-sm leading-relaxed break-words prose-sm"
-          dangerouslySetInnerHTML={{ __html: renderMarkdown(message.content) }}
+          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(renderMarkdown(message.content), { ADD_ATTR: ['class', 'target'] }) }}
         />
 
         <div
@@ -106,17 +109,22 @@ export function MessageBubble({ message }: MessageBubbleProps) {
         >
           <span>{formatDate(message.createdAt)}</span>
           {!isUser && (
-            <button
-              onClick={handleCopy}
-              className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-700"
-              aria-label="Copy message"
-            >
-              {copied ? (
-                <Check className="w-3.5 h-3.5 text-emerald-500" />
-              ) : (
-                <Copy className="w-3.5 h-3.5" />
+            <>
+              <button
+                onClick={handleCopy}
+                className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-700"
+                aria-label="Copy message"
+              >
+                {copied ? (
+                  <Check className="w-3.5 h-3.5 text-emerald-500" />
+                ) : (
+                  <Copy className="w-3.5 h-3.5" />
+                )}
+              </button>
+              {onAskWhy && (
+                <WhyButton onAskWhy={onAskWhy} />
               )}
-            </button>
+            </>
           )}
         </div>
       </div>

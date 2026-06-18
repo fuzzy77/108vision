@@ -35,6 +35,8 @@ export interface CommandDefinition {
   description: string;
   aliases?: string[];
   version?: number;
+  /** When set, execution delegates to a platform handler instead of LLM prompt */
+  builtin?: string;
   params?: CommandParamDef[];
   context?: CommandContextSource[];
   prompt?: string;
@@ -246,6 +248,8 @@ export interface McpServerDefinition {
   transport: 'stdio' | 'sse';
   command?: string;
   args?: string[];
+  /** Working directory for stdio transport (git-installed servers). */
+  cwd?: string;
   url?: string;
   env?: Record<string, string>;
   auth?: McpServerAuth;

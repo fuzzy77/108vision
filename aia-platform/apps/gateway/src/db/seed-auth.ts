@@ -30,6 +30,11 @@ interface SeedUser {
 }
 
 async function seed(): Promise<void> {
+  if (process.env.NODE_ENV === 'production') {
+    console.error('ERROR: Seed script cannot run in production environment');
+    process.exit(1);
+  }
+
   const pool = new Pool({ connectionString: DATABASE_URL });
 
   try {
@@ -109,11 +114,7 @@ async function seed(): Promise<void> {
         await client.query(
           `INSERT INTO shared.users (email, password_hash, name, role, tenant_id, email_verified, last_login_at)
            VALUES ($1, $2, $3, $4, $5, true, NULL)
-           ON CONFLICT (email) DO UPDATE SET
-             password_hash = EXCLUDED.password_hash,
-             name = EXCLUDED.name,
-             role = EXCLUDED.role,
-             tenant_id = EXCLUDED.tenant_id`,
+           ON CONFLICT (email) DO NOTHING`,
           [user.email, passwordHash, user.name, user.role, user.tenantId],
         );
       }
@@ -121,12 +122,7 @@ async function seed(): Promise<void> {
       await client.query('COMMIT');
       console.log('[seed-auth] Seed completed successfully.');
       console.log('');
-      console.log('  Credentials:');
-      console.log('  -----------------------------------------------');
-      console.log('  Consultant:    admin@108labs.it / changeme108!');
-      console.log('  Client Admin:  admin@demo-azienda.it / changeme108!');
-      console.log('  Client User:   mario.rossi@demo-azienda.it / changeme108!');
-      console.log('  -----------------------------------------------');
+      console.log('  Credentials: see .env or seed script source (not logged for security)');
       console.log('');
     } catch (error) {
       await client.query('ROLLBACK');

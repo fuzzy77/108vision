@@ -1,48 +1,27 @@
 /**
  * Shell Capability — Execute commands in a sandboxed shell.
- *
- * Security model:
- * - Working directory must be within allowedDirectories
- * - Blocklist of destructive commands
- * - Hard timeout (default 30s, max 120s)
- * - Output truncated to 100KB
- * - high-risk classification (requires gateway approval)
  */
 
 import { execSync } from 'node:child_process';
 import { platform } from 'node:os';
-import { resolve, normalize } from 'node:path';
-import { existsSync } from 'node:fs';
-import { validatePath } from '../security.js';
+
 import type { AgentConfig } from '../config.js';
+import {
+  assertShellEnabled,
+  resolveMaxOutputBytes,
+  resolveShellCwd,
+  resolveShellTimeout,
+  validateShellCommand,
+} from './shell-security.js';
+import {
+  getShellProcessLogs,
+  listRunningShellProcesses,
+  startShellProcess,
+  terminateShellProcess,
+} from './shell-process.js';
 
-const DEFAULT_TIMEOUT_MS = 30_000;
-const MAX_TIMEOUT_MS = 120_000;
-const MAX_OUTPUT_BYTES = 100 * 1024; // 100KB
-
-const BLOCKED_PATTERNS: RegExp[] = [
-  // Destructive filesystem ops
-  /\brm\s+(-rf?|--recursive)\s+[/\\]/i,
-  /\bdel\s+\/s\s+\/q/i,
-  /\bformat\s+[a-z]:/i,
-  /\brmdir\s+\/s/i,
-  /\bmkfs\b/i,
-  /\bdd\s+if=/i,
-  // System-level danger
-  /\bshutdown\b/i,
-  /\breboot\b/i,
-  /\bkill\s+-9\s+1\b/,
-  /\bkillall\b/i,
-  /\btaskkill\s+\/f\s+\/im\s+(explorer|csrss|svchost)/i,
-  // Registry / system config
-  /\breg\s+(delete|add)\s+hklm/i,
-  /\bchmod\s+777\s+\//i,
-  // Network danger
-  /\biptables\s+-F/i,
-  /\bnetsh\s+advfirewall\s+reset/i,
-  // Crypto / ransom patterns
-  /\bopenssl\s+enc\b.*-in\s+\//i,
-];
+export type { ShellStreamEvent, ShellStreamHandler } from './shell-process.js';
+export { setShellStreamHandler } from './shell-process.js';
 
 export interface ShellResult {
   stdout: string;
@@ -55,9 +34,6 @@ export interface ShellResult {
   cwd: string;
 }
 
-/**
- * Execute a shell command with sandboxing.
- */
 export function executeCommand(
   command: string,
   params: {
@@ -67,38 +43,13 @@ export function executeCommand(
   },
   config: AgentConfig,
 ): ShellResult {
-  if (!command || command.trim().length === 0) {
-    throw new Error('Command cannot be empty');
-  }
+  assertShellEnabled(config);
+  validateShellCommand(command, config);
 
-  // Validate working directory
-  const cwd = params.cwd ?? config.allowedDirectories[0];
-  if (!cwd) {
-    throw new Error('No working directory specified and no allowedDirectories configured');
-  }
+  const validatedCwd = resolveShellCwd(params.cwd, config);
+  const timeout = resolveShellTimeout(params.timeout, config);
+  const maxOutput = resolveMaxOutputBytes(config);
 
-  const resolvedCwd = resolve(normalize(cwd));
-  const validatedCwd = validatePath(resolvedCwd, config.allowedDirectories);
-  if (!validatedCwd) {
-    throw new Error(`Working directory "${cwd}" is outside allowed directories`);
-  }
-
-  if (!existsSync(validatedCwd)) {
-    throw new Error(`Working directory does not exist: ${validatedCwd}`);
-  }
-
-  // Check blocklist
-  const blocked = BLOCKED_PATTERNS.find((pat) => pat.test(command));
-  if (blocked) {
-    throw new Error(
-      `Command blocked by security policy. Destructive or dangerous commands are not allowed.`,
-    );
-  }
-
-  // Timeout
-  const timeout = Math.min(params.timeout ?? DEFAULT_TIMEOUT_MS, MAX_TIMEOUT_MS);
-
-  // Determine shell
   const isWindows = platform() === 'win32';
   const shell = isWindows ? 'cmd.exe' : '/bin/sh';
 
@@ -112,13 +63,12 @@ export function executeCommand(
     const output = execSync(command, {
       cwd: validatedCwd,
       timeout,
-      maxBuffer: MAX_OUTPUT_BYTES,
+      maxBuffer: maxOutput,
       encoding: 'utf-8',
       shell,
       env: {
         ...process.env,
         ...params.env,
-        // Prevent interactive prompts
         GIT_TERMINAL_PROMPT: '0',
         CI: '1',
       },
@@ -143,14 +93,13 @@ export function executeCommand(
 
   const durationMs = Date.now() - startTime;
 
-  // Truncate output if needed
   let truncated = false;
-  if (stdout.length > MAX_OUTPUT_BYTES) {
-    stdout = stdout.slice(0, MAX_OUTPUT_BYTES) + '\n... [output truncated]';
+  if (stdout.length > maxOutput) {
+    stdout = stdout.slice(0, maxOutput) + '\n... [output truncated]';
     truncated = true;
   }
-  if (stderr.length > MAX_OUTPUT_BYTES) {
-    stderr = stderr.slice(0, MAX_OUTPUT_BYTES) + '\n... [output truncated]';
+  if (stderr.length > maxOutput) {
+    stderr = stderr.slice(0, maxOutput) + '\n... [output truncated]';
     truncated = true;
   }
 
@@ -166,9 +115,34 @@ export function executeCommand(
   };
 }
 
-/**
- * Get the default shell info for context.
- */
+export function executeCommandStream(
+  command: string,
+  params: {
+    cwd?: string;
+    timeout?: number;
+    env?: Record<string, string>;
+  },
+  config: AgentConfig,
+): ReturnType<typeof startShellProcess> {
+  return startShellProcess(command, params, config);
+}
+
+export function terminateCommand(processId: string): ReturnType<typeof terminateShellProcess> {
+  return terminateShellProcess(processId);
+}
+
+export function getRunningCommands() {
+  return { processes: listRunningShellProcesses() };
+}
+
+export function getCommandLogs(processId: string, tail?: number) {
+  const logs = getShellProcessLogs(processId, tail);
+  if (!logs) {
+    throw new Error(`Process not found: ${processId}`);
+  }
+  return logs;
+}
+
 export function getShellInfo(): { shell: string; platform: string } {
   const isWindows = platform() === 'win32';
   return {

@@ -13,22 +13,24 @@ const posts = [
     tags: ['AI', 'Strategia', 'PMI'],
     readTime: '5 min',
   },
-  {
-    title: 'Fractional CTO: quando ha senso e quando no',
-    excerpt: 'Non ogni azienda ha bisogno di un Fractional CTO. Ecco i segnali che indicano che e il momento giusto e quelli che suggeriscono altre soluzioni.',
-    date: '2025-01-08',
-    slug: 'fractional-cto-quando-ha-senso',
-    tags: ['Leadership', 'Startup'],
-    readTime: '7 min',
-  },
-  {
-    title: 'Microservizi: il piu grande malinteso dell\'industria',
-    excerpt: 'Il 90% delle aziende che "fanno microservizi" ha in realta un distributed monolith. Ecco come capire se hai davvero bisogno di microservizi.',
-    date: '2025-01-02',
-    slug: 'microservizi-malinteso',
-    tags: ['Architettura', 'Microservizi'],
-    readTime: '8 min',
-  },
+  // TODO: Uncomment when post is published
+  // {
+  //   title: 'Fractional CTO: quando ha senso e quando no',
+  //   excerpt: 'Non ogni azienda ha bisogno di un Fractional CTO. Ecco i segnali che indicano che e il momento giusto e quelli che suggeriscono altre soluzioni.',
+  //   date: '2025-01-08',
+  //   slug: 'fractional-cto-quando-ha-senso',
+  //   tags: ['Leadership', 'Startup'],
+  //   readTime: '7 min',
+  // },
+  // TODO: Uncomment when post is published
+  // {
+  //   title: 'Microservizi: il piu grande malinteso dell\'industria',
+  //   excerpt: 'Il 90% delle aziende che "fanno microservizi" ha in realta un distributed monolith. Ecco come capire se hai davvero bisogno di microservizi.',
+  //   date: '2025-01-02',
+  //   slug: 'microservizi-malinteso',
+  //   tags: ['Architettura', 'Microservizi'],
+  //   readTime: '8 min',
+  // },
 ];
 ---
 
@@ -57,8 +59,8 @@ const posts = [
         ))}
       </div>
 
-      <!-- Pagination placeholder -->
-      <div class="mt-12 flex justify-center">
+      <!-- Pagination placeholder — hidden until enough posts exist -->
+      <div class="hidden mt-12 flex justify-center">
         <nav class="flex items-center gap-2" aria-label="Pagination">
           <span class="px-4 py-2 text-sm font-medium bg-primary-600 text-white rounded-lg">1</span>
           <a href="#" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg">2</a>

@@ -35,6 +35,7 @@ Dopo l'avvio entri nella shell REPL. Puoi:
 | `/skill list` | Skill installate |
 | `/mcp list` | Server MCP configurati |
 | `/export backup` | Backup extensions |
+| `/model [tier]` | Imposta modello sessione (`fast-cheap`, `balanced`, `powerful`) |
 
 ## Extensions
 
@@ -60,6 +61,14 @@ Strategie `context_window`:
 
 Server Model Context Protocol (stdio). Avvio: `/mcp start <nome>`, tool: `/mcp tools <nome>`.
 
+Install rapido (presets/npm/git):
+
+```text
+/mcp install everything-demo
+/mcp install npm @modelcontextprotocol/server-everything --name everything-demo
+/mcp install git https://github.com/org/repo --command node --args dist/index.js
+```
+
 ## Dashboard Web UI
 
 ```text
@@ -68,6 +77,18 @@ Server Model Context Protocol (stdio). Avvio: `/mcp start <nome>`, tool: `/mcp t
 ```
 
 Solo **localhost** (`127.0.0.1`). Tab: Commands, Skills, Agents, MCP, Store. Shortcut `Ctrl+K` per ricerca. Refresh automatico ogni 15s.
+
+### Store (install)
+
+Da terminale:
+
+```text
+/ui store install <item-id>
+```
+
+Da Web UI: tab **Store** → **Installa**.
+
+Nota: i pacchetti store possono essere verificati via firma autore (HMAC) in base alla policy (vedi `SECURITY-RUNBOOK.md`).
 
 ## Triage giornaliero
 
@@ -107,6 +128,7 @@ Le query ripetute o semanticamente simili possono essere servite da cache locale
 ~/.108ai/jobs/
 ~/.108ai/cache/
 ~/.108ai/audit.log
+~/.108ai/indexes/              # Local RAG indexes (index.*)
 ```
 
 Per dettagli sicurezza vedi [SECURITY-RUNBOOK.md](./SECURITY-RUNBOOK.md).

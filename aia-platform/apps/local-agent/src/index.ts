@@ -17,14 +17,23 @@
 
 import { loadConfig, parseCliArgs, saveConfig, isTokenExpired, getDefaultGatewayUrl, type AgentConfig } from './config.js';
 import { performBrowserLogin, gatewayWsToHttp } from './auth.js';
-import { startUpdateLoop, getCurrentVersion } from './updater.js';
+import { startUpdateLoop, applyPendingUpdate, setUpdateNotificationHandler, scheduleRestart, loadPendingUpdateVersion } from './updater.js';
+import { getAppVersion } from './version.js';
 import { AgentConnection, type AgentMessage } from './connection.js';
 import { executeAction, getRegisteredActions } from './capabilities/index.js';
+import { setShellStreamHandler } from './capabilities/shell.js';
 import { stopAllWatchers } from './capabilities/filesystem.js';
-import { initializeTray, computeDesktopTrayStatus, type TrayState } from './tray.js';
+import { initializeTray, computeDesktopTrayStatus, openSettingsInBrowser, type TrayState } from './tray.js';
 import { handleToolCall } from '@aia/desktop-bridge';
 import { handleInstall, handleUninstall, handleCliQuery, readStdin } from './cli.js';
 import { startShell } from './shell.js';
+import { ensureInstalled } from './installer.js';
+import { applyFirstRunDefaults, isFirstRunComplete } from './first-run.js';
+import { openShellInTerminal } from './shell-launcher.js';
+import { startTriageScheduler, stopTriageScheduler } from './triage/scheduler.js';
+import { startJobScheduler, stopJobScheduler } from './jobs/scheduler.js';
+import { startResourceMonitor, stopResourceMonitor } from './resources/monitor.js';
+import { runAutoHealing } from './resources/auto-healer.js';
 
 // --- Entry Point Router ---
 
@@ -41,8 +50,13 @@ if (firstArg === '--install' || firstArg === 'install') {
   handleUninstall();
   process.exit(0);
 } else if (firstArg === '--version' || firstArg === '-v') {
-  process.stdout.write(`108ai v${getCurrentVersion()}\n`);
+  process.stdout.write(`108ai v${getAppVersion()}\n`);
   process.exit(0);
+} else if (firstArg === 'setup' || firstArg === '--setup') {
+  handleInstall().then(() => process.exit(0)).catch((e) => {
+    process.stderr.write(`Errore: ${e instanceof Error ? e.message : String(e)}\n`);
+    process.exit(1);
+  });
 } else if (firstArg === 'agent' || firstArg === '--agent' || firstArg === '--daemon') {
   // Explicit agent mode
   startAgent();
@@ -92,7 +106,8 @@ function printUsage(): void {
     108ai                        Shell interattiva (come Claude Code)
     108ai domanda qui            Chiedi qualcosa all'AI (risposta e esci)
     108ai agent                  Avvia l'agente in background (WebSocket)
-    108ai --install              Installa nel PATH di sistema
+    108ai --install              Installa nel PATH + autostart
+    108ai setup                  Ripara installazione (alias --install)
     108ai --pipe istruzione      Leggi da stdin e processa
     108ai --version              Mostra versione
 
@@ -134,7 +149,7 @@ function write(text: string): void {
 }
 
 function printBanner(): void {
-  const version = getCurrentVersion();
+  const version = getAppVersion();
   write('');
   write('  \x1b[32m+========================================+\x1b[0m');
   write('  \x1b[32m|\x1b[0m                                        \x1b[32m|\x1b[0m');
@@ -167,6 +182,33 @@ function startAgent(): void {
 async function main(): Promise<void> {
   printBanner();
   status('Avvio in corso...');
+
+  if (applyPendingUpdate()) {
+    statusOk('Aggiornamento applicato dalla sessione precedente');
+  }
+
+  // Silent install when launched from downloaded binary (not ~/.108ai/bin)
+  const installResult = await ensureInstalled();
+  if (installResult) {
+    statusOk(`Installato in ${installResult.binaryPath}`);
+    if (installResult.pathAdded) {
+      status('Riavvia il terminale per aggiornare il PATH');
+    }
+    if (installResult.action === 'fresh') {
+      applyFirstRunDefaults();
+      statusOk('Primo avvio: triage mattutino lun-ven 07:00 attivato');
+    }
+  } else if (!isFirstRunComplete()) {
+    applyFirstRunDefaults();
+  }
+
+  startTriageScheduler();
+  startJobScheduler();
+  startResourceMonitor(async (snapshot, changed) => {
+    if (changed && snapshot.overall !== 'normal') {
+      await runAutoHealing(snapshot);
+    }
+  });
 
   status('Caricamento configurazione...');
 
@@ -245,13 +287,44 @@ async function main(): Promise<void> {
 
   // Start auto-update loop
   if (gatewayHttpUrl) {
+    setUpdateNotificationHandler((info) => {
+      tray?.notify(
+        info.type === 'staged' ? '108 AI — Aggiornamento pronto' : '108 AI — Aggiornamento disponibile',
+        info.type === 'staged'
+          ? `v${info.version} scaricato. Riavvia l'agent per applicare.`
+          : `Nuova versione v${info.version}`,
+      );
+      if (info.type === 'staged') {
+        tray?.setPendingUpdate(info.version);
+      }
+    });
     startUpdateLoop(gatewayHttpUrl);
   }
 
-  // Initialize system tray (optional, graceful degradation)
+  let connection: AgentConnection | null = null;
   let traySetState: ((state: TrayState) => void) | null = null;
 
+  const shutdown = (signal: string): void => {
+    console.log(JSON.stringify({
+      level: 'info',
+      message: `Shutting down (${signal})`,
+    }));
+
+    connection?.disconnect();
+    setShellStreamHandler(null);
+    stopAllWatchers();
+    stopTriageScheduler();
+    stopJobScheduler();
+    stopResourceMonitor();
+    tray?.destroy();
+
+    process.exit(0);
+  };
+
   const tray = await initializeTray({
+    onOpenShell: () => {
+      openShellInTerminal();
+    },
     onOpenDashboard: () => {
       import('open').then((open) => {
         const dashUrl = config!.gatewayUrl
@@ -261,10 +334,16 @@ async function main(): Promise<void> {
         open.default(dashUrl).catch(() => {});
       }).catch(() => {});
     },
+    onOpenSettings: () => {
+      if (config) openSettingsInBrowser(config);
+    },
     onPause: () => {
+      connection?.pause();
+      traySetState?.('paused');
       console.log(JSON.stringify({ level: 'info', message: 'Agent paused by user' }));
     },
     onResume: () => {
+      connection?.resume();
       console.log(JSON.stringify({ level: 'info', message: 'Agent resumed by user' }));
     },
     onQuit: () => {
@@ -276,7 +355,6 @@ async function main(): Promise<void> {
       const previous = config.desktopEnabled;
       config.desktopEnabled = enabled;
 
-      // Persist the toggle so it survives restarts
       try {
         saveConfig(config);
       } catch {
@@ -293,11 +371,15 @@ async function main(): Promise<void> {
         current: enabled,
       }));
 
-      // Update tray indicator
       if (tray) {
         tray.setDesktopStatus(computeDesktopTrayStatus(config));
       }
     },
+    onRestartForUpdate: () => {
+      scheduleRestart();
+    },
+  }, {
+    pendingUpdateVersion: loadPendingUpdateVersion(),
   });
 
   if (tray) {
@@ -313,13 +395,13 @@ async function main(): Promise<void> {
   status(`Connessione a ${config.gatewayUrl}...`);
 
   // Create WebSocket connection
-  const connection = new AgentConnection({
+  const agentConnection = new AgentConnection({
     gatewayUrl: config.gatewayUrl,
     authToken: config.authToken,
     tenantId: config.tenantId,
     capabilities,
     onMessage: async (message: AgentMessage) => {
-      await handleIncomingMessage(message, config!, connection, traySetState);
+      await handleIncomingMessage(message, config!, agentConnection, traySetState);
     },
     onConnect: () => {
       traySetState?.('connected');
@@ -332,26 +414,18 @@ async function main(): Promise<void> {
       write('');
     },
     onDisconnect: () => {
-      traySetState?.('disconnected');
+      traySetState?.(agentConnection.isPaused() ? 'paused' : 'disconnected');
     },
   });
 
+  connection = agentConnection;
+
+  setShellStreamHandler((event) => {
+    agentConnection.sendEvent('shell.stream', { ...event });
+  });
+
   // Connect
-  connection.connect();
-
-  // Graceful shutdown
-  const shutdown = (signal: string): void => {
-    console.log(JSON.stringify({
-      level: 'info',
-      message: `Shutting down (${signal})`,
-    }));
-
-    connection.disconnect();
-    stopAllWatchers();
-    tray?.destroy();
-
-    process.exit(0);
-  };
+  agentConnection.connect();
 
   process.on('SIGTERM', () => shutdown('SIGTERM'));
   process.on('SIGINT', () => shutdown('SIGINT'));

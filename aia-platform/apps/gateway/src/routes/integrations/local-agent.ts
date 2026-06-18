@@ -96,7 +96,13 @@ localAgent.post('/execute', async (c) => {
 
   // Validate that the action is within the agent's capabilities
   const capabilities = registry.getAgentCapabilities(tenantId);
-  if (capabilities.length > 0 && !capabilities.includes(body.action)) {
+  const internalPrefixes = ['triage.', 'jobs.'];
+  const isInternal = internalPrefixes.some((p) => body.action.startsWith(p));
+  if (
+    capabilities.length > 0 &&
+    !capabilities.includes(body.action) &&
+    !isInternal
+  ) {
     throw new AppError(
       'LOCAL_AGENT_CAPABILITY_MISSING',
       `The local agent does not support action: ${body.action}. Available: ${capabilities.join(', ')}`,
@@ -149,6 +155,98 @@ localAgent.post('/execute', async (c) => {
     result,
     durationMs,
   });
+});
+
+// --- Triage & Jobs (dashboard consulente) ---
+
+async function requireConnectedAgent(tenantId: string) {
+  const registry = getLocalAgentRegistry();
+  if (!registry.isAgentConnected(tenantId)) {
+    throw new AppError(
+      'LOCAL_AGENT_NOT_CONNECTED',
+      'No local agent is currently connected for this tenant',
+      503,
+    );
+  }
+  return registry;
+}
+
+/**
+ * GET /api/integrations/local-agent/triage — Last triage report + schedule.
+ */
+localAgent.get('/triage', async (c) => {
+  const tenantId = c.get('tenantId') as string;
+  const registry = await requireConnectedAgent(tenantId);
+
+  const [report, schedule] = await Promise.all([
+    registry.executeAction(tenantId, 'triage.lastReport', {}, 15_000),
+    registry.executeAction(tenantId, 'triage.schedule', {}, 15_000),
+  ]);
+
+  return c.json({ report, schedule });
+});
+
+/**
+ * POST /api/integrations/local-agent/triage/run — Run triage on the agent.
+ */
+localAgent.post('/triage/run', async (c) => {
+  const tenantId = c.get('tenantId') as string;
+  const registry = await requireConnectedAgent(tenantId);
+
+  const report = await registry.executeAction(tenantId, 'triage.run', {}, 120_000);
+
+  return c.json({ report });
+});
+
+/**
+ * GET /api/integrations/local-agent/jobs — List jobs with stats.
+ */
+localAgent.get('/jobs', async (c) => {
+  const tenantId = c.get('tenantId') as string;
+  const registry = await requireConnectedAgent(tenantId);
+
+  const [jobs, scheduler] = await Promise.all([
+    registry.executeAction(tenantId, 'jobs.list', {}, 30_000),
+    registry.executeAction(tenantId, 'jobs.scheduler', {}, 15_000),
+  ]);
+
+  return c.json({ jobs, scheduler });
+});
+
+/**
+ * GET /api/integrations/local-agent/jobs/:id — Job detail + recent runs.
+ */
+localAgent.get('/jobs/:id', async (c) => {
+  const tenantId = c.get('tenantId') as string;
+  const jobId = c.req.param('id');
+  const registry = await requireConnectedAgent(tenantId);
+
+  const detail = await registry.executeAction(
+    tenantId,
+    'jobs.get',
+    { id: jobId },
+    30_000,
+  );
+
+  return c.json(detail);
+});
+
+/**
+ * POST /api/integrations/local-agent/jobs/:id/run — Trigger job manually.
+ */
+localAgent.post('/jobs/:id/run', async (c) => {
+  const tenantId = c.get('tenantId') as string;
+  const jobId = c.req.param('id');
+  const registry = await requireConnectedAgent(tenantId);
+
+  const result = await registry.executeAction(
+    tenantId,
+    'jobs.run',
+    { id: jobId },
+    180_000,
+  );
+
+  return c.json(result);
 });
 
 /**

@@ -53,6 +53,21 @@ const PRINCIPLE_METADATA: Record<PrincipleId, Omit<PrincipleDefinition, 'id' | '
     description: 'L\'AI esprime esplicitamente rischi e benefici prima di ogni azione non banale.',
     riskWarning: 'L\'AI procedera\' senza dichiarare i rischi. Non saprai cosa potrebbe andare storto finche\' non va storto.',
   },
+  persistent_memory: {
+    label: 'Memoria Persistente',
+    description: 'L\'AI ricorda preferenze, contesto e decisioni tra sessioni e dispositivi senza che l\'utente debba ripetersi.',
+    riskWarning: 'L\'AI non ricordera\' nulla tra le sessioni. L\'utente dovra\' fornire lo stesso contesto ogni volta.',
+  },
+  context_awareness: {
+    label: 'Gestione del Contesto',
+    description: 'L\'AI monitora la lunghezza della conversazione e suggerisce nuove sessioni quando la qualità potrebbe degradare.',
+    riskWarning: 'L\'AI continuera\' a rispondere anche quando il contesto e\' saturo, con risposte progressivamente meno coerenti.',
+  },
+  token_efficiency: {
+    label: 'Efficienza e Risparmio',
+    description: 'L\'AI risponde in modo conciso e non spreca risorse inutilmente.',
+    riskWarning: 'L\'AI produrra\' risposte verbose e ridondanti, aumentando costi e riducendo la chiarezza.',
+  },
 };
 
 let cachedPrinciples: ParsedPrinciple[] | null = null;

@@ -1,174 +1,317 @@
 /**
- * System Tray — Optional system tray icon for 108 AI desktop agent.
- *
- * Provides visual feedback about connection state and a right-click menu.
- * Gracefully degrades if the tray is not available (headless/SSH sessions).
- *
- * States:
- * - Connected (green): actively connected to gateway
- * - Disconnected (red): not connected, attempting reconnection
- * - Processing (yellow): currently executing an action
- *
- * Desktop Access indicator (shown in tooltip / log):
- * - Green  [desktop:ON]  : desktop enabled, all capabilities available
- * - Yellow [desktop:PARTIAL]: desktop enabled but some capabilities unavailable
- * - Red    [desktop:OFF] : desktop disabled
+ * System Tray — Native menu via systray2 when available, else desktop notifications.
  */
 
-export type TrayState = 'connected' | 'disconnected' | 'processing';
+import { existsSync } from 'node:fs';
+import { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-/**
- * Desktop capability status for the tray indicator.
- */
+import type { AgentConfig } from './config.js';
+import { getAppVersion } from './version.js';
+
+export type TrayState = 'connected' | 'disconnected' | 'processing' | 'paused';
+
 export type DesktopTrayStatus = 'enabled' | 'partial' | 'disabled';
 
+export interface TrayInitOptions {
+  pendingUpdateVersion?: string | null;
+}
+
 export interface TrayCallbacks {
+  onOpenShell: () => void;
   onOpenDashboard: () => void;
+  onOpenSettings: () => void;
   onPause: () => void;
   onResume: () => void;
   onQuit: () => void;
   onToggleDesktopAccess: (enabled: boolean) => void;
+  onRestartForUpdate?: () => void;
 }
 
 interface TrayInstance {
   setState: (state: TrayState) => void;
   setTooltip: (text: string) => void;
   setDesktopStatus: (status: DesktopTrayStatus) => void;
+  setPendingUpdate: (version: string | null) => void;
+  notify: (title: string, message: string) => void;
   destroy: () => void;
 }
 
-const DESKTOP_STATUS_LABELS: Record<DesktopTrayStatus, string> = {
-  enabled:  '[desktop:ON]  (green)',
-  partial:  '[desktop:PARTIAL] (yellow)',
-  disabled: '[desktop:OFF] (red)',
+/** 16×16 PNG icons per connection state (base64). */
+const TRAY_ICONS: Record<TrayState, string> = {
+  connected:
+    'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAMUlEQVQ4T2NkYGD4z0ABYBw1gGE0DBhGwwAGBgZGBgYoBhQjI2MIJgYAABQAB3pLkZ0AAAAASUVORK5CYII=',
+  disconnected:
+    'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAMUlEQVQ4T2NkYGD4z0ABYBw1gGE0DBhGwwAGBgZGBgYoBhQjI2MIJgYAABQAB3pLkZ0AAAAASUVORK5CYII=',
+  processing:
+    'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAMUlEQVQ4T2NkYGD4z0ABYBw1gGE0DBhGwwAGBgZGBgYoBhQjI2MIJgYAABQAB3pLkZ0AAAAASUVORK5CYII=',
+  paused:
+    'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAMUlEQVQ4T2NkYGD4z0ABYBw1gGE0DBhGwwAGBgZGBgYoBhQjI2MIJgYAABQAB3pLkZ0AAAAASUVORK5CYII=',
 };
 
-const DESKTOP_STATUS_ICONS: Record<DesktopTrayStatus, string> = {
-  enabled:  'green',
-  partial:  'yellow',
-  disabled: 'red',
+const MENU = {
+  shell: 'Apri Shell',
+  dashboard: 'Apri Dashboard',
+  settings: 'Impostazioni',
+  restartUpdate: 'Riavvia per aggiornare',
+  pause: 'Pausa agente',
+  resume: 'Riprendi agente',
+  desktopOn: 'Abilita Desktop Access',
+  desktopOff: 'Disabilita Desktop Access',
+  quit: 'Esci',
+} as const;
+
+function resolveSystrayBinDir(): string | null {
+  const candidates = [
+    join(process.cwd(), 'node_modules', 'systray2', 'traybin'),
+    join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'node_modules', 'systray2', 'traybin'),
+    join(dirname(fileURLToPath(import.meta.url)), '..', 'node_modules', 'systray2', 'traybin'),
+  ];
+  for (const dir of candidates) {
+    if (existsSync(dir)) return dir;
+  }
+  return null;
+}
+
+async function sendDesktopNotification(title: string, message: string): Promise<void> {
+  if (!hasDisplay()) return;
+  try {
+    const notifier = await import('node-notifier');
+    notifier.default.notify({ title, message, sound: false, wait: false });
+  } catch {
+    // best-effort
+  }
+}
+
+type SystrayModule = {
+  default: new (config: {
+    copyDirectory: string;
+    icon: string;
+    title: string;
+    tooltip: string;
+    items: Array<{ title: string; tooltip: string; checked: boolean; enabled: boolean } | unknown>;
+  }) => {
+    onClick: (cb: (action: { item?: { title?: string } }) => void) => void;
+    sendAction: (action: unknown) => void;
+    kill: () => void;
+  };
+  separator?: unknown;
 };
 
-/**
- * Attempt to initialize the system tray.
- * Returns null if tray is not available (headless environment).
- */
-export async function initializeTray(callbacks: TrayCallbacks): Promise<TrayInstance | null> {
+async function tryNativeTray(
+  callbacks: TrayCallbacks,
+  initialDesktop: DesktopTrayStatus,
+  options: TrayInitOptions,
+): Promise<TrayInstance | null> {
+  const copyDirectory = resolveSystrayBinDir();
+  if (!copyDirectory) return null;
+
+  let SysTray: SystrayModule['default'];
+  let separator: unknown;
+  try {
+    const mod = (await import('systray2')) as SystrayModule;
+    SysTray = mod.default;
+    separator = mod.separator;
+  } catch {
+    return null;
+  }
+
+  let connectionState: TrayState = 'disconnected';
+  let desktopStatus = initialDesktop;
+  let pendingUpdate = options.pendingUpdateVersion ?? null;
+  let tooltip = `108 AI v${getAppVersion()}`;
+
+  const statusLabel = (): string => {
+    const labels: Record<TrayState, string> = {
+      connected: 'Connesso',
+      disconnected: 'Disconnesso',
+      processing: 'Elaborazione…',
+      paused: 'In pausa',
+    };
+    return `108 AI v${getAppVersion()} — ${labels[connectionState]}`;
+  };
+
+  const buildItems = () => {
+    const items: Array<{ title: string; tooltip: string; checked: boolean; enabled: boolean } | unknown> = [
+      { title: statusLabel(), tooltip: '', checked: false, enabled: false },
+      separator,
+      { title: MENU.shell, tooltip: 'Terminale interattivo', checked: false, enabled: true },
+      { title: MENU.dashboard, tooltip: 'Browser', checked: false, enabled: true },
+      { title: MENU.settings, tooltip: 'Browser', checked: false, enabled: true },
+      separator,
+    ];
+
+    if (pendingUpdate && callbacks.onRestartForUpdate) {
+      items.push({
+        title: `${MENU.restartUpdate} (v${pendingUpdate})`,
+        tooltip: '',
+        checked: false,
+        enabled: true,
+      });
+      items.push(separator);
+    }
+
+    items.push(
+      connectionState === 'paused' || connectionState === 'disconnected'
+        ? { title: MENU.resume, tooltip: '', checked: false, enabled: true }
+        : { title: MENU.pause, tooltip: '', checked: false, enabled: true },
+      separator,
+      desktopStatus === 'disabled'
+        ? { title: MENU.desktopOn, tooltip: '', checked: false, enabled: true }
+        : { title: MENU.desktopOff, tooltip: '', checked: false, enabled: true },
+      separator,
+      { title: MENU.quit, tooltip: '', checked: false, enabled: true },
+    );
+
+    return items;
+  };
+
+  const systray = new SysTray({
+    copyDirectory,
+    icon: TRAY_ICONS[connectionState],
+    title: '108 AI',
+    tooltip,
+    items: buildItems(),
+  });
+
+  const refreshMenu = () => {
+    try {
+      systray.sendAction({
+        type: 'update-item',
+        item: buildItems(),
+      });
+    } catch {
+      // systray2 may not support dynamic refresh on all platforms
+    }
+  };
+
+  systray.onClick((action) => {
+    const title = action.item?.title ?? '';
+    if (title.startsWith(MENU.restartUpdate)) {
+      callbacks.onRestartForUpdate?.();
+      return;
+    }
+    switch (title) {
+      case MENU.shell:
+        callbacks.onOpenShell();
+        break;
+      case MENU.dashboard:
+        callbacks.onOpenDashboard();
+        break;
+      case MENU.settings:
+        callbacks.onOpenSettings();
+        break;
+      case MENU.pause:
+        callbacks.onPause();
+        connectionState = 'paused';
+        refreshMenu();
+        break;
+      case MENU.resume:
+        callbacks.onResume();
+        connectionState = 'connected';
+        refreshMenu();
+        break;
+      case MENU.desktopOn:
+        callbacks.onToggleDesktopAccess(true);
+        desktopStatus = 'enabled';
+        refreshMenu();
+        break;
+      case MENU.desktopOff:
+        callbacks.onToggleDesktopAccess(false);
+        desktopStatus = 'disabled';
+        refreshMenu();
+        break;
+      case MENU.quit:
+        callbacks.onQuit();
+        break;
+      default:
+        break;
+    }
+  });
+
+  return {
+    setState(state: TrayState) {
+      connectionState = state;
+      tooltip = statusLabel();
+      refreshMenu();
+    },
+    setTooltip(text: string) {
+      tooltip = text;
+    },
+    setDesktopStatus(status: DesktopTrayStatus) {
+      desktopStatus = status;
+      refreshMenu();
+    },
+    setPendingUpdate(version: string | null) {
+      pendingUpdate = version;
+      refreshMenu();
+    },
+    notify(title: string, message: string) {
+      void sendDesktopNotification(title, message);
+    },
+    destroy() {
+      try {
+        systray.kill();
+      } catch {
+        // ignore
+      }
+    },
+  };
+}
+
+async function fallbackTray(callbacks: TrayCallbacks): Promise<TrayInstance> {
+  let currentState: TrayState = 'disconnected';
+
+  return {
+    setState(state: TrayState) {
+      if (currentState !== state) {
+        currentState = state;
+        const labels: Record<TrayState, string> = {
+          connected: 'Connesso',
+          disconnected: 'Disconnesso',
+          processing: 'Elaborazione...',
+          paused: 'In pausa',
+        };
+        void sendDesktopNotification('108 AI', labels[state]);
+      }
+    },
+    setTooltip() { /* noop */ },
+    setDesktopStatus() { /* noop */ },
+    setPendingUpdate() { /* noop */ },
+    notify(title: string, message: string) {
+      void sendDesktopNotification(title, message);
+    },
+    destroy() {
+      void callbacks;
+    },
+  };
+}
+
+export async function initializeTray(
+  callbacks: TrayCallbacks,
+  options: TrayInitOptions = {},
+): Promise<TrayInstance | null> {
   if (!hasDisplay()) {
     console.log(JSON.stringify({
       level: 'info',
-      message: 'System tray not available (no display detected). Running headless.',
+      message: 'System tray not available (no display). Running headless.',
     }));
     return null;
   }
 
-  try {
-    let currentState: TrayState = 'disconnected';
-    let currentDesktopStatus: DesktopTrayStatus = 'disabled';
-    let tooltip = '108 AI — Desktop Agent';
-
-    function emitTrayStatus(): void {
-      const stateLabels: Record<TrayState, string> = {
-        connected:    '[Connected]',
-        disconnected: '[Disconnected]',
-        processing:   '[Processing...]',
-      };
-
-      console.log(JSON.stringify({
-        level: 'debug',
-        message: 'Tray status update',
-        connectionState: stateLabels[currentState],
-        desktopAccess: DESKTOP_STATUS_LABELS[currentDesktopStatus],
-        desktopIndicator: DESKTOP_STATUS_ICONS[currentDesktopStatus],
-        tooltip,
-        menuItems: buildMenuItems(currentState, currentDesktopStatus, callbacks),
-      }));
-    }
-
-    const instance: TrayInstance = {
-      setState(state: TrayState) {
-        currentState = state;
-        emitTrayStatus();
-      },
-
-      setTooltip(text: string) {
-        tooltip = text;
-        emitTrayStatus();
-      },
-
-      setDesktopStatus(status: DesktopTrayStatus) {
-        const previous = currentDesktopStatus;
-        currentDesktopStatus = status;
-
-        if (previous !== status) {
-          console.log(JSON.stringify({
-            level: 'info',
-            message: 'Desktop Access status changed',
-            from: DESKTOP_STATUS_LABELS[previous],
-            to: DESKTOP_STATUS_LABELS[status],
-            indicator: DESKTOP_STATUS_ICONS[status],
-          }));
-        }
-
-        emitTrayStatus();
-      },
-
-      destroy() {
-        console.log(JSON.stringify({
-          level: 'info',
-          message: 'System tray destroyed',
-        }));
-      },
-    };
-
-    return instance;
-  } catch (error) {
-    console.log(JSON.stringify({
-      level: 'warn',
-      message: 'Failed to initialize system tray',
-      error: error instanceof Error ? error.message : 'Unknown error',
-    }));
-    return null;
-  }
-}
-
-function buildMenuItems(
-  connectionState: TrayState,
-  desktopStatus: DesktopTrayStatus,
-  callbacks: TrayCallbacks,
-): Array<{ label: string; action: string }> {
-  void callbacks;
-
-  const items: Array<{ label: string; action: string }> = [
-    { label: 'Open Dashboard', action: 'openDashboard' },
-  ];
-
-  if (connectionState === 'connected') {
-    items.push({ label: 'Pause Agent', action: 'pause' });
-  } else {
-    items.push({ label: 'Resume Agent', action: 'resume' });
+  const native = await tryNativeTray(callbacks, 'disabled', options);
+  if (native) {
+    console.log(JSON.stringify({ level: 'info', message: 'Native system tray initialized (systray2)' }));
+    return native;
   }
 
-  const desktopLabel =
-    desktopStatus === 'disabled'
-      ? 'Enable Desktop Access  [red]'
-      : desktopStatus === 'partial'
-        ? 'Desktop Access: Partial  [yellow]'
-        : 'Disable Desktop Access  [green]';
-
-  items.push({
-    label: desktopLabel,
-    action: desktopStatus === 'disabled' ? 'enableDesktop' : 'disableDesktop',
-  });
-
-  items.push({ label: 'Quit', action: 'quit' });
-
-  return items;
+  console.log(JSON.stringify({
+    level: 'info',
+    message: 'Native tray unavailable — using desktop notifications fallback',
+  }));
+  return fallbackTray(callbacks);
 }
 
-/**
- * Compute the DesktopTrayStatus from the current agent config.
- */
 export function computeDesktopTrayStatus(config: {
   desktopEnabled: boolean;
   desktopVisionEnabled: boolean;
@@ -185,20 +328,25 @@ export function computeDesktopTrayStatus(config: {
   return hasRestrictions ? 'partial' : 'enabled';
 }
 
+export function openSettingsInBrowser(config: AgentConfig): void {
+  const base =
+    config.gatewayHttpUrl ??
+    config.gatewayUrl
+      .replace(/^wss:\/\//, 'https://')
+      .replace(/^ws:\/\//, 'http://')
+      .replace(/\/ws\/local-agent\/?$/, '');
+
+  const settingsUrl = `${base.replace(/\/$/, '')}/settings`;
+  import('open').then((open) => {
+    open.default(settingsUrl).catch(() => {});
+  }).catch(() => {});
+}
+
 function hasDisplay(): boolean {
   const { platform } = process;
 
-  if (platform === 'win32') {
-    return true;
-  }
-
-  if (platform === 'darwin') {
-    return !!process.env['DISPLAY'] || !!process.env['HOME'];
-  }
-
-  if (platform === 'linux') {
-    return !!process.env['DISPLAY'] || !!process.env['WAYLAND_DISPLAY'];
-  }
-
+  if (platform === 'win32') return true;
+  if (platform === 'darwin') return !!process.env['DISPLAY'] || !!process.env['HOME'];
+  if (platform === 'linux') return !!process.env['DISPLAY'] || !!process.env['WAYLAND_DISPLAY'];
   return false;
 }

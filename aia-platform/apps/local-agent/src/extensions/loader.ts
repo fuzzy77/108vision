@@ -5,6 +5,7 @@ import { COMMANDS_DIR, ensureExtensionDirs } from './paths.js';
 import { ensureDefaultPermissions } from './permissions.js';
 import { clearFileCommands, registerCommand } from './registry.js';
 import { isCommandFile, parseCommandFile } from './commands/parser.js';
+import { attachBuiltinHandler, registerBuiltinCommandFallbacks } from './commands/builtins.js';
 import { loadSkillsFromDisk } from './skills/loader.js';
 import { loadPersonasFromDisk } from './agents/loader.js';
 import { loadMcpServersFromConfig, autoStartMcpServers } from './mcp/manager.js';
@@ -51,10 +52,55 @@ output:
   model: fast-cheap
 `;
 
+const TRIAGE_YAML = `name: triage
+description: "Triage completo (email, calendar, PEC, billing, sistema)"
+version: 1
+builtin: triage
+`;
+
+const MORNING_YAML = `name: morning
+description: "Morning briefing con greeting e triage completo"
+aliases:
+  - mattina
+version: 1
+builtin: morning
+`;
+
+const STANDUP_YAML = `name: standup
+description: "Formato standup per daily meeting"
+version: 1
+builtin: standup
+`;
+
+const JOB_YAML = `name: job
+description: "Job engine — lista, esecuzione e gestione job schedulati"
+aliases:
+  - jobs
+version: 1
+builtin: job
+`;
+
+const SCHEDULE_YAML = `name: schedule
+description: "Scheduler triage automatico (status, on, off, set cron)"
+version: 1
+builtin: schedule
+`;
+
+const SEED_COMMANDS: Array<{ fileName: string; content: string }> = [
+  { fileName: 'summarize-email.yml', content: SUMMARIZE_EMAIL_YAML },
+  { fileName: 'triage.yml', content: TRIAGE_YAML },
+  { fileName: 'morning.yml', content: MORNING_YAML },
+  { fileName: 'standup.yml', content: STANDUP_YAML },
+  { fileName: 'job.yml', content: JOB_YAML },
+  { fileName: 'schedule.yml', content: SCHEDULE_YAML },
+];
+
 function seedDefaultCommands(): void {
-  const summarizePath = join(COMMANDS_DIR, 'summarize-email.yml');
-  if (!existsSync(summarizePath)) {
-    writeFileSync(summarizePath, SUMMARIZE_EMAIL_YAML, 'utf-8');
+  for (const seed of SEED_COMMANDS) {
+    const targetPath = join(COMMANDS_DIR, seed.fileName);
+    if (!existsSync(targetPath)) {
+      writeFileSync(targetPath, seed.content, 'utf-8');
+    }
   }
 }
 
@@ -79,10 +125,16 @@ export function loadCommandsFromDisk(): { loaded: number; errors: string[] } {
     const filePath = join(COMMANDS_DIR, entry);
     try {
       const definition = parseCommandFile(filePath);
+      const handler = attachBuiltinHandler(definition);
+      if (definition.builtin && !handler) {
+        errors.push(`${entry}: builtin sconosciuto "${definition.builtin}"`);
+        continue;
+      }
       registerCommand({
         definition,
         origin: 'file',
         filePath,
+        handler,
       });
       loaded++;
     } catch (err) {
@@ -90,6 +142,8 @@ export function loadCommandsFromDisk(): { loaded: number; errors: string[] } {
       errors.push(`${entry}: ${message}`);
     }
   }
+
+  registerBuiltinCommandFallbacks();
 
   return { loaded, errors };
 }

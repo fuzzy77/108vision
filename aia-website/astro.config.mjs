@@ -5,7 +5,7 @@ import vercel from '@astrojs/vercel';
 
 export default defineConfig({
   site: 'https://www.108vision.it',
-  output: 'static',
+  output: 'hybrid',
   adapter: vercel(),
   vite: {
     plugins: [tailwindcss()],

@@ -131,8 +131,7 @@ export function renderStorePanel(query = '', type = 'all'): string {
     if (item.rating) lines.push(`      ${dim(`★ ${item.rating} · ${item.category}`)}`);
   }
 
-  lines.push('', dim('Install bundled: già in ~/.108ai/ al primo avvio'));
-  lines.push(dim('Web store: /ui web → tab Store'));
+  lines.push('', dim('Install: /ui store install <id>  |  Web: /ui web → Store'));
   return box('108ai Store (locale)', lines);
 }
 

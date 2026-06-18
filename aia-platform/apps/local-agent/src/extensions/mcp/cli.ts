@@ -12,6 +12,7 @@ import {
 } from './manager.js';
 import type { McpServerDefinition } from '../types.js';
 import { parseMcpConfig } from '../schemas.js';
+import { parseMcpInstall } from './install.js';
 
 function bold(text: string): string {
   return `\x1b[1m${text}\x1b[0m`;
@@ -124,43 +125,34 @@ export async function handleMcpCli(args: string[]): Promise<string> {
 
     case 'install':
     case 'i': {
-      const target = rest[0]?.toLowerCase();
-      if (!target) return '  Uso: /mcp install <everything-demo>\n';
-
-      let def: McpServerDefinition | null = null;
-
-      if (target === 'everything-demo' || target === 'mcp-everything' || target === 'everything') {
-        def = {
-          name: 'everything-demo',
-          description: 'MCP Everything (demo) via npx @modelcontextprotocol/server-everything',
-          transport: 'stdio',
-          command: 'npx',
-          args: ['-y', '@modelcontextprotocol/server-everything'],
-          env: {},
-          auth: undefined,
-          auto_start: false,
-          enabled: true,
-          tools_exposed: [],
-        };
+      if (rest.length === 0) {
+        return [
+          '  Uso:',
+          '    /mcp install npm <package> [--name x] [--args a,b]',
+          '    /mcp install git <https-url> --command <cmd> [--args a,b]',
+          '    /mcp install everything-demo',
+          '',
+        ].join('\n');
       }
-
-      if (!def) {
-        return `  \x1b[31m[ERR]\x1b[0m install non supportato per: ${rest[0]}\n`;
-      }
-
-      parseMcpConfig({ mcp_servers: [def] });
-      const doc = loadMcpConfig();
-      const servers = [...doc.mcp_servers.filter((s) => s.name !== def!.name), def];
-      saveMcpConfig(servers);
-      addMcpServerDefinition(def);
 
       try {
-        await startMcpServer(def.name);
-      } catch {
-        // install ok anche se start fallisce (utente può /mcp start dopo)
-      }
+        const { name, definition } = parseMcpInstall(rest);
+        parseMcpConfig({ mcp_servers: [definition] });
+        const doc = loadMcpConfig();
+        const servers = [...doc.mcp_servers.filter((s) => s.name !== name), definition];
+        saveMcpConfig(servers);
+        addMcpServerDefinition(definition);
 
-      return `  ${ok('[OK]')} MCP installato: ${def.name}\n`;
+        try {
+          await startMcpServer(name);
+        } catch {
+          // install ok anche se start fallisce
+        }
+
+        return `  ${ok('[OK]')} MCP installato: ${name} (${definition.command} ${(definition.args ?? []).join(' ')})\n`;
+      } catch (err) {
+        return `  \x1b[31m[ERR]\x1b[0m ${err instanceof Error ? err.message : String(err)}\n`;
+      }
     }
 
     case 'test':

@@ -8,6 +8,7 @@
 
 import { type Result, success, failure, AppError } from '@aia/shared';
 import { nanoid } from 'nanoid';
+import neo4j from 'neo4j-driver';
 import { runInTransaction, runReadTransaction } from './client.js';
 import type {
   GraphEntity,
@@ -624,6 +625,6 @@ function parseJsonProp(value: unknown): Record<string, string | number | boolean
   return {};
 }
 
-function neo4jInt(value: number): number {
-  return value;
+function neo4jInt(value: number) {
+  return neo4j.int(value);
 }

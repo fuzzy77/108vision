@@ -51,7 +51,7 @@ memory.post('/', async (c) => {
 memory.get('/', async (c) => {
   const tenantId = c.get('tenantId') as string;
   const page = parseInt(c.req.query('page') ?? '1', 10);
-  const pageSize = parseInt(c.req.query('pageSize') ?? '50', 10);
+  const pageSize = Math.min(Math.max(parseInt(c.req.query('pageSize') ?? '50', 10) || 50, 1), 100);
   const category = c.req.query('category') ?? undefined;
 
   const result = await memoryService.list(tenantId, { page, pageSize, category });

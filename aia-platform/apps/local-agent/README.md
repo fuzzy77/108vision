@@ -59,6 +59,10 @@ On first run, an interactive setup wizard will guide you. Configuration is store
 | `autoStart` | Start on system boot | false |
 | `maxActionsPerMinute` | Rate limit | 10 |
 | `desktopEnabled` | Enable desktop automation | false |
+| `shellEnabled` | Enable shell/process actions | false |
+| `gitEnabled` | Enable git actions | true |
+| `gitAllowPush` | Allow git push without explicit approval | false |
+| `gitAllowDestructive` | Allow destructive git (reset) without explicit approval | false |
 
 ### CLI Arguments
 
@@ -81,7 +85,7 @@ CLI arguments override config file values.
 | `filesystem.watchDirectory` | Watch for file changes | read_only |
 | `filesystem.getFileInfo` | Get file metadata | read_only |
 
-### Shell (planned v0.2)
+### Shell
 
 | Action | Description | Risk |
 |--------|-------------|------|
@@ -90,7 +94,7 @@ CLI arguments override config file values.
 | `shell.terminate` | Kill a running process | low_risk |
 | `shell.getRunning` | List active agent-spawned processes | read_only |
 
-### Code (planned v0.2)
+### Code
 
 | Action | Description | Risk |
 |--------|-------------|------|
@@ -99,7 +103,7 @@ CLI arguments override config file values.
 | `code.write` | Write entire file (new files or full rewrite) | low_risk |
 | `code.readRange` | Read line range with line numbers | read_only |
 
-### Git (planned v0.2)
+### Git
 
 | Action | Description | Risk |
 |--------|-------------|------|
@@ -110,29 +114,39 @@ CLI arguments override config file values.
 | `git.branch` | Create/switch/list branches | low_risk |
 | `git.stash` | Stash/pop changes | low_risk |
 | `git.blame` | Line-level blame | read_only |
+| `git.push` | Push to remote (gated) | high_risk |
+| `git.reset` | Reset (soft/mixed only, gated) | high_risk |
 
-### Search (planned v0.3)
+### Search
 
 | Action | Description | Risk |
 |--------|-------------|------|
 | `search.grep` | Regex search with context (ripgrep-like) | read_only |
 | `search.glob` | File pattern matching | read_only |
-| `search.semantic` | Embedding-based local search | read_only |
+| `search.find` | Recursive find by name/type | read_only |
 
-### Web (planned v0.3)
+### Web
 
 | Action | Description | Risk |
 |--------|-------------|------|
 | `web.fetch` | GET URL, return content | low_risk |
 | `web.search` | Web search via API | read_only |
 
-### MCP (planned v0.4)
+### Process
 
 | Action | Description | Risk |
 |--------|-------------|------|
-| `mcp.listServers` | List configured MCP servers | read_only |
-| `mcp.listTools` | List tools from a server | read_only |
-| `mcp.callTool` | Invoke a tool on MCP server | high_risk |
+| `process.start` | Start long-running command (gated by shellEnabled + approval) | high_risk |
+| `process.stop` | Stop a running process | low_risk |
+| `process.list` | List running processes | read_only |
+| `process.logs` | Tail process logs | read_only |
+
+### MCP (via Extensions)
+
+MCP is currently exposed via the **extensions layer** (CLI + local UI), not as `mcp.*` WebSocket actions.
+
+- CLI: `/mcp list|add|install|start|tools|test`
+- Config: `~/.108ai/mcp.yml`
 
 ### Clipboard
 

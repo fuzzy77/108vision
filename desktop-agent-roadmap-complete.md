@@ -43,14 +43,14 @@
 
 | Area | ✅ Fatto (codice) | ❌ Manca |
 |------|------------------|---------|
-| **Commands** | `extensions/commands/*`, `/command`, seed `summarize-email`, **hooks before/after**, **`/command create`** | Store online (catalog fetch) |
+| **Commands** | `extensions/commands/*`, `/command`, seed `summarize-email` + **triage/job/morning/standup/schedule** (`builtin:`), **hooks before/after**, **`/command create`** | Store online: publisher verification + rating/installs reali |
 | **Skills** | `extensions/skills/*`, trigger implicito, `email-writer` seed, **`tools_required`**, **`knowledge:`** | — |
 | **Agents** | `extensions/agents/*`, MCP tool loop, **`knowledge:`** path RAG-lite | — |
-| **MCP** | stdio + **SSE/HTTP**, `mcp.yml`, `/mcp list\|start\|tools\|test` | `mcp install` (demo), store online, usage metrics |
-| **Security ext.** | `permissions.yml`, sandbox path, `${ENV}`, rate limit MCP, lock file | Sandbox shell, firma autore store |
+| **MCP** | stdio + **SSE/HTTP**, `mcp.yml`, `/mcp list\|add\|install\|start\|tools\|test` | `mcp.*` come capability WS (rimane in Phase 5 v0.4) |
+| **Security ext.** | `permissions.yml`, sandbox path, `${ENV}`, rate limit MCP, lock file, **firma autore store (HMAC)** | — |
 | **Import/Export** | `/import claude\|n8n\|chatgpt\|restore`, `/export backup\|restore`, lock file | — |
 | **CLI unificato** | `/ext status\|reload\|permissions\|audit` | Wizard install, `108ai` subcommand standalone |
-| **UI** | ✅ Terminal panels + web dashboard `127.0.0.1:7891`, `/ui`, `/palette`, store catalog locale | Store online, agent switcher Electron/Tauri |
+| **UI** | ✅ Terminal panels + web dashboard `127.0.0.1:7891`, `/ui`, `/palette`, **store catalog online fetch + install flow** | Agent switcher Electron/Tauri (Fase E) |
 
 **Path codice Sprint 11:** `aia-platform/apps/local-agent/src/extensions/` (54 file)
 
@@ -82,17 +82,17 @@
 | Item | Severità | Dettaglio |
 |------|----------|-----------|
 | Errori TS pre-esistenti | Media | ✅ Allineamento strict: `jobs/*`, `triage/*`, `integrations/messaging-cli`, `resources/*`, `extensions/*`, `desktop-bridge`; `tsc --noEmit` verde |
-| Test coverage extensions | Bassa | **34** test Vitest (incl. FIC, coalesce, UI, MCP tools) |
-| Built-in → extension migration | Bassa | `/triage`, `/job` ancora hardcoded in shell, non YAML commands |
+| Test coverage extensions | Bassa | **65** test Vitest (incl. store signature, mcp install, phase-b/c) |
+| Built-in → extension migration | ✅ | `/triage`, `/job`, `/morning`, `/standup`, `/schedule` → YAML `builtin:` in `~/.108ai/commands/` |
 | `pnpm install` monorepo | Ops | `blockExoticSubdeps` su `@whiskeysockets/baileys` |
 
 ### Priorità consigliata (ordine)
 
-1. **Chiudere gap Sprint 11 ad alto ROI:** MCP SSE + wire MCP tools in agent LLM loop  
+1. **Sprint 5 (Business Italia)**: partire da entry point ad alto ROI (Fatture in Cloud + billing)  
 2. **Sprint 5 entry point:** Fatture in Cloud (fatture scadute nel triage)  
-3. **Completare Sprint 6 wiring:** lazy-loader + prompt compression in hot path  
-4. **Sprint 7:** guida utente + security runbook (sblocca beta esterna)  
-5. **UI panels** — solo se si esce da CLI-first  
+3. **Sprint 7:** guida utente + security runbook (sblocca beta esterna)  
+4. **Phase 5 v0.4 (nice-to-have)**: MCP come capability WS `mcp.*` (oggi è extension)  
+5. **Packaging Phase A** — MSI/DMG + code signing (vedi `desktop-agent-installer-plan.md`)
 
 ---
 

@@ -41,6 +41,7 @@ const envSchema = z.object({
   SMTP_PASS: z.string().default(''),
   SMTP_FROM: z.string().email().default('noreply@108ai.dev'),
   APP_URL: z.string().url().default('http://localhost:5173'),
+  CORS_ALLOWED_ORIGINS: z.string().default(''),
 });
 
 export type Env = z.infer<typeof envSchema>;

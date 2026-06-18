@@ -21,10 +21,13 @@ export interface TenantContext {
  */
 export async function tenantMiddleware(c: Context, next: Next): Promise<void | Response> {
   const headerTenantId = c.req.header('X-Tenant-ID');
-  const jwtTenantId = c.get('jwtPayload')?.tenantId as string | undefined;
-  const jwtRole = c.get('jwtPayload')?.role as string | undefined;
-
-  let tenantId = headerTenantId || jwtTenantId;
+  const jwtPayload = c.get('jwtPayload');
+  const jwtTenantId = jwtPayload?.tenantId as string | undefined;
+  const jwtRole = jwtPayload?.role as string | undefined;
+  // Only platform_admin can override tenant via header
+  let tenantId = (jwtRole === 'platform_admin' && headerTenantId)
+    ? headerTenantId
+    : (jwtTenantId || headerTenantId);
 
   // Platform admins without a tenant_id: resolve to first active tenant
   if (!tenantId && jwtRole === 'platform_admin') {

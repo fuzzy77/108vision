@@ -10,8 +10,7 @@ export interface ExtensionRouteResult {
 }
 
 /**
- * Try to execute a file-based custom command from the registry.
- * Built-in slash commands remain in shell.ts until fully migrated.
+ * Try to execute a registered command (YAML prompt or platform builtin handler).
  */
 export async function tryExecuteCustomCommand(
   cmd: string,
@@ -28,8 +27,8 @@ export async function tryExecuteCustomCommand(
     return { handled: false };
   }
 
-  // Skip file commands without prompt/handler
-  if (entry.origin === 'file' && !entry.definition.prompt?.trim()) {
+  // Skip file commands without prompt or builtin handler
+  if (entry.origin === 'file' && !entry.handler && !entry.definition.prompt?.trim()) {
     return { handled: false };
   }
 

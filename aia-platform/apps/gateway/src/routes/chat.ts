@@ -75,10 +75,12 @@ chat.post('/', async (c) => {
   let systemPrompt = DEFAULT_SYSTEM_PROMPT;
   let modelTier: ModelTier = (input.model as ModelTier) ?? MODEL_TIERS.BALANCED;
   let agentKbIds: string[] = [];
+  // Hoisted so Step 3a can reuse it without a second DB query.
+  let agent: { systemPrompt: string; model: string | null; knowledgeBaseIds: unknown; config: unknown } | undefined;
 
   if (input.agentId) {
     const db = getDb();
-    const [agent] = await db
+    const [fetchedAgent] = await db
       .select()
       .from(agents)
       .where(
@@ -90,59 +92,53 @@ chat.post('/', async (c) => {
       )
       .limit(1);
 
-    if (!agent) {
+    if (!fetchedAgent) {
       throw new AppError('AGENT_NOT_FOUND', 'Agent not found or inactive', 404);
     }
 
+    agent = fetchedAgent;
     systemPrompt = agent.systemPrompt;
     modelTier = (input.model as ModelTier) ?? (agent.model as ModelTier) ?? MODEL_TIERS.BALANCED;
     agentKbIds = (agent.knowledgeBaseIds ?? []) as string[];
   }
 
   // Step 3a: Prepend AI governance principles to system prompt
-  const agentConfig = input.agentId
-    ? (await getDb().select().from(agents).where(and(eq(agents.id, input.agentId), eq(agents.tenantId, tenantId))).limit(1))[0]?.config ?? {}
-    : {};
+  // Reuse the agent object already fetched in Step 3 — no second DB round-trip.
+  const agentConfig = agent?.config ?? {};
   const principlesBlock = principlesService.compilePrinciplesPrompt(agentConfig as Record<string, unknown>);
   if (principlesBlock) {
     systemPrompt = principlesBlock + '\n\n---\n\n' + systemPrompt;
   }
 
-  // Step 3b: Budget-aware tier enforcement
-  const budgetStatus = await budgetService.getBudgetStatus(tenantId);
-  modelTier = budgetService.resolveEffectiveTier(modelTier, budgetStatus);
-
-  // Step 3c: Plan-level allowed_models enforcement
-  // Downgrade to the best allowed tier if the effective tier is not permitted.
-  // Tier priority order: most capable first so we pick the best available fallback.
+  // Step 3b+3c: Fetch budget status and tenant plan in parallel (independent I/O).
+  // resolveEffectiveTier and model-downgrade are applied after both resolve.
   const PLAN_TIER_PRIORITY: ModelTier[] = [
     MODEL_TIERS.POWERFUL as ModelTier,
     MODEL_TIERS.BALANCED as ModelTier,
     MODEL_TIERS.FAST_CHEAP as ModelTier,
   ];
 
-  {
-    const db = getDb();
-    const [tenant] = await db
-      .select({ planId: tenants.planId })
+  const db = getDb();
+  const [budgetStatus, tenantPlanRows] = await Promise.all([
+    budgetService.getBudgetStatus(tenantId),
+    db
+      .select({ planId: tenants.planId, allowedModels: plans.allowedModels })
       .from(tenants)
+      .leftJoin(plans, eq(tenants.planId, plans.id))
       .where(eq(tenants.id, tenantId))
-      .limit(1);
+      .limit(1),
+  ]);
 
-    if (tenant?.planId) {
-      const [plan] = await db
-        .select({ allowedModels: plans.allowedModels })
-        .from(plans)
-        .where(eq(plans.id, tenant.planId))
-        .limit(1);
+  // Budget-aware tier enforcement
+  modelTier = budgetService.resolveEffectiveTier(modelTier, budgetStatus);
 
-      const allowed = plan?.allowedModels;
-      if (allowed && allowed.length > 0 && !allowed.includes(modelTier)) {
-        // Downgrade to the best tier that the plan permits
-        const fallback = PLAN_TIER_PRIORITY.find((t) => allowed.includes(t));
-        modelTier = fallback ?? MODEL_TIERS.FAST_CHEAP as ModelTier;
-      }
-    }
+  // Plan-level allowed_models enforcement
+  const tenantPlan = tenantPlanRows[0];
+  const allowed = tenantPlan?.allowedModels;
+  if (allowed && allowed.length > 0 && !allowed.includes(modelTier)) {
+    // Downgrade to the best tier that the plan permits
+    const fallback = PLAN_TIER_PRIORITY.find((t) => allowed.includes(t));
+    modelTier = fallback ?? MODEL_TIERS.FAST_CHEAP as ModelTier;
   }
 
   // Step 4: Retrieve context from knowledge base (hybrid: vector + graph)
@@ -185,7 +181,7 @@ chat.post('/', async (c) => {
   }
 
   // Step 5: Load conversation history
-  const historyResult = await conversationService.getHistory(conversationId, 10);
+  const historyResult = await conversationService.getHistory(conversationId, 10, tenantId);
   const history = historyResult.success ? historyResult.data : [];
 
   // Build prompt (hybrid with graph context or vector-only fallback)
@@ -302,6 +298,7 @@ chat.post('/', async (c) => {
 
       // Call LiteLLM with streaming via fetch (the ai-client doesn't support streaming natively)
       const response = await fetch(`${env.LITELLM_URL}/v1/chat/completions`, {
+        signal: AbortSignal.timeout(90_000),
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -318,9 +315,10 @@ chat.post('/', async (c) => {
 
       if (!response.ok) {
         const errorBody = await response.text();
+        console.error(`[LLM_ERROR] Status ${response.status}: ${errorBody}`);
         throw new AppError(
           'LLM_ERROR',
-          `LLM request failed with status ${response.status}: ${errorBody}`,
+          'AI service temporarily unavailable',
           502,
         );
       }
@@ -333,6 +331,9 @@ chat.post('/', async (c) => {
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let buffer = '';
+      // Actual per-direction token counts from the final SSE usage chunk (preferred over estimate).
+      let streamInputTokens: number | undefined;
+      let streamOutputTokens: number | undefined;
 
       while (true) {
         const { done, value } = await reader.read();
@@ -371,6 +372,10 @@ chat.post('/', async (c) => {
             }
             if (parsed.usage) {
               totalTokens = parsed.usage.total_tokens ?? 0;
+              if (parsed.usage.prompt_tokens) {
+                streamInputTokens = parsed.usage.prompt_tokens;
+                streamOutputTokens = parsed.usage.completion_tokens;
+              }
             }
           } catch {
             // Skip malformed JSON chunks
@@ -395,9 +400,11 @@ chat.post('/', async (c) => {
         },
       });
 
-      // Track per-request usage and update daily aggregate
-      const estimatedInputTokens = Math.ceil(totalTokens * 0.4);
-      const estimatedOutputTokens = totalTokens - estimatedInputTokens;
+      // Track per-request usage and update daily aggregate.
+      // Use actual prompt/completion counts from the stream's usage chunk when available;
+      // fall back to a 60/40 input/output estimate only when the LLM omits them.
+      const estimatedInputTokens = streamInputTokens ?? Math.ceil(totalTokens * 0.6);
+      const estimatedOutputTokens = streamOutputTokens ?? (totalTokens - estimatedInputTokens);
       await usageTrackingService.trackRequest({
         tenantId,
         userId,
@@ -517,6 +524,7 @@ chat.post('/quick', async (c) => {
   const modelTier = 'fast-cheap';
 
   const response = await fetch(`${env.LITELLM_URL}/v1/chat/completions`, {
+    signal: AbortSignal.timeout(90_000),
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -533,12 +541,13 @@ chat.post('/quick', async (c) => {
 
   if (!response.ok) {
     const errorBody = await response.text();
-    throw new AppError('LLM_ERROR', `LLM request failed: ${errorBody}`, 502);
+    console.error(`[LLM_ERROR] /quick status ${response.status}: ${errorBody}`);
+    throw new AppError('LLM_ERROR', 'AI service temporarily unavailable', 502);
   }
 
   const data = await response.json() as {
     choices?: Array<{ message?: { content?: string } }>;
-    usage?: { total_tokens?: number };
+    usage?: { total_tokens?: number; prompt_tokens?: number; completion_tokens?: number };
     model?: string;
   };
 
@@ -546,9 +555,9 @@ chat.post('/quick', async (c) => {
   const totalTokens = data.usage?.total_tokens ?? 0;
   const modelUsed = data.model ?? modelTier;
 
-  // Track usage
-  const estimatedInputTokens = Math.ceil(totalTokens * 0.4);
-  const estimatedOutputTokens = totalTokens - estimatedInputTokens;
+  // Use actual per-direction counts when available; fall back to 60/40 estimate.
+  const estimatedInputTokens = data.usage?.prompt_tokens ?? Math.ceil(totalTokens * 0.6);
+  const estimatedOutputTokens = data.usage?.completion_tokens ?? (totalTokens - estimatedInputTokens);
   await usageTrackingService.trackRequest({
     tenantId,
     userId,

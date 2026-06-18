@@ -13,6 +13,14 @@ export interface StoreCatalogItem {
   description: string;
   category: string;
   verified: boolean;
+  author?: string;
+  version?: string;
+  signature?: string;
+  installUrl?: string;
+  /** Dev/test only — inline YAML content (avoid in production catalog) */
+  inlineContent?: string;
+  /** MCP preset id for /mcp install */
+  mcpPreset?: string;
   rating?: number;
   installs?: number;
   bundled?: boolean;
@@ -29,6 +37,30 @@ const BUNDLED_CATALOG: StoreCatalog = {
   version: 1,
   updatedAt: '2026-06-15',
   items: [
+    {
+      id: 'cmd-triage',
+      type: 'command',
+      name: 'triage',
+      displayName: 'Daily Triage',
+      description: 'Triage completo email, calendario, PEC e sistema',
+      category: 'productivity',
+      verified: true,
+      rating: 4.9,
+      installs: 1,
+      bundled: true,
+    },
+    {
+      id: 'cmd-job',
+      type: 'command',
+      name: 'job',
+      displayName: 'Job Engine',
+      description: 'Lista, esecuzione e gestione job schedulati',
+      category: 'automation',
+      verified: true,
+      rating: 4.8,
+      installs: 1,
+      bundled: true,
+    },
     {
       id: 'cmd-summarize-email',
       type: 'command',
@@ -85,6 +117,9 @@ const BUNDLED_CATALOG: StoreCatalog = {
       description: 'Server MCP di test via npx @modelcontextprotocol/server-everything',
       category: 'development',
       verified: false,
+      author: '108ai',
+      version: '1',
+      mcpPreset: 'everything-demo',
       rating: 4.0,
       installs: 0,
       bundled: false,
@@ -175,4 +210,13 @@ export function searchStoreCatalog(query: string, type?: string): StoreCatalogIt
     const hay = `${i.name} ${i.displayName} ${i.description} ${i.category}`.toLowerCase();
     return hay.includes(q);
   });
+}
+
+export function findStoreItemById(itemId: string): StoreCatalogItem | undefined {
+  return loadStoreCatalog().items.find((i) => i.id === itemId);
+}
+
+export function invalidateStoreCatalogCache(): void {
+  cached = null;
+  lastOnlineFetchAt = 0;
 }

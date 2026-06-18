@@ -59,6 +59,14 @@ const crawlSchema = z.object({
 // --- Routes ---
 
 /**
+ * GET /api/integrations/browser/crawl-jobs — List crawl job history.
+ * Returns empty until persistent job storage is implemented.
+ */
+browser.get('/crawl-jobs', async (c) => {
+  return c.json({ items: [], total: 0 });
+});
+
+/**
  * POST /api/integrations/browser/sessions — Create a new browser session.
  */
 browser.post('/sessions', async (c) => {

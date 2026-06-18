@@ -28,20 +28,33 @@ const commandHooksSchema = z.object({
   after: z.string().nullable().optional(),
 });
 
-export const commandDefinitionSchema = z.object({
-  name: z
-    .string()
-    .min(1)
-    .regex(/^[a-z0-9][a-z0-9-]*$/i, 'name must be alphanumeric with hyphens'),
-  description: z.string().min(1),
-  aliases: z.array(z.string()).optional(),
-  version: z.number().int().positive().optional(),
-  params: z.array(commandParamSchema).optional(),
-  context: z.array(commandContextSchema).optional(),
-  prompt: z.string().optional(),
-  output: commandOutputSchema.optional(),
-  hooks: commandHooksSchema.optional(),
-});
+export const commandDefinitionSchema = z
+  .object({
+    name: z
+      .string()
+      .min(1)
+      .regex(/^[a-z0-9][a-z0-9-]*$/i, 'name must be alphanumeric with hyphens'),
+    description: z.string().min(1),
+    aliases: z.array(z.string()).optional(),
+    version: z.number().int().positive().optional(),
+    builtin: z.string().min(1).optional(),
+    params: z.array(commandParamSchema).optional(),
+    context: z.array(commandContextSchema).optional(),
+    prompt: z.string().optional(),
+    output: commandOutputSchema.optional(),
+    hooks: commandHooksSchema.optional(),
+  })
+  .superRefine((value, ctx) => {
+    const hasBuiltin = Boolean(value.builtin?.trim());
+    const hasPrompt = Boolean(value.prompt?.trim());
+    if (!hasBuiltin && !hasPrompt) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Command must define prompt or builtin',
+        path: ['prompt'],
+      });
+    }
+  });
 
 export type ParsedCommandDefinition = z.infer<typeof commandDefinitionSchema>;
 
@@ -230,6 +243,7 @@ export const mcpServerSchema = z.object({
   transport: z.enum(['stdio', 'sse']).default('stdio'),
   command: z.string().optional(),
   args: z.array(z.string()).optional(),
+  cwd: z.string().optional(),
   url: z.string().url().optional(),
   env: z.record(z.string()).optional(),
   auth: mcpAuthSchema.optional(),

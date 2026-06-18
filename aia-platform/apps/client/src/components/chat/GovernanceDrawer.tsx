@@ -98,6 +98,61 @@ export function GovernanceDrawer({ open, onClose }: GovernanceDrawerProps) {
               </p>
             </div>
           </section>
+
+          <section>
+            <h3 className="font-medium text-slate-900 dark:text-slate-100 mb-2">
+              Come l'AI gestisce il contesto
+            </h3>
+            <ul className="space-y-2 leading-relaxed">
+              <li>• L'AI ha una <strong>"memoria di lavoro" limitata</strong> per ogni conversazione</li>
+              <li>• Piu' la conversazione e' lunga, meno precisa diventa</li>
+              <li>• Per questo consigliamo: <strong>1 argomento per conversazione</strong>, domande dirette</li>
+              <li>• Se le risposte diventano ripetitive o incoerenti → <em>inizia una nuova chat</em></li>
+            </ul>
+          </section>
+
+          <section>
+            <h3 className="font-medium text-slate-900 dark:text-slate-100 mb-2">
+              Proporzionalita' — Quando l'AI si ferma
+            </h3>
+            <div className="space-y-2">
+              <div className="flex items-start gap-2">
+                <span className="mt-0.5 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 shrink-0">
+                  basso
+                </span>
+                <span>L'AI risponde direttamente (analisi, ricerca, formattazione)</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="mt-0.5 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 shrink-0">
+                  medio
+                </span>
+                <span>L'AI ti dice cosa sta per fare e procede</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="mt-0.5 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400 shrink-0">
+                  alto
+                </span>
+                <span>L'AI ti mostra rischi e benefici e aspetta il tuo OK</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="mt-0.5 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 shrink-0">
+                  critico
+                </span>
+                <span>L'AI si ferma completamente e chiede conferma esplicita</span>
+              </div>
+            </div>
+          </section>
+
+          <section>
+            <h3 className="font-medium text-slate-900 dark:text-slate-100 mb-2">
+              L'AI impara da te
+            </h3>
+            <ul className="space-y-2 leading-relaxed">
+              <li>• Quando correggi l'AI, lei <strong>ricorda per le prossime conversazioni</strong></li>
+              <li>• Le tue preferenze e il tuo contesto migliorano le risposte nel tempo</li>
+              <li>• Puoi dire <em>"ricorda che..."</em> per salvare informazioni importanti</li>
+            </ul>
+          </section>
         </div>
       </div>
     </div>

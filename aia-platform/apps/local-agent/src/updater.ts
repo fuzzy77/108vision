@@ -1,86 +1,137 @@
 /**
- * Auto-Updater — Checks for new versions and self-updates the binary.
+ * Auto-Updater — Checks gateway for updates, stages binary, applies on restart.
  *
- * Strategy:
- * - On startup: check gateway for latest version
- * - If newer version available: download new binary, replace self, restart
- * - Check again every 6 hours while running
+ * Gateway contract: GET /api/desktop-agent/updates?version={current}
  */
 
-import { createWriteStream, renameSync, unlinkSync, chmodSync, existsSync } from 'node:fs';
+import {
+  createWriteStream,
+  renameSync,
+  unlinkSync,
+  chmodSync,
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  writeFileSync,
+} from 'node:fs';
+import { join } from 'node:path';
 import { platform, arch } from 'node:os';
 import { spawn } from 'node:child_process';
 
-const CHECK_INTERVAL_MS = 6 * 60 * 60 * 1000; // 6 hours
-const CURRENT_VERSION = '0.2.0';
+import { getAppVersion, isNewerVersion } from './version.js';
+import { getDataDir, getInstalledBinaryPath } from './paths.js';
+
+const CHECK_INTERVAL_MS = 6 * 60 * 60 * 1000;
+const PENDING_UPDATE_FILE = 'pending-update.json';
 
 export interface UpdateInfo {
   version: string;
   downloadUrl: string;
-  sha256: string;
-  releaseNotes: string;
+  releaseNotes?: string;
+}
+
+interface PendingUpdate {
+  version: string;
+  downloadPath: string;
+  targetPath: string;
+  createdAt: string;
+}
+
+interface GatewayUpdateResponse {
+  updateAvailable: boolean;
+  version: string;
+  releaseNotes?: string;
+  downloads?: Array<{
+    filename: string;
+    os: string;
+    arch: string;
+    url: string;
+  }>;
+}
+
+function getPendingUpdatePath(): string {
+  return join(getDataDir(), PENDING_UPDATE_FILE);
+}
+
+function getUpdateStagingPath(): string {
+  const tmpDir = join(getDataDir(), 'tmp');
+  if (!existsSync(tmpDir)) {
+    mkdirSync(tmpDir, { recursive: true });
+  }
+  const ext = platform() === 'win32' ? '.exe' : '';
+  return join(tmpDir, `108ai-new${ext}`);
+}
+
+function getTargetPlatform(): { os: string; arch: string } {
+  const p = platform();
+  const a = arch();
+  return {
+    os: p === 'win32' ? 'windows' : p === 'darwin' ? 'macos' : 'linux',
+    arch: a === 'arm64' ? 'arm64' : 'x64',
+  };
 }
 
 /**
  * Check the gateway for available updates.
  */
 export async function checkForUpdate(gatewayBaseUrl: string): Promise<UpdateInfo | null> {
-  const target = getTargetPlatform();
-  const url = `${gatewayBaseUrl}/api/desktop-agent/updates?platform=${target.platform}&arch=${target.arch}&current=${CURRENT_VERSION}`;
+  const current = getAppVersion();
+  const base = gatewayBaseUrl.replace(/\/$/, '');
+  const url = `${base}/api/desktop-agent/updates?version=${encodeURIComponent(current)}`;
 
   try {
     const response = await fetch(url, {
-      headers: { 'User-Agent': `108ai-desktop/${CURRENT_VERSION}` },
+      headers: { 'User-Agent': `108ai-desktop/${current}` },
       signal: AbortSignal.timeout(10_000),
     });
-
-    if (response.status === 204 || response.status === 304) {
-      return null; // No update available
-    }
 
     if (!response.ok) {
       return null;
     }
 
-    const data = await response.json() as UpdateInfo;
+    const data = await response.json() as GatewayUpdateResponse;
 
-    if (data.version === CURRENT_VERSION) {
+    if (!data.updateAvailable || !isNewerVersion(data.version, current)) {
       return null;
     }
 
-    return data;
+    const target = getTargetPlatform();
+    const download =
+      data.downloads?.find((d) => d.os === target.os && d.arch === target.arch) ??
+      data.downloads?.[0];
+
+    if (!download?.url) {
+      return null;
+    }
+
+    return {
+      version: data.version,
+      downloadUrl: download.url,
+      releaseNotes: data.releaseNotes,
+    };
   } catch {
-    // Update check is non-critical
     return null;
   }
 }
 
 /**
- * Download and apply an update.
- *
- * Strategy:
- * 1. Download new binary to temp file
- * 2. Verify SHA256 hash
- * 3. Replace current binary (rename old → .bak, move new → current)
- * 4. Schedule restart
+ * Download update to staging area and write pending manifest (apply on next restart).
  */
-export async function applyUpdate(
+export async function stageUpdate(
   update: UpdateInfo,
   onProgress?: (percent: number) => void,
 ): Promise<boolean> {
-  const currentPath = process.execPath;
-  const tempPath = currentPath + '.update';
-  const backupPath = currentPath + '.bak';
+  const stagingPath = getUpdateStagingPath();
+  const targetPath = isRunningInstalledBinary() ? getInstalledBinaryPath() : process.execPath;
 
   console.log(JSON.stringify({
     level: 'info',
-    message: 'Downloading update',
+    message: 'Downloading update (staged)',
     version: update.version,
     url: update.downloadUrl,
   }));
 
   try {
-    // Download
     const response = await fetch(update.downloadUrl);
     if (!response.ok || !response.body) {
       throw new Error(`Download failed: ${response.status}`);
@@ -89,7 +140,7 @@ export async function applyUpdate(
     const totalSize = parseInt(response.headers.get('content-length') ?? '0', 10);
     let downloadedSize = 0;
 
-    const writer = createWriteStream(tempPath);
+    const writer = createWriteStream(stagingPath);
     const reader = response.body.getReader();
 
     while (true) {
@@ -104,26 +155,26 @@ export async function applyUpdate(
       }
     }
 
-    writer.close();
+    await new Promise<void>((resolve, reject) => {
+      writer.end(() => resolve());
+      writer.on('error', reject);
+    });
 
-    // TODO: Verify SHA256 hash (crypto.createHash('sha256'))
-
-    // Replace binary
-    if (existsSync(backupPath)) {
-      unlinkSync(backupPath);
-    }
-
-    renameSync(currentPath, backupPath);
-    renameSync(tempPath, currentPath);
-
-    // Make executable on Unix
     if (platform() !== 'win32') {
-      chmodSync(currentPath, 0o755);
+      chmodSync(stagingPath, 0o755);
     }
+
+    const pending: PendingUpdate = {
+      version: update.version,
+      downloadPath: stagingPath,
+      targetPath,
+      createdAt: new Date().toISOString(),
+    };
+    writeFileSync(getPendingUpdatePath(), JSON.stringify(pending, null, 2), 'utf-8');
 
     console.log(JSON.stringify({
       level: 'info',
-      message: 'Update applied successfully',
+      message: 'Update staged — will apply on next restart',
       version: update.version,
     }));
 
@@ -131,14 +182,83 @@ export async function applyUpdate(
   } catch (error) {
     console.log(JSON.stringify({
       level: 'error',
-      message: 'Update failed',
+      message: 'Update staging failed',
       error: error instanceof Error ? error.message : String(error),
     }));
-
-    // Cleanup temp file
-    try { unlinkSync(tempPath); } catch {}
-
+    try { unlinkSync(stagingPath); } catch { /* ignore */ }
     return false;
+  }
+}
+
+function isRunningInstalledBinary(): boolean {
+  try {
+    return process.execPath.toLowerCase() === getInstalledBinaryPath().toLowerCase();
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Apply a pending staged update (call before agent main on startup).
+ */
+export function applyPendingUpdate(): boolean {
+  const pendingPath = getPendingUpdatePath();
+  if (!existsSync(pendingPath)) return false;
+
+  let pending: PendingUpdate;
+  try {
+    pending = JSON.parse(readFileSync(pendingPath, 'utf-8')) as PendingUpdate;
+  } catch {
+    return false;
+  }
+
+  if (!existsSync(pending.downloadPath)) {
+    try { unlinkSync(pendingPath); } catch { /* ignore */ }
+    return false;
+  }
+
+  const target = pending.targetPath;
+  const backupPath = target + '.bak';
+
+  try {
+    if (existsSync(backupPath)) {
+      unlinkSync(backupPath);
+    }
+    if (existsSync(target)) {
+      renameSync(target, backupPath);
+    }
+    renameSync(pending.downloadPath, target);
+    if (platform() !== 'win32') {
+      chmodSync(target, 0o755);
+    }
+    unlinkSync(pendingPath);
+
+    console.log(JSON.stringify({
+      level: 'info',
+      message: 'Pending update applied',
+      version: pending.version,
+      target,
+    }));
+
+    return true;
+  } catch (error) {
+    console.log(JSON.stringify({
+      level: 'error',
+      message: 'Failed to apply pending update',
+      error: error instanceof Error ? error.message : String(error),
+    }));
+    return false;
+  }
+}
+
+export function loadPendingUpdateVersion(): string | null {
+  const pendingPath = getPendingUpdatePath();
+  if (!existsSync(pendingPath)) return null;
+  try {
+    const pending = JSON.parse(readFileSync(pendingPath, 'utf-8')) as PendingUpdate;
+    return pending.version;
+  } catch {
+    return null;
   }
 }
 
@@ -146,64 +266,56 @@ export async function applyUpdate(
  * Restart the agent process after an update.
  */
 export function scheduleRestart(): void {
-  console.log(JSON.stringify({
-    level: 'info',
-    message: 'Restarting agent after update...',
-  }));
-
   const execPath = process.execPath;
   const args = process.argv.slice(1);
 
-  // Spawn detached process and exit current
   const child = spawn(execPath, args, {
     detached: true,
     stdio: 'ignore',
   });
   child.unref();
-
   process.exit(0);
+}
+
+export type UpdateNotificationHandler = (info: {
+  type: 'available' | 'staged';
+  version: string;
+  releaseNotes?: string;
+}) => void;
+
+let notifyHandler: UpdateNotificationHandler | null = null;
+
+export function setUpdateNotificationHandler(handler: UpdateNotificationHandler | null): void {
+  notifyHandler = handler;
 }
 
 /**
  * Start periodic update checks in the background.
+ * Downloads updates to staging; does not auto-restart (user or next boot applies).
  */
 export function startUpdateLoop(gatewayBaseUrl: string): void {
   const check = async () => {
     const update = await checkForUpdate(gatewayBaseUrl);
-    if (update) {
-      console.log(JSON.stringify({
-        level: 'info',
-        message: 'Update available',
-        currentVersion: CURRENT_VERSION,
-        newVersion: update.version,
-        releaseNotes: update.releaseNotes,
-      }));
+    if (!update) return;
 
-      // Auto-apply in background
-      const success = await applyUpdate(update);
-      if (success) {
-        scheduleRestart();
-      }
+    notifyHandler?.({
+      type: 'available',
+      version: update.version,
+      releaseNotes: update.releaseNotes,
+    });
+
+    const success = await stageUpdate(update);
+    if (success) {
+      notifyHandler?.({
+        type: 'staged',
+        version: update.version,
+        releaseNotes: update.releaseNotes,
+      });
     }
   };
 
-  // Check on startup (after 5s delay to not block main flow)
-  setTimeout(check, 5000);
-
-  // Check periodically
+  setTimeout(check, 5_000);
   setInterval(check, CHECK_INTERVAL_MS);
 }
 
-function getTargetPlatform(): { platform: string; arch: string } {
-  const p = platform();
-  const a = arch();
-
-  return {
-    platform: p === 'win32' ? 'windows' : p === 'darwin' ? 'macos' : 'linux',
-    arch: a === 'arm64' ? 'arm64' : 'x64',
-  };
-}
-
-export function getCurrentVersion(): string {
-  return CURRENT_VERSION;
-}
+export { getAppVersion as getCurrentVersion } from './version.js';

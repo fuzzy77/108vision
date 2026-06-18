@@ -64,6 +64,7 @@ async function createMcpClient(def: McpServerDefinition): Promise<McpTransportCl
   return new StdioMcpClient({
     command: def.command,
     args: def.args,
+    cwd: def.cwd,
     env: resolveMcpServerEnv(def),
     timeoutMs,
   });

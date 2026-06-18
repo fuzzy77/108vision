@@ -7,6 +7,7 @@ import {
   renderStorePanel,
 } from './panels.js';
 import { getUiServerUrl, isUiServerRunning, startUiServer, stopUiServer } from './server.js';
+import { installStoreItem } from './store/installer.js';
 import { dim, green } from './ansi.js';
 
 export async function handleUiCli(args: string[]): Promise<string> {
@@ -36,6 +37,18 @@ export async function handleUiCli(args: string[]): Promise<string> {
       return `${renderMcpPanel()}\n`;
 
     case 'store': {
+      const sub = rest[0]?.toLowerCase();
+      if (sub === 'install') {
+        const itemId = rest[1];
+        if (!itemId) return '  Uso: /ui store install <item-id>\n';
+        const result = await installStoreItem(itemId);
+        const warn = result.warnings.length
+          ? `\n  ${dim(result.warnings.join('; '))}`
+          : '';
+        return result.ok
+          ? `  ${green('[OK]')} ${result.message}${warn}\n`
+          : `  Errore: ${result.message}${warn}\n`;
+      }
       const type = rest[0] && !rest[0].includes(' ') ? rest[0] : 'all';
       const q = rest[0]?.includes(' ') ? query : rest.slice(1).join(' ');
       return `${renderStorePanel(q, type)}\n`;

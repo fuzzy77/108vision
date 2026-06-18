@@ -13,6 +13,7 @@ import { resolve, normalize, dirname } from 'node:path';
 import { rotateAuditLogIfNeeded } from './hardening/audit-rotation.js';
 import type { AgentConfig } from './config.js';
 import { getAuditLogPath } from './config.js';
+import { assertSafeUrl } from './capabilities/web.js';
 
 // --- Rate Limiter ---
 
@@ -146,7 +147,43 @@ const ACTION_RISK_LEVELS = new Map<string, ActionRiskLevel>([
   ['filesystem.getFileInfo',    'read-only'],
   // Shell
   ['shell.execute',             'high-risk'],
+  ['shell.executeStream',       'high-risk'],
+  ['shell.terminate',           'low-risk'],
+  ['shell.getRunning',          'read-only'],
   ['shell.getInfo',             'read-only'],
+  // Code
+  ['code.readRange',            'read-only'],
+  ['code.edit',                 'low-risk'],
+  ['code.editMulti',            'low-risk'],
+  ['code.write',                'low-risk'],
+  // Git
+  ['git.status',                'read-only'],
+  ['git.diff',                  'read-only'],
+  ['git.log',                   'read-only'],
+  ['git.commit',                'low-risk'],
+  ['git.branch',                'low-risk'],
+  ['git.stash',                 'low-risk'],
+  ['git.blame',                 'read-only'],
+  ['git.push',                  'high-risk'],
+  ['git.reset',                 'high-risk'],
+  // Search
+  ['search.grep',               'read-only'],
+  ['search.glob',               'read-only'],
+  ['search.find',               'read-only'],
+  // Web
+  ['web.fetch',                 'low-risk'],
+  ['web.search',                'read-only'],
+  // Process
+  ['process.start',             'high-risk'],
+  ['process.stop',              'low-risk'],
+  ['process.list',              'read-only'],
+  ['process.logs',              'read-only'],
+  // Index / Context (Local RAG)
+  ['index.build',               'read-only'],
+  ['index.search',              'read-only'],
+  ['index.status',              'read-only'],
+  ['index.clear',               'low-risk'],
+  ['context.assemble',          'read-only'],
   // Clipboard
   ['clipboard.read',            'read-only'],
   ['clipboard.write',           'low-risk'],
@@ -170,6 +207,14 @@ const ACTION_RISK_LEVELS = new Map<string, ActionRiskLevel>([
   ['desktop.clickElement',      'high-risk'],
   ['desktop.pressHotkey',       'high-risk'],
   ['desktop.mouseClick',        'high-risk'],
+  // Triage & Jobs (dashboard consulente)
+  ['triage.lastReport',         'read-only'],
+  ['triage.schedule',           'read-only'],
+  ['triage.run',                'low-risk'],
+  ['jobs.list',                 'read-only'],
+  ['jobs.get',                  'read-only'],
+  ['jobs.scheduler',            'read-only'],
+  ['jobs.run',                  'low-risk'],
 ]);
 
 /**
@@ -308,12 +353,25 @@ export function performSecurityCheck(
     };
   }
 
-  // 3. Path validation for filesystem and shell operations
-  if (action.startsWith('filesystem.') || action === 'shell.execute') {
+  // 3. Path validation for filesystem, code, shell, git, search, process
+  const pathActions = new Set([
+    'filesystem.readFile', 'filesystem.writeFile', 'filesystem.editFile',
+    'filesystem.listDirectory', 'filesystem.searchFiles', 'filesystem.grep',
+    'filesystem.watchDirectory', 'filesystem.getFileInfo',
+    'code.readRange', 'code.edit', 'code.editMulti', 'code.write',
+    'shell.execute', 'shell.executeStream', 'process.start',
+    'search.grep', 'search.glob', 'search.find',
+    'git.blame',
+    'index.build', 'index.search', 'index.status', 'index.clear',
+    'context.assemble',
+  ]);
+
+  if (pathActions.has(action) || action.startsWith('git.')) {
     const path = params['path'] as string | undefined;
     const directory = params['directory'] as string | undefined;
     const cwd = params['cwd'] as string | undefined;
-    const targetPath = path ?? directory ?? cwd;
+    const filePath = params['filePath'] as string | undefined;
+    const targetPath = path ?? directory ?? cwd ?? filePath;
 
     if (targetPath) {
       if (isSystemPath(targetPath)) {
@@ -326,6 +384,47 @@ export function performSecurityCheck(
           allowed: false,
           reason: `Path "${targetPath}" is outside allowed directories: ${config.allowedDirectories.join(', ')}`,
         };
+      }
+    }
+  }
+
+  // Shell opt-in
+  if ((action === 'shell.execute' || action === 'shell.executeStream' || action === 'process.start')
+    && config.shellEnabled === false) {
+    return {
+      allowed: false,
+      reason: 'Shell execution is disabled. Set shellEnabled: true in config.',
+    };
+  }
+
+  // Git opt-in
+  if (action.startsWith('git.') && config.gitEnabled === false) {
+    return {
+      allowed: false,
+      reason: 'Git capabilities are disabled (gitEnabled: false).',
+    };
+  }
+
+  // High-risk approval (shell, git push/reset, process)
+  const riskLevel = getActionRiskLevel(action);
+  if (riskLevel === 'high-risk' && config.riskPreferences.requireApprovalHighRisk) {
+    if (params['_approved'] !== true) {
+      return {
+        allowed: false,
+        reason: `High-risk action "${action}" requires gateway approval (_approved: true).`,
+      };
+    }
+  }
+
+  // web.fetch SSRF guard
+  if (action === 'web.fetch') {
+    const url = params['url'] as string | undefined;
+    if (url) {
+      try {
+        assertSafeUrl(url);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'URL blocked';
+        return { allowed: false, reason: message };
       }
     }
   }

@@ -2,7 +2,7 @@
  * Job CLI — Formatting and command handling for the job engine.
  *
  * Consumed by:
- *  - shell.ts slash commands: /job, /job list, /job run, etc.
+ *  - extensions/commands/builtins.ts (YAML `builtin: job`)
  *  - Direct invocation: handleJobCommand(args)
  *
  * Color scheme:

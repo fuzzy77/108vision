@@ -5,6 +5,7 @@ import { logger } from 'hono/logger';
 import { nanoid } from 'nanoid';
 import type { IncomingMessage } from 'node:http';
 import { WebSocketServer, type WebSocket } from 'ws';
+import { jwtVerify } from 'jose';
 import { loadEnv } from './lib/env.js';
 import { getRedis, closeRedis } from './lib/redis.js';
 import { closeDb } from './lib/db.js';
@@ -51,7 +52,10 @@ app.use('*', async (c, next) => {
 // CORS
 app.use('*', cors({
   origin: env.NODE_ENV === 'production'
-    ? (origin) => origin // In production, validate against tenant-configured domains
+    ? (origin) => {
+        const allowed = (env.CORS_ALLOWED_ORIGINS ?? '').split(',').map(s => s.trim()).filter(Boolean);
+        return allowed.includes(origin) ? origin : allowed[0] ?? null;
+      }
     : '*',
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowHeaders: ['Content-Type', 'Authorization', 'X-Tenant-ID', 'X-Request-ID', 'X-API-Key'],
@@ -192,6 +196,7 @@ type UpgradeHandler = (
 ) => void;
 
 const upgradeHandler: UpgradeHandler = (req, socket, head) => {
+  void (async () => {
   const url = new URL(req.url ?? '/', `http://${req.headers.host ?? 'localhost'}`);
 
   if (url.pathname !== '/ws/local-agent') {
@@ -207,19 +212,16 @@ const upgradeHandler: UpgradeHandler = (req, socket, head) => {
     return;
   }
 
-  // Decode the JWT payload to extract tenantId.
-  // Full signature verification is not done here because the WS connection
-  // itself does not transmit data until the registry registers the agent —
-  // any tenant-scoped action still goes through the authenticated REST layer.
-  // For production, replace this with a jose verifyJwt call.
+  // Verify the JWT signature and extract tenantId.
+  // ws is not yet created here (pre-upgrade), so on failure we destroy the socket
+  // with a 4001 close code written to the raw stream before destroying.
   let tenantId: string | null = null;
   try {
-    const base64Payload = token.split('.')[1] ?? '';
-    const payload = JSON.parse(
-      Buffer.from(base64Payload, 'base64url').toString('utf8'),
-    ) as { tenantId?: string };
-    tenantId = payload.tenantId ?? null;
+    const secret = new TextEncoder().encode(env.JWT_SECRET);
+    const { payload } = await jwtVerify(token, secret);
+    tenantId = (payload.tenantId as string) ?? null;
   } catch {
+    socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
     socket.destroy();
     return;
   }
@@ -233,6 +235,7 @@ const upgradeHandler: UpgradeHandler = (req, socket, head) => {
   wss.handleUpgrade(req, socket, head, (ws) => {
     wss.emit('connection', ws, resolvedTenantId);
   });
+  })();
 };
 
 (server as unknown as { on: (event: 'upgrade', handler: UpgradeHandler) => void })

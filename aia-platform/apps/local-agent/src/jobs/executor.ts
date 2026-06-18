@@ -36,6 +36,9 @@ import type {
 import { appendRun } from './store.js';
 import { trackTokens } from '../resources/config.js';
 import { isLLMBlocked, isModelDowngraded } from '../resources/auto-healer.js';
+import { loadConfig } from '../config.js';
+import { validateShellCommand } from '../capabilities/shell-security.js';
+import { commandsAllowShell } from '../extensions/permissions.js';
 
 const execFileAsync = promisify(execFile);
 
@@ -303,6 +306,28 @@ async function executeShellStep(
   context: ExecutionContext,
 ): Promise<string> {
   const command = interpolateTemplate(step.command ?? '', context);
+  if (!command.trim()) {
+    throw new Error('Shell step requires a non-empty command');
+  }
+
+  if (!commandsAllowShell()) {
+    throw new Error(
+      'Shell steps blocked by permissions.yml (commands.allow_shell: deny)',
+    );
+  }
+
+  const config = loadConfig();
+  if (!config) {
+    throw new Error('Agent config not found (~/.108ai/config.json)');
+  }
+  if (config.shellEnabled === false) {
+    throw new Error(
+      'Shell steps blocked: set shellEnabled: true in ~/.108ai/config.json',
+    );
+  }
+
+  validateShellCommand(command, config);
+
   const timeoutMs = step.timeout ?? 30_000;
 
   const { stdout } = IS_WINDOWS

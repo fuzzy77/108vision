@@ -209,8 +209,20 @@ export const conversationService = {
   async getHistory(
     conversationId: string,
     limit: number = 20,
+    tenantId?: string,
   ): Promise<Result<Array<{ role: string | null; content: string }>>> {
     const db = getDb();
+
+    // Verify conversation belongs to tenant (defense in depth)
+    if (tenantId) {
+      const [conv] = await db.select({ id: conversations.id })
+        .from(conversations)
+        .where(and(eq(conversations.id, conversationId), eq(conversations.tenantId, tenantId)))
+        .limit(1);
+      if (!conv) {
+        return success([]);
+      }
+    }
 
     const history = await db
       .select({

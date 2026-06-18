@@ -621,6 +621,50 @@ Un sistema AI in produzione non è mai perfetto dal primo giorno. Avrà risposte
 
 ---
 
+## Come funzionano i principi AI nella pratica
+
+108 AI non è un chatbot qualsiasi. Ha dei principi di comportamento che la rendono affidabile e trasparente. Ecco cosa vedrai:
+
+### Badge di certezza
+
+Quando l'AI risponde, vedrai dei badge colorati che indicano quanto è sicura:
+
+- 🟢 **Verificato** — L'AI ha controllato direttamente (letto un documento, consultato un dato)
+- 🟡 **Probabile** — Ragionamento logico, ma senza conferma diretta
+- 🟠 **Non verificato** — Per analogia — conferma prima di agire su questa informazione
+- 🔴 **Ignoto** — L'AI non lo sa e te lo dice. Questo è un segno di qualità, non di debolezza
+
+### L'AI chiede prima di fare
+
+Se l'AI deve fare qualcosa di importante (modificare un file, inviare un messaggio, eseguire un'azione):
+1. Ti dice cosa sta per fare
+2. Ti spiega perché
+3. Ti mostra i rischi
+4. Aspetta il tuo OK
+
+Non agirà mai autonomamente su cose importanti. **Tu decidi, sempre.**
+
+### L'AI ti conosce nel tempo
+
+Più usi 108 AI, più diventa utile:
+- Ricorda le tue preferenze e il tuo contesto
+- Non ti chiede le stesse cose due volte
+- Adatta il linguaggio al tuo livello
+
+Se vuoi che ricordi qualcosa: dillo. "Ricorda che preferisco risposte brevi" o "Ricorda che il nostro gestionale è TeamSystem".
+
+### Quando l'AI suggerisce una nuova chat
+
+Se la conversazione diventa molto lunga, l'AI potrebbe suggerirti di iniziarne una nuova. Non è un bug — è perché dopo molti messaggi la qualità delle risposte può diminuire. Pensa a una scrivania: se è troppo piena, non trovi più niente.
+
+### Il principio guida
+
+> L'AI propone, tu decidi. Sempre, esplicitamente, consapevolmente.
+
+Questo non è uno slogan — è come funziona il software. L'AI è costruita per rendere le tue decisioni migliori, non per prenderle al posto tuo.
+
+---
+
 ## Vuoi andare oltre?
 
 Vuoi applicare questo metodo alla tua azienda? Prenota 30 minuti con noi su 108vision.it — gratuito, senza impegno.

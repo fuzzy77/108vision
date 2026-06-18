@@ -15,12 +15,14 @@
 4. [Clone repo e configurazione .env](#4-clone-repo-e-configurazione-env)
 5. [Docker Compose in produzione](#5-docker-compose-in-produzione)
 6. [SSL con Traefik e Let's Encrypt](#6-ssl-con-traefik-e-lets-encrypt)
-7. [Git Autodeploy con webhook](#7-git-autodeploy-con-webhook)
-8. [Backup automatico](#8-backup-automatico)
-9. [Monitoring](#9-monitoring)
-10. [RAM Budget](#10-ram-budget)
-11. [Troubleshooting](#11-troubleshooting)
-12. [Security Hardening](#12-security-hardening)
+7. [Deploy applicazioni (Gateway, Dashboard, Client)](#7-deploy-applicazioni-gateway-dashboard-client)
+8. [Desktop Agent — Build e distribuzione](#8-desktop-agent--build-e-distribuzione)
+9. [Git Autodeploy con webhook](#9-git-autodeploy-con-webhook)
+10. [Backup automatico](#10-backup-automatico)
+11. [Monitoring](#11-monitoring)
+12. [RAM Budget](#12-ram-budget)
+13. [Troubleshooting](#13-troubleshooting)
+14. [Security Hardening](#14-security-hardening)
 
 ---
 
@@ -31,7 +33,7 @@
 Vai su [console.hetzner.com](https://console.hetzner.com) e crea un account.
 
 **Perché CX23 e non CX22?**  
-Il CX22 ha 4 GB RAM — troppo poco per Far girare PostgreSQL, Redis, Qdrant, Neo4j, LiteLLM e Traefik insieme. Il CX23 con 8 GB ha un margine di sicurezza adeguato (vedi [RAM Budget](#10-ram-budget) per il breakdown esatto).
+Il CX22 ha 4 GB RAM — troppo poco per Far girare PostgreSQL, Redis, Qdrant, Neo4j, LiteLLM e Traefik insieme. Il CX23 con 8 GB ha un margine di sicurezza adeguato (vedi [RAM Budget](#12-ram-budget) per il breakdown esatto).
 
 **Configurazione da scegliere:**
 
@@ -552,7 +554,346 @@ Mostra:
 
 ---
 
-## 7. Git Autodeploy con webhook
+## 7. Deploy applicazioni (Gateway, Dashboard, Client)
+
+Il docker-compose base contiene solo l'infrastruttura (DB, cache, AI, proxy). I servizi applicativi vanno aggiunti come container separati, che vengono buildati direttamente dal codice sorgente.
+
+### 7.1 docker-compose.apps.yml — Container applicativi
+
+Crea un file override per i container applicativi. Si usa un file separato per evitare di mischiare infrastruttura (immagini prebuilt) con applicazioni (build dal sorgente).
+
+```bash
+cat > /opt/aia-platform/docker-compose.apps.yml << 'EOF'
+version: "3.9"
+
+services:
+  gateway:
+    build:
+      context: .
+      dockerfile: apps/gateway/Dockerfile
+    container_name: aia-gateway
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      REDIS_URL: redis://redis:6379
+      QDRANT_URL: http://qdrant:6333
+      LITELLM_URL: http://litellm:4000
+      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY}
+      NEO4J_URI: bolt://neo4j:7687
+      NEO4J_USER: neo4j
+      NEO4J_PASSWORD: ${NEO4J_PASSWORD:-neo4j_dev_password}
+      JWT_SECRET: ${JWT_SECRET}
+      CORS_ALLOWED_ORIGINS: https://${DOMAIN},https://app.${DOMAIN}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - aia-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.gateway.rule=Host(`api.${DOMAIN}`)"
+      - "traefik.http.routers.gateway.entrypoints=websecure"
+      - "traefik.http.routers.gateway.tls.certresolver=letsencrypt"
+      - "traefik.http.services.gateway.loadbalancer.server.port=3000"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3000/health/live').then(r=>r.ok?process.exit(0):process.exit(1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      start_period: 15s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  dashboard:
+    build:
+      context: apps/dashboard
+      dockerfile: Dockerfile
+    container_name: aia-dashboard
+    restart: unless-stopped
+    depends_on:
+      - gateway
+    networks:
+      - aia-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dashboard.rule=Host(`app.${DOMAIN}`)"
+      - "traefik.http.routers.dashboard.entrypoints=websecure"
+      - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
+      - "traefik.http.services.dashboard.loadbalancer.server.port=80"
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+
+  client:
+    build:
+      context: apps/client
+      dockerfile: Dockerfile
+    container_name: aia-client
+    restart: unless-stopped
+    depends_on:
+      - gateway
+    networks:
+      - aia-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.client.rule=Host(`chat.${DOMAIN}`)"
+      - "traefik.http.routers.client.entrypoints=websecure"
+      - "traefik.http.routers.client.tls.certresolver=letsencrypt"
+      - "traefik.http.services.client.loadbalancer.server.port=80"
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+EOF
+```
+
+### 7.2 Aggiungere i DNS per le applicazioni
+
+Nel pannello del registrar, aggiungi questi record A (come fatto alla sezione 3):
+
+| Nome | Tipo | Valore | Ruolo |
+|---|---|---|---|
+| `app` | A | `<IP_SERVER>` | Dashboard admin |
+| `chat` | A | `<IP_SERVER>` | Widget chat client |
+
+### 7.3 Aggiungere le variabili .env mancanti
+
+```bash
+# Aggiungi al file .env queste variabili se non presenti:
+cat >> /opt/aia-platform/.env << 'EOF'
+
+# --- App Configuration ---
+# Password Neo4j (deve corrispondere a quella nel docker-compose.yml)
+NEO4J_PASSWORD=<GENERA_CON_OPENSSL>
+
+# Origini CORS permesse (separate da virgola)
+# Usato dal gateway per validare le richieste cross-origin
+# CORS_ALLOWED_ORIGINS viene costruito automaticamente dal DOMAIN nel compose
+EOF
+```
+
+### 7.4 Avviare le applicazioni
+
+```bash
+cd /opt/aia-platform
+
+# Build e avvio (la prima volta ci vogliono 2-5 minuti per il build)
+docker compose -f docker-compose.yml -f docker-compose.apps.yml up -d --build
+
+# Verifica lo stato
+docker compose -f docker-compose.yml -f docker-compose.apps.yml ps
+```
+
+Output atteso:
+
+```
+NAME              IMAGE                    STATUS           PORTS
+aia-gateway       aia-platform-gateway     Up (healthy)     3000/tcp
+aia-dashboard     aia-platform-dashboard   Up               80/tcp
+aia-client        aia-platform-client      Up               80/tcp
+aia-litellm       ghcr.io/berriai/litellm  Up (healthy)     4000/tcp
+...
+```
+
+### 7.5 Verificare che tutto funzioni
+
+```bash
+# 1. Health check del gateway
+curl -s https://api.108ai.dev/health/live
+# Atteso: {"status":"ok"}
+
+# 2. Dashboard raggiungibile
+curl -s -o /dev/null -w "%{http_code}" https://app.108ai.dev
+# Atteso: 200
+
+# 3. Client raggiungibile
+curl -s -o /dev/null -w "%{http_code}" https://chat.108ai.dev
+# Atteso: 200
+
+# 4. API auth funziona
+curl -s https://api.108ai.dev/api/auth/health
+# Atteso: {"status":"ok"} o simile
+```
+
+### 7.6 Come funziona il routing in produzione
+
+```
+Browser → https://app.108ai.dev
+  → Traefik (SSL) → aia-dashboard (nginx:80)
+  → Le chiamate /api/* vengono proxate da nginx → aia-gateway:3000
+
+Browser → https://api.108ai.dev
+  → Traefik (SSL) → aia-gateway:3000 (diretto)
+```
+
+Il nginx inside il container dashboard ha un `proxy_pass http://gateway:3000/api/` che risolve `gateway` via la Docker network interna. In produzione, le SPA (dashboard e client) servono file statici e proxano le API verso il container gateway.
+
+### 7.7 Aggiornare deploy.sh per includere le app
+
+Modifica lo script `/opt/aia-platform/deploy.sh` per usare entrambi i compose file:
+
+```bash
+# Nella sezione "Rebuilding containers..." del deploy.sh, sostituisci:
+# docker compose up -d --build
+# Con:
+docker compose -f docker-compose.yml -f docker-compose.apps.yml pull 2>&1 | tee -a "$LOG_FILE"
+docker compose -f docker-compose.yml -f docker-compose.apps.yml up -d --build 2>&1 | tee -a "$LOG_FILE"
+```
+
+### 7.8 Variabili d'ambiente di produzione — checklist
+
+| Variabile | Valore in produzione | Note |
+|---|---|---|
+| `NODE_ENV` | `production` | Disabilita dev tools, abilita cache |
+| `JWT_SECRET` | 48+ char random | **Mai** usare il default dev |
+| `CORS_ALLOWED_ORIGINS` | `https://108ai.dev,https://app.108ai.dev` | Solo domini reali |
+| `NEO4J_PASSWORD` | 32+ char random | Password dedicata |
+| `LITELLM_MASTER_KEY` | `sk-108ai-<random>` | Deve iniziare con `sk-` |
+
+---
+
+## 8. Desktop Agent — Build e distribuzione
+
+Il Desktop Agent (`108ai.exe`) e' un binario compilato con Bun che i clienti scaricano e installano. Il server Hetzner serve come host per il download.
+
+### 8.1 Build del binario (sulla macchina di sviluppo)
+
+```bash
+cd apps/local-agent
+
+# Installa Bun se non ce l'hai (https://bun.sh)
+# Windows: powershell -c "irm bun.sh/install.ps1 | iex"
+# Mac/Linux: curl -fsSL https://bun.sh/install | bash
+
+# Build per tutte le piattaforme
+bun build src/index.ts --compile --outfile dist/108ai            # Linux
+bun build src/index.ts --compile --target=bun-windows-x64 --outfile dist/108ai.exe  # Windows
+bun build src/index.ts --compile --target=bun-darwin-x64 --outfile dist/108ai-macos  # Mac Intel
+bun build src/index.ts --compile --target=bun-darwin-arm64 --outfile dist/108ai-macos-arm  # Mac ARM
+```
+
+### 8.2 Firmare il binario (Code Signing)
+
+Senza firma, Windows Defender/SmartScreen bloccano l'exe al primo avvio.
+
+**Opzioni di certificato:**
+
+| Provider | Costo/anno | Note |
+|---|---|---|
+| DigiCert | ~$400 | Standard enterprise, riconosciuto ovunque |
+| Sectigo (Comodo) | ~$200 | Buon rapporto qualita'/prezzo |
+| SSL.com | ~$250 | EV Code Signing (immediata reputazione) |
+| SignPath.io | Free per OSS | Se il progetto e' open-source |
+
+**Procedura firma Windows (signtool):**
+
+```powershell
+# Richiede il Windows SDK installato
+# Il certificato .pfx deve essere nel keystore o su file
+signtool sign /f "108vision-codesign.pfx" /p "<password>" /tr http://timestamp.digicert.com /td sha256 /fd sha256 dist/108ai.exe
+
+# Verifica la firma
+signtool verify /pa dist/108ai.exe
+```
+
+**Procedura firma Mac (codesign):**
+
+```bash
+# Richiede un Apple Developer ID ($99/anno)
+codesign --sign "Developer ID Application: 108 Vision S.r.l." --timestamp --options runtime dist/108ai-macos
+codesign --sign "Developer ID Application: 108 Vision S.r.l." --timestamp --options runtime dist/108ai-macos-arm
+
+# Notarization (necessario per macOS Gatekeeper)
+xcrun notarytool submit dist/108ai-macos --apple-id "dev@108vision.it" --team-id XXXXXXXXXX --password @keychain:AC_PASSWORD --wait
+```
+
+### 8.3 Generare checksum e caricare sul server
+
+```bash
+# Genera SHA-256 per ogni binario
+sha256sum dist/108ai dist/108ai.exe dist/108ai-macos dist/108ai-macos-arm > dist/checksums.txt
+
+# Copia i binari sul server
+scp -i ~/.ssh/aia_hetzner dist/108ai* deploy@<IP_SERVER>:/opt/aia-platform/public/downloads/
+scp -i ~/.ssh/aia_hetzner dist/checksums.txt deploy@<IP_SERVER>:/opt/aia-platform/public/downloads/
+```
+
+### 8.4 Configurare il gateway per servire i download
+
+Il gateway espone un endpoint `/api/desktop-agent/download/:platform` che serve il binario corretto. Per i file statici di grandi dimensioni, conviene servirli direttamente da Traefik/nginx.
+
+Crea la directory dei download sul server:
+
+```bash
+sudo mkdir -p /opt/aia-platform/public/downloads
+sudo chown deploy:deploy /opt/aia-platform/public/downloads
+```
+
+Aggiungi un servizio file-server leggero nel `docker-compose.apps.yml`:
+
+```yaml
+  downloads:
+    image: nginx:1.27-alpine
+    container_name: aia-downloads
+    restart: unless-stopped
+    volumes:
+      - /opt/aia-platform/public/downloads:/usr/share/nginx/html:ro
+    networks:
+      - aia-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.downloads.rule=Host(`dl.${DOMAIN}`)"
+      - "traefik.http.routers.downloads.entrypoints=websecure"
+      - "traefik.http.routers.downloads.tls.certresolver=letsencrypt"
+      - "traefik.http.services.downloads.loadbalancer.server.port=80"
+    deploy:
+      resources:
+        limits:
+          memory: 32M
+```
+
+Aggiungi il record DNS:
+
+| Nome | Tipo | Valore |
+|---|---|---|
+| `dl` | A | `<IP_SERVER>` |
+
+### 8.5 Endpoint version check per auto-update
+
+Il gateway ha gia' una route per la versione. In produzione il Desktop Agent chiama:
+
+```
+GET https://api.108ai.dev/api/desktop-agent/version
+→ { "latest": "1.0.0", "url": "https://dl.108ai.dev/108ai.exe", "sha256": "abc123..." }
+```
+
+Per aggiornare una release:
+1. Build + firma i binari (8.1 + 8.2)
+2. Carica su `/opt/aia-platform/public/downloads/` (8.3)
+3. Aggiorna la versione nel gateway (variabile env o DB)
+
+### 8.6 Workflow di rilascio Desktop Agent
+
+```
+Sviluppo locale
+  → bun build --compile (3 piattaforme)
+  → signtool / codesign (firma)
+  → sha256sum (checksum)
+  → scp sul server in /opt/aia-platform/public/downloads/
+  → Aggiorna version.json o env var DESKTOP_AGENT_VERSION
+  → Gli agent gia' installati ricevono la notifica al prossimo check (ogni 6h)
+```
+
+---
+
+## 9. Git Autodeploy con webhook
 
 Il deploy automatico funziona così: push su GitHub/GitLab → webhook → script sul server → `git pull` + `docker compose up --build`.
 
@@ -802,7 +1143,7 @@ tail -f /var/log/aia-deploy.log
 
 ---
 
-## 8. Backup automatico
+## 10. Backup automatico
 
 ### 8.1 Script di backup PostgreSQL
 
@@ -944,7 +1285,7 @@ echo "Restore completato"
 
 ---
 
-## 9. Monitoring
+## 11. Monitoring
 
 ### 9.1 Monitoring live con docker stats
 
@@ -1097,7 +1438,7 @@ Traefik espone già le metriche Prometheus sulla porta websecure. Se vuoi un das
 
 ---
 
-## 10. RAM Budget
+## 12. RAM Budget
 
 Con 8 GB di RAM, ecco la distribuzione realistica a regime (valori misurati con `docker stats`):
 
@@ -1111,10 +1452,13 @@ Con 8 GB di RAM, ecco la distribuzione realistica a regime (valori misurati con 
 | **Qdrant** | ~200-400 MB | Dipende dagli indici vettoriali caricati |
 | **LiteLLM** | ~400-512 MB | Hard limit configurato nel compose |
 | **Neo4j Community** | ~400-500 MB | Heap 256 MB + pagecache 128 MB configurati |
-| **App gateway (futuro)** | ~200-300 MB | Node.js API gateway |
+| **App gateway** | ~200-300 MB | Node.js API (hard limit 512M) |
+| **Dashboard (nginx)** | ~10-20 MB | File statici, trascurabile |
+| **Client (nginx)** | ~10-20 MB | File statici, trascurabile |
+| **Downloads (nginx)** | ~10-20 MB | Binari desktop agent |
 | **Webhook server** | ~20 MB | Trascurabile |
-| **Subtotale** | ~2.3-3.0 GB | Carico normale |
-| **Buffer disponibile** | ~5.0-5.7 GB | Per picchi, swap coverage, crescita |
+| **Subtotale** | ~2.4-3.2 GB | Carico normale |
+| **Buffer disponibile** | ~4.8-5.6 GB | Per picchi, swap coverage, crescita |
 
 **Neo4j è configurato nel compose con limiti espliciti:**
 ```yaml
@@ -1143,7 +1487,7 @@ Upgrade al CX33 quando: RAM used > 6.5 GB in condizioni normali (non picco).
 
 ---
 
-## 11. Troubleshooting
+## 13. Troubleshooting
 
 ### Container non parte: "port already in use"
 
@@ -1280,7 +1624,7 @@ docker compose up -d
 
 ---
 
-## 12. Security Hardening
+## 14. Security Hardening
 
 ### 12.1 Fail2ban per bloccare brute force SSH
 
@@ -1514,13 +1858,16 @@ cd /opt/aia-platform && docker compose pull && docker compose up -d
 
 ```
 /opt/
-├── aia-platform/           ← Repository clonato
-│   ├── docker-compose.yml
-│   ├── .env                ← SEGRETO — chmod 600
-│   ├── deploy.sh           ← Script deploy
+├── aia-platform/               ← Repository clonato
+│   ├── docker-compose.yml      ← Infrastruttura (DB, cache, AI, proxy)
+│   ├── docker-compose.apps.yml ← Applicazioni (gateway, dashboard, client, downloads)
+│   ├── .env                    ← SEGRETO — chmod 600
+│   ├── deploy.sh               ← Script deploy
 │   ├── health-check.sh
 │   ├── alert-check.sh
 │   ├── security-check.sh
+│   ├── public/
+│   │   └── downloads/          ← Binari Desktop Agent (108ai.exe, checksums.txt)
 │   └── infrastructure/
 │       ├── traefik/
 │       ├── litellm/
@@ -1528,20 +1875,21 @@ cd /opt/aia-platform && docker compose pull && docker compose up -d
 │       ├── redis/
 │       └── qdrant/
 ├── backups/
-│   ├── postgres/           ← Dump giornalieri .sql.gz
-│   └── volumes/            ← Backup volumi settimanali
+│   ├── postgres/               ← Dump giornalieri .sql.gz
+│   └── volumes/                ← Backup volumi settimanali
 └── webhooks/
-    └── hooks.json          ← Configurazione webhook
+    └── hooks.json              ← Configurazione webhook
 
 /var/log/
-├── aia-deploy.log          ← Log deploy automatici
-└── aia-backup.log          ← Log backup
+├── aia-deploy.log              ← Log deploy automatici
+└── aia-backup.log              ← Log backup
 
 /home/deploy/
-└── webhook-secret.txt      ← Segreto webhook (chmod 600)
+└── webhook-secret.txt          ← Segreto webhook (chmod 600)
 ```
 
 ---
 
-*Documento generato il 13 giugno 2026 — 108 Vision*  
-*Versione infrastruttura: Traefik v3.1, PostgreSQL 16 + pgvector, Redis 7, Qdrant latest, Neo4j 5 Community, LiteLLM main-latest*
+*Documento aggiornato il 16 giugno 2026 — 108 Vision*  
+*Versione infrastruttura: Traefik v3.1, PostgreSQL 16 + pgvector, Redis 7, Qdrant latest, Neo4j 5 Community, LiteLLM main-latest*  
+*Versione applicazioni: Gateway (Node.js 20 + Hono), Dashboard (React 19 + Vite 6 + nginx), Client (React + nginx), Desktop Agent (Bun compile)*

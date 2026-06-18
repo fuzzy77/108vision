@@ -17,6 +17,22 @@
  */
 
 import { nanoid } from 'nanoid';
+import { z } from 'zod';
+
+// --- Incoming message schema ------------------------------------------------
+// Validates structure and sizes of every message received from a local agent.
+// Uses .passthrough() so the switch-case below can still access known fields
+// while unknown extra fields are carried through without rejection.
+
+const AgentMessageSchema = z.object({
+  id: z.string().max(100),
+  type: z.enum(['request', 'response', 'event', 'heartbeat', 'register']),
+  action: z.string().max(200).optional(),
+  params: z.record(z.unknown()).optional(),
+  result: z.unknown().optional(),
+  error: z.string().max(1000).optional(),
+  capabilities: z.array(z.string().max(100)).max(100).optional(),
+}).passthrough();
 
 // --- Types ---
 
@@ -133,11 +149,23 @@ class LocalAgentRegistry {
 
     let message: AgentMessage;
     try {
-      message = JSON.parse(raw) as AgentMessage;
+      const parsed = AgentMessageSchema.safeParse(JSON.parse(raw));
+      if (!parsed.success) {
+        console.log(JSON.stringify({
+          level: 'warn',
+          message: 'Rejected message from local agent: schema validation failed',
+          agentId,
+          errors: parsed.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`),
+        }));
+        // Send a structured error back so the agent can surface it
+        agent.ws.send(JSON.stringify({ error: 'Invalid message format' }));
+        return;
+      }
+      message = parsed.data as AgentMessage;
     } catch {
       console.log(JSON.stringify({
         level: 'warn',
-        message: 'Invalid message from local agent',
+        message: 'Invalid message from local agent (JSON parse error)',
         agentId,
       }));
       return;
@@ -198,6 +226,7 @@ class LocalAgentRegistry {
     tenantId: string,
     action: string,
     params: Record<string, unknown>,
+    timeoutMs = LocalAgentRegistry.REQUEST_TIMEOUT_MS,
   ): Promise<unknown> {
     const agentId = this.getActiveAgentForTenant(tenantId);
     if (!agentId) {
@@ -214,8 +243,8 @@ class LocalAgentRegistry {
     return new Promise((resolve, reject) => {
       const timeout = setTimeout(() => {
         agent.pendingRequests.delete(requestId);
-        reject(new Error(`Agent did not respond within ${LocalAgentRegistry.REQUEST_TIMEOUT_MS / 1000}s`));
-      }, LocalAgentRegistry.REQUEST_TIMEOUT_MS);
+        reject(new Error(`Agent did not respond within ${timeoutMs / 1000}s`));
+      }, timeoutMs);
 
       const pending: PendingRequest = {
         id: requestId,

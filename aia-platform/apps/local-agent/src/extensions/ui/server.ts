@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { buildUiApiSnapshot } from './api.js';
 import { setActivePersona } from '../agents/switcher.js';
 import { startMcpServer } from '../mcp/manager.js';
+import { installStoreItem } from './store/installer.js';
 
 const DEFAULT_PORT = 7891;
 let server: Server | null = null;
@@ -80,6 +81,23 @@ async function handleApi(
       }
       await startMcpServer(name);
       json(res, 200, { ok: true, name });
+    } catch (err) {
+      json(res, 500, { error: err instanceof Error ? err.message : String(err) });
+    }
+    return;
+  }
+
+  if (pathname === '/api/store/install' && req.method === 'POST') {
+    let body = '';
+    for await (const chunk of req) body += chunk;
+    try {
+      const { itemId, force } = JSON.parse(body) as { itemId?: string; force?: boolean };
+      if (!itemId) {
+        json(res, 400, { error: 'itemId required' });
+        return;
+      }
+      const result = await installStoreItem(itemId, { force: force === true });
+      json(res, result.ok ? 200 : 400, result);
     } catch (err) {
       json(res, 500, { error: err instanceof Error ? err.message : String(err) });
     }

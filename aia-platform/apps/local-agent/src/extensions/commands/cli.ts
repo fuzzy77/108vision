@@ -138,7 +138,8 @@ function formatCommandList(entries = listRegisteredCommands()): string {
       const aliases = entry.definition.aliases?.length
         ? dim(` [${entry.definition.aliases.join(', ')}]`)
         : '';
-      lines.push(`  /${entry.definition.name}${aliases}`);
+      const kind = entry.handler ? dim(' [builtin]') : '';
+      lines.push(`  /${entry.definition.name}${aliases}${kind}`);
       lines.push(`    ${dim(entry.definition.description)}`);
     }
     lines.push('');
@@ -177,6 +178,12 @@ function formatCommandInfo(
   }
   if (entry.filePath) {
     lines.push(`  File:      ${entry.filePath}`);
+  }
+  if (def.builtin) {
+    lines.push(`  Builtin:   ${def.builtin}`);
+  }
+  if (entry.handler) {
+    lines.push(`  Handler:   platform (no LLM)`);
   }
   if (def.params?.length) {
     lines.push('  Parametri:');

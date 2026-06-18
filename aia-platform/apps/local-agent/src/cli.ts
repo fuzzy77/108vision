@@ -10,117 +10,38 @@
  *   108ai agent            (start background agent - existing behavior)
  */
 
-import { existsSync, copyFileSync, mkdirSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
-import { homedir, platform } from 'node:os';
-import { execSync } from 'node:child_process';
 import { loadConfig, saveConfig, getDefaultGatewayUrl, type AgentConfig } from './config.js';
 import { performBrowserLogin } from './auth.js';
 import { tryLocalExecution } from './local-router.js';
 import { initCache, getCached, setCached, flushToDisk } from './local-cache.js';
 import { findScript, executeScript, updateUsage } from './script-store.js';
 import { smartChunk } from './smart-chunk.js';
-
-const INSTALL_DIR_NAME = '.108ai';
-
-function getInstallDir(): string {
-  return join(homedir(), INSTALL_DIR_NAME, 'bin');
-}
-
-function getExeName(): string {
-  return platform() === 'win32' ? '108ai.exe' : '108ai';
-}
+import {
+  installAgent,
+  uninstallAgent,
+  printInstallSuccess,
+  printUninstallInstructions,
+} from './installer.js';
 
 /**
  * Install the binary to ~/.108ai/bin/ and add to PATH.
  */
 export async function handleInstall(): Promise<void> {
-  const installDir = getInstallDir();
-  const targetPath = join(installDir, getExeName());
-  const sourcePath = process.execPath;
-
   process.stdout.write('\n  108 AI -- Installazione\n\n');
-
-  // 1. Create install directory
-  if (!existsSync(installDir)) {
-    mkdirSync(installDir, { recursive: true });
+  const result = await installAgent({ enableAutostart: true });
+  if (result.action === 'cancelled') {
+    process.stdout.write('\n  Operazione annullata.\n\n');
+    return;
   }
-
-  // 2. Copy binary
-  if (sourcePath !== targetPath) {
-    process.stdout.write(`  > Copia in ${installDir}...\n`);
-    copyFileSync(sourcePath, targetPath);
-  } else {
-    process.stdout.write(`  > Gia' installato in ${installDir}\n`);
-  }
-
-  // 3. Add to PATH
-  const isInPath = isDirectoryInPath(installDir);
-
-  if (!isInPath) {
-    process.stdout.write(`  > Aggiunta al PATH di sistema...\n`);
-
-    if (platform() === 'win32') {
-      // Windows: add to user PATH via setx (persistent)
-      try {
-        const currentPath = execSync('echo %PATH%', { encoding: 'utf-8' }).trim();
-        if (!currentPath.includes(installDir)) {
-          // Read user PATH from registry (not the expanded one)
-          const userPath = execSync(
-            `reg query "HKCU\\Environment" /v Path`,
-            { encoding: 'utf-8' },
-          );
-          const match = userPath.match(/Path\s+REG_(?:EXPAND_)?SZ\s+(.+)/i);
-          const existingUserPath = match ? match[1]!.trim() : '';
-          const newPath = existingUserPath ? `${existingUserPath};${installDir}` : installDir;
-          execSync(`setx PATH "${newPath}"`, { stdio: 'pipe' });
-        }
-      } catch {
-        process.stdout.write(`  [!] Non riesco ad aggiungere al PATH automaticamente.\n`);
-        process.stdout.write(`      Aggiungi manualmente: ${installDir}\n`);
-      }
-    } else {
-      // Unix: append to shell profile
-      const shellProfile = getShellProfile();
-      if (shellProfile) {
-        try {
-          const exportLine = `\nexport PATH="$HOME/${INSTALL_DIR_NAME}/bin:$PATH"\n`;
-          const content = existsSync(shellProfile) ? readFileSync(shellProfile, 'utf-8') : '';
-          if (!content.includes(INSTALL_DIR_NAME)) {
-            const { appendFileSync } = await import('node:fs');
-            appendFileSync(shellProfile, exportLine);
-          }
-        } catch {
-          process.stdout.write(`  [!] Non riesco a modificare ${shellProfile}.\n`);
-          process.stdout.write(`      Aggiungi manualmente: export PATH="$HOME/${INSTALL_DIR_NAME}/bin:$PATH"\n`);
-        }
-      }
-    }
-  } else {
-    process.stdout.write(`  > PATH gia' configurato\n`);
-  }
-
-  process.stdout.write('\n  [OK] Installazione completata!\n\n');
-  process.stdout.write('  Ora puoi usare 108ai da qualsiasi terminale:\n\n');
-  process.stdout.write('    108ai Cerca nei documenti la fattura di marzo\n');
-  process.stdout.write('    108ai Che file ho modificato oggi?\n');
-  process.stdout.write('    type report.txt | 108ai --pipe Riassumi questo\n');
-  process.stdout.write('    108ai agent    (avvia agente in background)\n');
-  process.stdout.write('\n');
-
-  if (!isInPath) {
-    process.stdout.write('  [!] Riavvia il terminale per rendere effettivo il PATH.\n\n');
-  }
+  printInstallSuccess(result);
 }
 
 /**
- * Uninstall: remove from PATH hint.
+ * Uninstall: remove autostart and manifest.
  */
 export function handleUninstall(): void {
-  const installDir = getInstallDir();
-  process.stdout.write('\n  Per disinstallare:\n');
-  process.stdout.write(`  1. Elimina la cartella: ${join(homedir(), INSTALL_DIR_NAME)}\n`);
-  process.stdout.write(`  2. Rimuovi "${installDir}" dal PATH\n\n`);
+  uninstallAgent();
+  printUninstallInstructions();
 }
 
 /**
@@ -303,30 +224,6 @@ export async function handleCliQuery(query: string, pipeInput?: string): Promise
 }
 
 // --- Helpers ---
-
-function isDirectoryInPath(dir: string): boolean {
-  const pathVar = process.env['PATH'] ?? '';
-  const separator = platform() === 'win32' ? ';' : ':';
-  return pathVar.split(separator).some(p => p.toLowerCase() === dir.toLowerCase());
-}
-
-function getShellProfile(): string | null {
-  const home = homedir();
-  const shell = process.env['SHELL'] ?? '';
-
-  if (shell.includes('zsh')) return join(home, '.zshrc');
-  if (shell.includes('bash')) {
-    const bashProfile = join(home, '.bash_profile');
-    if (existsSync(bashProfile)) return bashProfile;
-    return join(home, '.bashrc');
-  }
-  if (shell.includes('fish')) return join(home, '.config', 'fish', 'config.fish');
-
-  // Fallback
-  if (existsSync(join(home, '.zshrc'))) return join(home, '.zshrc');
-  if (existsSync(join(home, '.bashrc'))) return join(home, '.bashrc');
-  return null;
-}
 
 function createDefaultConfig(): AgentConfig {
   return {

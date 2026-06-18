@@ -128,8 +128,25 @@ function renderStore(items) {
         <span class="chip ${i.verified ? 'verified' : ''}">${i.type}${i.bundled ? ' · bundled' : ''}</span>
       </div>
       <p>${escapeHtml(i.description)}</p>
-      <p class="muted">${i.category}${i.rating ? ' · ★ ' + i.rating : ''}</p>
+      <p class="muted">${i.category}${i.rating ? ' · ★ ' + i.rating : ''}${i.author ? ' · ' + escapeHtml(i.author) : ''}</p>
+      <p class="muted">id: ${escapeHtml(i.id)}</p>
     `;
+    const btn = el('button', 'btn-sm', i.bundled ? 'Verifica' : 'Installa');
+    btn.onclick = async () => {
+      const res = await fetch('/api/store/install', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ itemId: i.id }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        btn.textContent = 'OK';
+        btn.disabled = true;
+      } else {
+        alert(data.message || data.error || 'Install fallita');
+      }
+    };
+    card.querySelector('.row').appendChild(btn);
     root.appendChild(card);
   }
 }

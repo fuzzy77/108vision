@@ -370,6 +370,8 @@ async function executeTriage(config: ScheduleConfig): Promise<void> {
     const config = loadTriageConfig();
     const tokens = await resolveTriageTokens();
     const result = await runTriage(config, tokens);
+    const { saveLastTriageReport } = await import('../capabilities/triage-jobs.js');
+    saveLastTriageReport(result);
     notifyBody = formatTriageCompact(result);
     notifyTitle = `108ai Triage — ${new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}`;
   } catch (err) {

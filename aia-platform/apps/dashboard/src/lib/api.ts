@@ -97,6 +97,21 @@ export function apiForTenant<T>(
   });
 }
 
+/** Tenant-scoped request with arbitrary method (POST, etc.). */
+export function tenantRequest<T>(
+  tenantId: string,
+  endpoint: string,
+  options: RequestOptions = {},
+): Promise<T> {
+  return request<T>(endpoint, {
+    ...options,
+    headers: {
+      ...(options.headers as Record<string, string> | undefined),
+      'X-Tenant-ID': tenantId,
+    },
+  });
+}
+
 export async function uploadForTenant<T>(
   tenantId: string,
   endpoint: string,

@@ -10,6 +10,14 @@ export const POST: APIRoute = async ({ request }) => {
     return new Response(JSON.stringify({ error: 'Nome e email sono obbligatori.' }), { status: 400 });
   }
 
+  const emailRe = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
+  if (!emailRe.test(email)) {
+    return new Response(JSON.stringify({ error: 'Invalid email format' }), { status: 400 });
+  }
+  if (listId !== undefined && (typeof listId !== 'number' || !Number.isInteger(listId))) {
+    return new Response(JSON.stringify({ error: 'Invalid list ID' }), { status: 400 });
+  }
+
   const BREVO_API_KEY = import.meta.env.BREVO_API_KEY;
 
   if (!BREVO_API_KEY) {

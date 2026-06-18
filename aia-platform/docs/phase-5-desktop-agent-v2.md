@@ -4,6 +4,14 @@
 
 Trasformare il desktop agent da un semplice bridge filesystem/clipboard in un **coding assistant completo** competitivo con Claude Code, Cursor e Windsurf — con il vantaggio unico dell'automazione desktop e del billing multi-tenant integrato.
 
+## Stato implementazione (reale) — 2026-06-17 `[verificato]`
+
+- **v0.2 (Shell/Code/Git + Security/Config)**: ✅ completato e wired in `apps/local-agent/src/capabilities/*` + `src/security.ts` + `src/config.ts`
+- **v0.3 (Search/Web/Process)**: ✅ completato e wired in capability registry
+- **v0.4 (MCP come actions `mcp.*`)**: 🟡 **non** come capability WS; implementato come **extensions CLI** (`/mcp ...`) + UI locale
+- **v0.4 PTY streaming**: ❌
+- **v0.5 local indexer (`index.*`)**: 🟡 parziale (knowledge lite, no sqlite-vec)
+
 ## Principio architetturale
 
 > L'intelligenza vive nel cloud (Gateway + LiteLLM). Il desktop agent esegue localmente.
@@ -27,6 +35,12 @@ Trasformare il desktop agent da un semplice bridge filesystem/clipboard in un **
 | `shell.executeStream` | `command`, `cwd?`, `timeout?` | high-risk | Comando long-running, output via WS events |
 | `shell.terminate` | `processId` | low-risk | Kill processo attivo |
 | `shell.getRunning` | — | read-only | Lista processi attivi lanciati dall'agent |
+
+**Stato codice:** ✅
+- Registry: `apps/local-agent/src/capabilities/index.ts`
+- Streaming/registry: `apps/local-agent/src/capabilities/shell-process.ts`
+- Validazione: `apps/local-agent/src/capabilities/shell-security.ts`
+- In agent mode: eventi inoltrati al gateway come `shell.stream`
 
 **Sicurezza (non negoziabile):**
 
@@ -86,6 +100,8 @@ interface ShellStreamEvent {
 | `code.write` | `filePath`, `content` | low-risk | Scrivi file intero |
 | `code.readRange` | `filePath`, `startLine?`, `endLine?` | read-only | Leggi con numeri di riga |
 
+**Stato codice:** ✅ (`apps/local-agent/src/capabilities/code.ts`)
+
 **Logica edit:**
 
 ```typescript
@@ -124,6 +140,9 @@ interface CodeEdit {
 - `git reset --hard`
 - `git checkout .` (discard all)
 - `git clean -f`
+
+**Stato codice:** ✅ (`apps/local-agent/src/capabilities/git.ts`)
+- `git.push` e `git.reset` esistono ma sono **gated** da config/approval
 
 #### 5.4 Aggiornamento Security Layer
 
@@ -175,6 +194,8 @@ interface AgentConfig {
 }
 ```
 
+**Stato codice:** ✅ (`apps/local-agent/src/config.ts`, `apps/local-agent/src/security.ts`)
+
 ---
 
 ### v0.3 — Search, Web & Process (P1)
@@ -192,6 +213,9 @@ interface AgentConfig {
 | `search.find` | `path`, `name?`, `type?`, `maxDepth?` | read-only |
 
 **Implementazione:** wrappa `ripgrep` (se installato) con fallback a regex nativa Node.js su `fs.readFile`. Output max 500 matches.
+
+**Stato codice:** ✅ (`apps/local-agent/src/capabilities/search.ts`)  
+Nota: implementazione usa `filesystem.grep` / `grepFiles` (ripgrep opzionale rimandato).
 
 #### 5.7 Web Capabilities (`web.*`)
 
@@ -211,6 +235,9 @@ interface AgentConfig {
 
 **Search backend:** Brave Search API o SearXNG self-hosted (configurabile).
 
+**Stato codice:** ✅ (`apps/local-agent/src/capabilities/web.ts`)
+- SSRF guard: host/IP privati bloccati, timeout, max size
+
 #### 5.8 Process Management (`process.*`)
 
 **File:** `src/capabilities/process.ts`
@@ -223,6 +250,8 @@ interface AgentConfig {
 | `process.logs` | `processId`, `tail?` | read-only |
 
 Per dev server, build watcher, test runner — processi che vivono oltre la singola azione.
+
+**Stato codice:** ✅ (`apps/local-agent/src/capabilities/process.ts` + `shell-process.ts`)
 
 ---
 
@@ -262,6 +291,12 @@ Per dev server, build watcher, test runner — processi che vivono oltre la sing
 ```
 
 **Transport:** stdio per server locali, HTTP/SSE per server remoti.
+
+**Stato reale:** 🟡  
+MCP è implementato come **extensions**:
+- CLI: `/mcp list|add|install|start|tools|test`
+- Runtime: `apps/local-agent/src/extensions/mcp/*`
+- UI locale: `apps/local-agent/src/extensions/ui/`
 
 #### 5.10 Terminal Streaming Avanzato
 

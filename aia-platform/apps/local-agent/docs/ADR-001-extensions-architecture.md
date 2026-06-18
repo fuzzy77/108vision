@@ -17,13 +17,20 @@ Adottiamo un **modular monolith** in `src/extensions/` con quattro primitive:
 | Agents | `~/.108ai/agents/*.yml` | Persona + history per-agent + MCP tool loop |
 | MCP | `~/.108ai/mcp.yml` | stdio o SSE/HTTP JSON-RPC |
 
+**Fuori dal perimetro ADR-001 (ma integrato in runtime):**
+
+| Primitive | Storage | Esecuzione |
+|-----------|---------|------------|
+| Local Index (`index.*`) | `~/.108ai/indexes/<project>/index.json` | Build/search locale + embeddings cache |
+| Context assembly (`context.assemble`) | — | Restituisce snippet top-K al gateway |
+
 **Router unico:** `extensions/router.ts` → shell REPL (`/command`, `/skill`, `/agent`).
 
 ## Conseguenze
 
 - ✅ Estensione senza rebuild per la maggior parte dei casi
 - ✅ Lock file + permissions.yml per governance
-- ⚠️ Shell ancora contiene builtin (`/triage`, `/job`) — migrazione graduale a YAML
+- ✅ Builtin migrate: `/triage`, `/job`, `/morning`, `/standup`, `/schedule` sono YAML commands con `builtin:` (fallback seed)
 - ⚠️ MCP SSE dipende da gateway remoto compatibile MCP-over-HTTP
 
 ## Alternative scartate

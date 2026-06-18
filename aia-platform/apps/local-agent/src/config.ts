@@ -71,6 +71,17 @@ export interface AgentConfig {
 
   /** Gateway HTTP base URL (derived from gatewayUrl, used for OAuth + updates). */
   gatewayHttpUrl?: string;
+
+  /** Opt-in shell execution (default false — like desktop). */
+  shellEnabled?: boolean;
+  shellBlocklist?: string[];
+  shellDefaultTimeout?: number;
+  shellMaxOutputSize?: number;
+
+  /** Git capabilities (default enabled). */
+  gitEnabled?: boolean;
+  gitAllowPush?: boolean;
+  gitAllowDestructive?: boolean;
 }
 
 const CONFIG_DIR_NAME = '.108ai';
@@ -132,6 +143,13 @@ const DEFAULT_CONFIG: AgentConfig = {
   screenshotBeforeAction: true,
   allowedProcesses: undefined,
   blockedProcesses: undefined,
+  shellEnabled: false,
+  shellBlocklist: [],
+  shellDefaultTimeout: 120_000,
+  shellMaxOutputSize: 1_048_576,
+  gitEnabled: true,
+  gitAllowPush: false,
+  gitAllowDestructive: false,
 };
 
 /**

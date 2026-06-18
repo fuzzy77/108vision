@@ -2,7 +2,7 @@
  * Triage CLI — Formatting and command handling for the daily triage system.
  *
  * Consumed by:
- *  - shell.ts slash commands: /triage, /morning, /standup
+ *  - extensions/commands/builtins.ts (YAML `builtin: triage|morning|standup`)
  *  - Direct invocation: handleTriageCommand(args)
  *
  * Color scheme:
@@ -489,7 +489,7 @@ export async function handleTriageCommand(args: string[]): Promise<string> {
 }
 
 // ---------------------------------------------------------------------------
-// Shell alias helpers (called directly from shell.ts for /morning, /standup)
+// Shell alias helpers (used by builtin command handlers)
 // ---------------------------------------------------------------------------
 
 /**

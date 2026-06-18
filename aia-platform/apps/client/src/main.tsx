@@ -1,4 +1,4 @@
-import { StrictMode } from 'react';
+import { StrictMode, lazy, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { RouterProvider, createRouter, createRootRoute, createRoute } from '@tanstack/react-router';
@@ -8,12 +8,27 @@ import { HomePage } from '@/routes/index';
 import { ChatPage } from '@/routes/chat.$conversationId';
 import { KnowledgePage } from '@/routes/knowledge';
 import { SettingsPage } from '@/routes/settings';
-import { AdminUsersPage } from '@/routes/admin/users';
-import { AdminSettingsPage } from '@/routes/admin/settings';
-import { AdminAgentsPage } from '@/routes/admin/agents';
 import { DesktopAgentPage } from '@/routes/desktop-agent';
 import { MemoryPage } from '@/routes/memory';
 import './app.css';
+
+const AdminUsersPage = lazy(() =>
+  import('@/routes/admin/users').then((m) => ({ default: m.AdminUsersPage })),
+);
+const AdminSettingsPage = lazy(() =>
+  import('@/routes/admin/settings').then((m) => ({ default: m.AdminSettingsPage })),
+);
+const AdminAgentsPage = lazy(() =>
+  import('@/routes/admin/agents').then((m) => ({ default: m.AdminAgentsPage })),
+);
+
+function AdminFallback() {
+  return (
+    <div className="flex items-center justify-center h-full">
+      <span className="text-sm text-slate-500">Loading...</span>
+    </div>
+  );
+}
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -61,19 +76,31 @@ const settingsRoute = createRoute({
 const adminUsersRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/admin/users',
-  component: AdminUsersPage,
+  component: () => (
+    <Suspense fallback={<AdminFallback />}>
+      <AdminUsersPage />
+    </Suspense>
+  ),
 });
 
 const adminSettingsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/admin/settings',
-  component: AdminSettingsPage,
+  component: () => (
+    <Suspense fallback={<AdminFallback />}>
+      <AdminSettingsPage />
+    </Suspense>
+  ),
 });
 
 const adminAgentsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/admin/agents',
-  component: AdminAgentsPage,
+  component: () => (
+    <Suspense fallback={<AdminFallback />}>
+      <AdminAgentsPage />
+    </Suspense>
+  ),
 });
 
 const desktopAgentRoute = createRoute({

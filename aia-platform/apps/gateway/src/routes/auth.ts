@@ -8,7 +8,8 @@ import { nanoid } from 'nanoid';
 import { getEnv } from '../lib/env.js';
 import { getDb } from '../lib/db.js';
 import { users, invitations, sessions, passwordResetTokens } from '../db/schema.js';
-import { eq, and } from 'drizzle-orm';
+import { eq, and, gt } from 'drizzle-orm';
+import { createHash } from 'crypto';
 import { authMiddlewareV2 } from '../middleware/auth-v2.js';
 import { emailService } from '../services/email.service.js';
 
@@ -129,6 +130,8 @@ function buildAuthUserResponse(user: {
   role: string;
   tenantId: string | null;
   createdAt: Date | null;
+  emailVerified?: boolean | null;
+  lastLoginAt?: Date | null;
 }): AuthUser {
   return {
     id: user.id,
@@ -136,8 +139,8 @@ function buildAuthUserResponse(user: {
     name: user.name,
     role: user.role as AuthUser['role'],
     tenantId: user.tenantId,
-    emailVerified: true,
-    lastLoginAt: new Date(),
+    emailVerified: user.emailVerified ?? false,
+    lastLoginAt: user.lastLoginAt ?? new Date(),
     createdAt: user.createdAt ?? new Date(),
   };
 }
@@ -434,14 +437,29 @@ auth.post('/forgot-password', async (c) => {
   }
 
   const user = userRecords[0]!;
+  // Cooldown: don't generate a new token if one was created in the last 5 minutes
+  const recentToken = await db.select({ id: passwordResetTokens.id })
+    .from(passwordResetTokens)
+    .where(and(
+      eq(passwordResetTokens.userId, user.id),
+      gt(passwordResetTokens.createdAt, new Date(Date.now() - 5 * 60 * 1000))
+    ))
+    .limit(1);
+
+  if (recentToken.length > 0) {
+    // Return success without generating new token (prevents token rotation attack)
+    return c.json({ message: 'If an account with this email exists, a password reset link has been sent.' });
+  }
+
   const resetToken = nanoid(48);
+  const tokenHash = createHash('sha256').update(resetToken).digest('hex');
   const expiresAt = new Date(Date.now() + RESET_TOKEN_EXPIRY_MS);
 
   // Delete any existing reset tokens for this user, then insert new one
   await db.delete(passwordResetTokens).where(eq(passwordResetTokens.userId, user.id));
   await db.insert(passwordResetTokens).values({
     userId: user.id,
-    token: resetToken,
+    token: tokenHash,
     expiresAt,
   });
 
@@ -468,11 +486,14 @@ auth.post('/reset-password', async (c) => {
   const body = resetPasswordSchema.parse(await c.req.json());
   const db = getDb();
 
+  // Hash the incoming token before lookup (tokens are stored as SHA-256 hashes)
+  const lookupHash = createHash('sha256').update(body.token).digest('hex');
+
   // Find valid reset token
   const tokenRecords = await db
     .select()
     .from(passwordResetTokens)
-    .where(eq(passwordResetTokens.token, body.token))
+    .where(eq(passwordResetTokens.token, lookupHash))
     .limit(1);
 
   if (tokenRecords.length === 0) {

@@ -789,6 +789,29 @@ Usa questo canvas per pianificare ogni singola iniziativa AI.
 
 ---
 
+## Governance AI — Il vantaggio competitivo nascosto
+
+Quando si adotta l'AI in azienda, il rischio principale non è tecnico — è la **perdita di controllo**. L'AI che decide per te, che presenta inferenze come fatti, che agisce senza chiedere.
+
+### Cosa cercare in un tool AI aziendale
+
+| Caratteristica | Perché conta | 108 AI |
+|---|---|---|
+| **Trasparenza** | Sapere quanto l'AI è sicura delle risposte | ✅ Badge di certezza visibili |
+| **Conferma su azioni critiche** | Nessuna azione irreversibile senza OK | ✅ Checkpoint + ProportionalityCard |
+| **Memoria** | L'AI conosce il tuo contesto senza ripetere | ✅ Persistente cross-sessione |
+| **Spiegabilità** | Capire PERCHÉ l'AI propone qualcosa | ✅ Principio "Spiega cosa fai" |
+| **Costi controllati** | Sapere quanto stai spendendo | ✅ Token meter + routing automatico |
+| **Ownership chiara** | L'AI propone, tu decidi | ✅ Principio fondamentale built-in |
+
+### Il test del "Perché?"
+
+Un buon tool AI aziendale deve superare questo test: chiedi "Perché?" a qualsiasi risposta. Se l'AI sa spiegare il suo ragionamento in modo chiaro, è un tool affidabile. Se risponde con vaghi "in base alla mia analisi..." — non ti sta aiutando, ti sta vendendo fumo.
+
+108 AI ha un pulsante "Perché?" integrato in ogni risposta. Provalo.
+
+---
+
 ## Vuoi andare oltre?
 
 Vuoi applicare questo metodo alla tua azienda? Prenota 30 minuti con noi su 108vision.it — gratuito, senza impegno.

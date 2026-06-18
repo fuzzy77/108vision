@@ -46,6 +46,7 @@ export class AgentConnection {
   private heartbeatTimer: ReturnType<typeof setInterval> | null = null;
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
   private intentionalClose = false;
+  private paused = false;
   private connected = false;
 
   constructor(config: ConnectionConfig) {
@@ -91,6 +92,7 @@ export class AgentConnection {
    */
   disconnect(): void {
     this.intentionalClose = true;
+    this.paused = false;
     this.stopHeartbeat();
     this.cancelReconnect();
 
@@ -100,6 +102,39 @@ export class AgentConnection {
     }
 
     this.connected = false;
+  }
+
+  /**
+   * Pause the agent — disconnect and suppress auto-reconnect until resume().
+   */
+  pause(): void {
+    this.paused = true;
+    this.intentionalClose = true;
+    this.stopHeartbeat();
+    this.cancelReconnect();
+
+    if (this.ws) {
+      this.ws.close(1000, 'Agent paused');
+      this.ws = null;
+    }
+
+    this.connected = false;
+    this.config.onDisconnect();
+  }
+
+  /**
+   * Resume after pause — reconnect to gateway.
+   */
+  resume(): void {
+    if (!this.paused) return;
+    this.paused = false;
+    this.intentionalClose = false;
+    this.reconnectAttempts = 0;
+    this.doConnect();
+  }
+
+  isPaused(): boolean {
+    return this.paused;
   }
 
   /**
@@ -192,8 +227,8 @@ export class AgentConnection {
 
     this.config.onDisconnect();
 
-    // Auto-reconnect unless intentionally closed
-    if (!this.intentionalClose) {
+    // Auto-reconnect unless intentionally closed or paused
+    if (!this.intentionalClose && !this.paused) {
       this.scheduleReconnect();
     }
   }
