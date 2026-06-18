@@ -358,65 +358,329 @@ O se parti con 1 gg/sett:
 
 ---
 
-## LIVELLO 6 — ADATTAMENTO A ETICA SOLUZIONI
+## LIVELLO 6 — ETICA SOLUZIONI: PROFILO COMPLETO
 
-### 6.1 Il Settore: Ristorazione Collettiva
+### 6.1 L'Azienda — Dati Verificati [da sito web, giugno 2026]
 
-**Cosa devi sapere:**
-- Mercato enorme e stabile (mense scolastiche, ospedali, aziende, PA)
-- Alta regolamentazione (PA = gare, HACCP, tracciabilita, normative regionali)
-- Clienti conservativi (enti pubblici = decisioni lente, budget fissi, SLA rigidi)
-- Competizione: Elior, Sodexo, Compass Group — ma il software e il differenziatore
-- Trend: digitalizzazione prenotazioni, allergie, sprechi alimentari, portale genitori
+| Dato | Valore |
+|------|--------|
+| **Ragione sociale** | Etica Soluzioni |
+| **P.IVA** | 02344210220 |
+| **Fondata** | 2003 da due professionisti IT |
+| **Sede legale** | Trento (TN), Via Solteri 76 |
+| **Sede operativa** | Abbiategrasso (MI), Via Francesco Croce 65 |
+| **Esperienza dichiarata** | 20+ anni |
+| **Utenti gestiti** | 1.000.000+ |
+| **Pasti prenotati/giorno** | 750.000+ |
+| **Clienti attivi** | 1.500+ |
+| **Comuni serviti** | 1.000+ |
+| **Certificazioni** | ISO 9001, 27001, 27017, 27018, 22301 |
+| **Team** | "Giovane e competente, fortemente orientato all'innovazione tecnologica" |
+| **Team AI** | Presente — posizioni Data Analyst "AI & Analytics" aperte |
+| **Contatto HR** | Diletta Papari |
 
-**Implicazioni per il tuo ruolo:**
-- Stack probabilmente stabile/conservativo (non vogliono "l'ultima tecnologia")
-- Priorita: affidabilita > innovazione > velocita
-- Compliance forte (dati personali minori se scolastico, dati sanitari se ospedaliero)
-- Integration heavy (sistemi PA, fatturazione elettronica, SPID/CIE)
+### 6.2 Portfolio Prodotti — Analisi dettagliata
 
-### 6.2 Punti di Contatto col Tuo Background
+**School.Net** — Flagship, il piu adottato dalla PA italiana per mense scolastiche
 
-| Il tuo background | Rilevanza per Etica Soluzioni |
-|-------------------|-------------------------------|
-| Compliance fiscale (SIAE, GDPR) | Loro: compliance PA, dati personali, normative food |
-| Piattaforma mission-critical (ticketing) | Loro: mense devono funzionare ogni giorno, zero downtime |
-| Multi-tenancy (organizzatori diversi) | Loro: clienti PA diversi, multi-ente |
-| Integration esterne (Polizia, SIAE) | Loro: integrazioni PA, fatturazione, SPID |
-| Team 10-15 dev governance | Loro: probabilmente team simile da governare |
-| Legacy modernization (CORBA → micro) | Loro: 15 anni di prodotto = sicuramente legacy da evolvere |
+| Aspetto | Dettaglio |
+|---------|-----------|
+| **Funzionalita core** | Iscrizioni online, prenotazione/disdetta pasti, rilevazione presenze (app/badge/QR), tariffazione automatica, pagamenti elettronici |
+| **Servizi gestiti** | Non solo mensa: trasporto scolastico, pre/post scuola, centri estivi, nidi |
+| **Integrazioni** | PagoPA, App IO, SPID/CIE, ANPR, AIE (adozioni libri), AgID |
+| **Accesso** | Portale web multilingua + ComunicApp (iOS/Android) |
+| **Utenti** | 900.000 famiglie attive, 750K pasti/giorno |
+| **Architettura** | Cloud-based, sviluppo interno R&D, aggiornamenti continui |
+| **Note** | Portale role-based (genitori, operatori, amministratori) |
 
-### 6.3 Cosa potresti portare (primi 6 mesi)
+**Ospedale.Net** — Ristorazione ospedaliera
 
-**Quick win potenziali (mese 1-2):**
-- Setup CI/CD se non c'e (impatto immediato sulla qualita)
-- Code review strutturata (se non esiste)
-- Monitoring base (se non c'e)
-- Documentazione architetturale (se manca)
+| Aspetto | Dettaglio |
+|---------|-----------|
+| **Funzionalita core** | Configurazione struttura (presidi/edifici/reparti/stanze/letti), associazione degente-dieta, menu personalizzati, prenotazione (PC/tablet), produzione e distribuzione |
+| **Feature chiave** | Modalita monoporzione/multiporzione, app nativa "PrenoDroid" con **funzionamento offline**, tracciabilita 100% pasti, stampe dettagliate per vassoio |
+| **Target** | Aziende ospedaliere, ASL, case di cura, strutture private |
+| **Criticita tecnica** | Offline-first (reparti senza WiFi), dati sanitari (massima classificazione GDPR) |
 
-**Iniziative strategiche (mese 3-6):**
-- Roadmap tecnica allineata al business
-- Riduzione debito tecnico critico (1-2 aree prioritarie)
-- Hiring strategy (se team deve crescere)
-- AI adoption dove ha senso (es: classificazione automatica richieste, analisi sprechi)
+**Easy Lunch** — Ristorazione aziendale (B2B)
 
-### 6.4 Domande Specifiche per Capire il Loro Pain
+| Aspetto | Dettaglio |
+|---------|-----------|
+| **Funzionalita core** | Badge/QR per identificazione, prenotazione multi-sede/multi-turno con capienza, menu digitali (allergeni, valori nutrizionali), pagamenti integrati |
+| **Modalita servizio** | Mensa interna, take away, lunch box, delivery |
+| **Pagamenti** | Borsellino elettronico, addebito busta paga (integrazione payroll), PagoPA |
+| **Architettura** | Piattaforma cloud modulare, dashboard analitiche real-time |
+| **Note** | E il prodotto piu "moderno" — nato cloud-native, B2B |
 
-> "Il vostro software gestisce le prenotazioni mensa? O anche la produzione/logistica?"
+**Cedole Librarie Net** — Gestione buoni libri scolastici
 
-→ Scope del prodotto = complessita del ruolo
+| Aspetto | Dettaglio |
+|---------|-----------|
+| **Funzionalita core** | Dematerializzazione buoni libro, richiesta online da famiglia, verifica eligibilita Comune, gestione libreria |
+| **Integrazioni** | ANPR (verifica residenza automatica), AIE (import adozioni), SPID/CIE (autenticazione) |
+| **Risultati dichiarati** | -95% tempi amministrativi, 0 fogli carta, 100% tracciabilita fondi |
+| **Target** | Comuni (gestione), famiglie (richiesta), librerie (erogazione) |
 
-> "I vostri clienti PA richiedono certificazioni specifiche (AgID, SPID, fatturazione elettronica)?"
+**Altri prodotti:**
+- **ComunicApp** — App mobile nativa (iOS/Android) per famiglie e operatori
+- **DomusAPP** — Gestione servizi di assistenza domiciliare
+- **Ticket Manager** — Sistema ticketing supporto clienti
+- **PagoPA Integration** — Intermediazione tecnologica pagamenti PA
 
-→ Livello di compliance = tipo di governance necessaria
+### 6.3 Il Settore: Ristorazione Collettiva + Servizi PA
 
-> "Quante installazioni/clienti gestite in parallelo? E multi-tenant o deploy separati?"
+**Dimensione e dinamiche del mercato:**
 
-→ Architettura = sfida di scala
+| Aspetto | Dato |
+|---------|------|
+| **Mercato mense scolastiche** | ~8.000 Comuni con servizio attivo in Italia |
+| **Market share Etica** | 1.000+ / ~8.000 = **~12-15% — leader nazionale** |
+| **Tipo di contratto** | Gare pluriennali (3-5 anni), rinnovi taciti, alto lock-in |
+| **Ciclo vendita** | Lungo (PA): bando → gara → aggiudicazione → attivazione = 6-18 mesi |
+| **Churn** | Bassissimo (una volta dentro, il Comune non cambia facilmente) |
+| **Revenue model** | Canoni annuali ricorrenti + setup + personalizzazioni |
+| **Crescita** | Spinta dal PNRR (digitalizzazione PA) e dall'obbligo PagoPA/AppIO |
 
-> "Avete mai avuto un incidente serio in produzione? Cosa e successo?"
+**Trend di mercato rilevanti:**
 
-→ Maturita operativa = dove servono guardrail
+1. **Digitalizzazione PA obbligatoria** — PNRR forza i Comuni a digitalizzare servizi. Etica e posizionata perfettamente
+2. **App IO universale** — ogni servizio PA deve integrarsi. Chi non lo fa viene escluso dalle gare
+3. **PagoPA unico canale** — i pagamenti PA vanno tutti su PagoPA. Essere intermediario certificato = vantaggio competitivo
+4. **AI per ottimizzazione** — predizione sprechi alimentari, classificazione diete speciali, analisi pattern prenotazioni
+5. **Interoperabilita** — ANPR, AIE, registri regionali: chi integra di piu vince le gare
+6. **Cloud-first PA** — AgID spinge verso cloud qualificato (PSN, CSP qualificati)
+
+**Competizione diretta (software ristorazione collettiva):**
+- Serenissima Informatica, Soluzione Informatica, JM Software, Sigma Informatica
+- I big della ristorazione (Elior, Sodexo, Compass) hanno software interno ma meno evoluto
+- **Vantaggio Etica**: e un software house pura, non un caterer con un software. Prodotto come core business.
+
+### 6.4 Certificazioni — Analisi Strategica
+
+Le 5 ISO rivelano una maturita organizzativa rara per una PMI italiana. Capire cosa implicano:
+
+| Certificazione | Cosa garantisce | Cosa implica per il team tech |
+|---------------|----------------|-------------------------------|
+| **ISO 9001** | Sistema di gestione qualita | Processi documentati, audit interni periodici, non-conformita tracciate. Il team lavora con procedure scritte. |
+| **ISO 27001** | Sistema gestione sicurezza informazioni (ISMS) | Risk assessment formale, politiche di sicurezza, access control documentato, incident response plan. Probabilmente hanno un referente sicurezza/DPO. |
+| **ISO 27017** | Controlli sicurezza specifici per cloud | Confermano architettura cloud. Hanno affrontato: shared responsibility, data residency, tenant isolation a livello formale. |
+| **ISO 27018** | Protezione PII in public cloud | Trattano dati personali sensibili (minori, pazienti) in cloud con garanzie documentate. Privacy by design non e un concetto astratto per loro. |
+| **ISO 22301** | Business continuity management | Piano DR/BC esiste e viene testato. RTO/RPO definiti. Il sistema e classificato come mission-critical internamente. |
+
+**Insight chiave per la call:**
+
+Non sono un'azienda in caos che ha bisogno che tu "metta ordine". Hanno GIA struttura. Quello che cercano e probabilmente:
+- **Direzione strategica** — le certificazioni governano il presente, non disegnano il futuro
+- **Decisioni architetturali** — ISO non ti dicono se il microservizio X va separato o meno
+- **Accelerazione** — hanno i processi ma forse sono lenti. Servono ottimizzazioni, non rivoluzioni
+- **AI vision** — hanno creato il team ma chi lo guida?
+- **Scale engineering** — da 1.000 a 2.000 Comuni il sistema regge? Le ISO non rispondono
+
+### 6.5 Sfide Tecniche Specifiche [probabile — da verificare]
+
+Basandomi sul profilo completo, le sfide piu probabili:
+
+**1. Volume e picchi concentrati**
+- 750K prenotazioni/giorno ma NON distribuite uniformemente
+- Picco mattutino: 7:00-8:30 (genitori prenotano prima della scuola)
+- Picco settembre: inizio anno scolastico = tutti si iscrivono contemporaneamente
+- Implicazione: il sistema deve reggere 10x il carico medio per 90 minuti/giorno
+
+**2. Multi-tenancy a scala**
+- 1.000+ Comuni = 1.000+ tenant, ognuno con configurazione diversa
+- Dati di MINORI: tenant isolation non e nice-to-have, e obbligo legale
+- Ogni Comune ha tariffe diverse, regole diverse, calendari diversi
+- Implicazione: la configurabilita e il cuore della complessita
+
+**3. Integration sprawl**
+- 7+ integrazioni PA nazionali (PagoPA, AppIO, SPID, CIE, ANPR, AIE, FatturaPA)
+- Ognuna evolve indipendentemente con breaking changes
+- PagoPA da solo ha 3-4 major version changes in 5 anni
+- Implicazione: serve una strategia di integrazione (anticorruption layer, contract testing, versioning)
+
+**4. Legacy stratification**
+- School.Net esiste dal 2003 — 23 anni di strati geologici
+- Easy Lunch e probabilmente piu recente e cloud-native
+- Ospedale.Net ha bisogno di offline-first (PrenoDroid) = architettura diversa
+- Implicazione: non e UN prodotto, sono almeno 3 architetture diverse che convivono
+
+**5. Dati ultra-sensibili**
+- Minori (mense scolastiche): massima protezione, consenso genitoriale, diritto all'oblio
+- Pazienti (ospedali): dati sanitari, diete terapeutiche = dato sensibile ex art. 9 GDPR
+- Residenza (ANPR): dato anagrafico critico
+- Implicazione: ogni feature, ogni log, ogni test deve essere GDPR-by-design. Zero margine d'errore.
+
+**6. App native multiplatform**
+- ComunicApp (iOS + Android) per famiglie
+- PrenoDroid (Android) con offline per ospedali
+- Web portal responsive
+- Implicazione: 3+ frontend da manutenere, testare, rilasciare sincronizzati col backend
+
+**7. AI al bivio**
+- Hanno creato un team "AI & Analytics"
+- Cercano Data Analyst che lavorino con "Product, Marketing, Sales, Customer Care"
+- Ma dove va l'AI nel PRODOTTO? Predizione sprechi? Diete personalizzate? Chatbot genitori? Anomaly detection?
+- Implicazione: il team esiste ma probabilmente manca la strategia (= esattamente dove entro io)
+
+### 6.6 Punti di Contatto col Mio Background — Aggiornato
+
+| Il mio background | Match specifico con Etica Soluzioni |
+|-------------------|--------------------------------------|
+| **30M transazioni/anno, zero-downtime** | 750K prenotazioni/giorno, picchi mattutini, sistema mission-critical per 1M utenti |
+| **Multi-tenancy SPORT** (organizzatori diversi, config per-tenant) | 1.000+ Comuni con configurazione indipendente, dati isolati |
+| **Compliance fiscale SIAE** (smart card, sigilli, audit) | Compliance PA: PagoPA, SPID, AppIO, certificazioni ISO 27001 |
+| **MAI-Police / VRO** (SOAP su VPN verso Polizia di Stato) | Integrazioni PA nazionali (ANPR, AIE) con protocolli diversi e breaking changes |
+| **SETA legacy modernization** (CORBA 23 anni → gRPC) | School.Net 23 anni — stesso tipo di sfida di evoluzione senza riscrivere |
+| **7+ integrazioni esterne** (KPS, Adyen, PayPal, SIAE) con circuit breaker | 7+ integrazioni PA con versioning indipendente |
+| **GDPR daily** (PII minimization, audit, no PII in log) | Dati minori + dati sanitari = massima classificazione GDPR |
+| **Governance architetturale** su 93 componenti, 7 livelli, 3 team | Portfolio 8 prodotti, probabilmente 3+ architetture diverse |
+| **AI adoption pragmatica** (ROI dimostrato, cost routing) | Team AI creato ma senza strategia di prodotto chiara |
+| **ISO/Security** (OWASP, SAST/DAST, threat modeling) | ISO 27001+27017+27018 gia ottenute — serve chi le rende operative nel codice |
+| **Team scaling** (hiring, 1:1, DORA metrics, Team Topologies) | Team in crescita, probabilmente 15-30 dev da strutturare |
+
+### 6.7 I Due Filoni Applicati a Etica Soluzioni
+
+#### FILONE 1 — Presente: Ottimizzare
+
+| Area | Intervento concreto per Etica | KPI |
+|------|-------------------------------|-----|
+| **Flusso ticket → produzione** | Mappare come un bug/feature va da Jira/Linear a release. Dove si blocca? Quanti handoff? | Lead time: baseline → -40% |
+| **CI/CD** | Se non c'e pipeline automatica end-to-end: introdurla. Se c'e: ottimizzarla | Deploy frequency: baseline → +100% |
+| **Code review** | Standard condiviso, checklist PR, tempo massimo review (24h) | PR review time: baseline → <24h |
+| **Incident management** | Playbook per "School.Net down il primo giorno di scuola a settembre" | MTTR: baseline → -50% |
+| **Testing strategy** | Integration test su integrazioni PA critiche (PagoPA, SPID). Contract testing | Change failure rate: <15% |
+| **Onboarding dev** | Documentazione architetturale viva, runbook, ADR. Nuovo dev produttivo in settimane, non mesi | Onboarding: baseline → -50% |
+| **Comunicazione tech-business** | Report mensile strutturato, CEO sync bisettimanale, linguaggio condiviso | Decision latency: baseline → -60% |
+
+#### FILONE 2 — Visione: Evolvere
+
+| Area | Intervento strategico per Etica | Outcome |
+|------|----------------------------------|---------|
+| **Audit architetturale** | School.Net vs Ospedale.Net vs Easy Lunch: 3 architetture o 1 piattaforma? Dove convergere? | ADR: Platform Strategy |
+| **Cloud qualification** | AgID richiede cloud qualificato. Sono gia CSP qualificato? Serve PSN? | Compliance roadmap cloud |
+| **Scale to 2.000 Comuni** | Cosa si rompe quando raddoppiano? DB? Cache? Tenant config? Picchi? | Capacity plan + bottleneck resolution |
+| **AI nel prodotto** | Use case concreti: predizione sprechi, diete automatiche, anomaly detection prenotazioni, chatbot genitori | AI Strategy con ROI per use case |
+| **AI nel processo** | Code review assistita, generazione test, analisi requisiti gara automatizzata | Riduzione costi dev -50% su task specifici |
+| **Integration strategy** | Anticorruption layer su PagoPA/SPID/AppIO. Contract testing. Versioning strategy | Zero breaking change non intercettata |
+| **Platform approach** | Da 8 prodotti separati a piattaforma condivisa? Shared kernel? Core comune? | Piano con fasi, costi, benefici |
+| **Security operativa** | ISO 27001 e policy. Ma penetration test? SAST in CI? Dependency scanning? Secret management? | Security-as-code pipeline |
+
+### 6.8 Domande Specifiche per la Call — Aggiornate
+
+**Domande informate (mostrano che hai studiato):**
+
+> "Ho visto che gestite 750.000 prenotazioni al giorno su 1.000+ Comuni. Come gestite i picchi concentrati — settembre per le iscrizioni, e il mattino per le prenotazioni giornaliere?"
+
+→ Rivela architettura e scaling strategy
+
+> "Avete 5 certificazioni ISO tra cui 27001 e 22301. Chi gestisce la sicurezza e la continuita oggi a livello tecnico? C'e un referente interno o e esternalizzato?"
+
+→ Capisce se il vuoto e di competenza o di leadership
+
+> "School.Net esiste dal 2003, Easy Lunch sembra piu recente e cloud-native. Sono architetture separate o condividono un core?"
+
+→ Rivela complessita architetturale e debito tecnico
+
+> "Ho visto che avete un team AI & Analytics e state cercando Data Analyst. Qual e la visione per l'AI nel prodotto? Dove la state gia usando e dove vorreste portarla?"
+
+→ Capisce maturita AI e dove servi tu
+
+> "PagoPA, SPID, App IO, ANPR — sono integrazioni che evolvono continuamente. Come gestite i breaking change? Avete un team dedicato o e distribuito?"
+
+→ Rivela maturita integration e possibile pain nascosto
+
+> "Con dati di minori e pazienti, immagino che la privacy sia al centro. Le ISO coprono il framework — ma a livello di codice, avete automatizzato i controlli (scanning, test, audit)?"
+
+→ Apre il tema security-as-code vs security-as-policy
+
+---
+
+## LIVELLO 7 — IL METODO: KNOW-HOW → STEP → KPI
+
+### 7.1 Perche il metodo conta per QUESTO cliente
+
+Etica Soluzioni NON e una startup in caos. E un'azienda strutturata con certificazioni ISO e 23 anni di storia. Arrivare e dire "cambio tutto" sarebbe:
+1. Arrogante (hanno fatto 750K pasti/giorno SENZA di te)
+2. Rischioso (tocchi un sistema mission-critical che serve 1M utenti)
+3. Controproducente (il team resistera)
+
+Il metodo corretto: **prima capisco, poi propongo, poi eseguo con numeri.**
+
+### 7.2 Fase 0 — Costruzione Know-How (Settimane 1-4)
+
+**Cosa imparo io:**
+
+| Settimana | Focus | Output |
+|-----------|-------|--------|
+| 1 | **Architettura** — codebase, stack, deploy, infra, integrazioni | Mappa architetturale (as-is) |
+| 2 | **Flussi** — come lavora il team oggi (da ticket a produzione) | Process map con colli di bottiglia |
+| 3 | **Team** — 1:1 con ogni senior/lead (chi sa cosa, chi decide cosa) | Team assessment + risk map |
+| 4 | **Strategia** — workshop CEO: dove andate? cosa vi blocca? priorita 6/12 mesi | Strategic alignment document |
+
+**Cosa imparano loro:**
+
+| Aspetto | Come lo comunico |
+|---------|-----------------|
+| Come lavoro (governance, non codice) | Primo standup + primo report settimanale |
+| Cosa misuro e perche (DORA, satisfaction) | Proposta KPI baseline nella settimana 2 |
+| Come prendo decisioni (ADR, trade-off) | Primo ADR scritto nella settimana 3 |
+| Cosa aspettarsi e cosa NO | Documento "Working Agreement" settimana 1 |
+
+**Output Fase 0:** *State of the Stack* — documento strutturato:
+1. Executive Summary (3-5 righe)
+2. Architettura (stack, deployment, integrazioni, rischi top-5)
+3. Flussi operativi (process map, inefficienze, bottleneck)
+4. Team (struttura, forze, gap, rischio turnover)
+5. KPI Baseline (DORA + custom)
+6. Piano Azione 90 Giorni (3 priorita Filone 1 + 3 priorita Filone 2)
+
+### 7.3 Fase 1 — Step Operativi (Mese 2-3)
+
+Ogni step ha: **obiettivo → azione → owner → deadline → KPI di successo**
+
+**Filone 1 (Presente):**
+
+| # | Step | Azione | KPI successo |
+|---|------|--------|--------------|
+| 1 | CI/CD solido | Pipeline end-to-end con test automatici, deploy predittibile | Tempo deploy: da X ore a <30 min |
+| 2 | Code review process | Standard review, checklist, tempo massimo 24h | PR stale (>48h): 0 |
+| 3 | Incident playbook | Runbook per top-3 scenari critici (School.Net down, PagoPA failure, picco settembre) | MTTR misurato e in calo |
+| 4 | Team ritmo | Standup efficace (15 min), retro mensile con azioni concrete | Team satisfaction survey: baseline |
+
+**Filone 2 (Visione):**
+
+| # | Step | Azione | Outcome |
+|---|------|--------|---------|
+| 1 | Audit architetturale | Documento completo: cosa scala, cosa no, dove il debito blocca | Architecture Roadmap 12 mesi |
+| 2 | Top-3 rischi | Identificati, documentati, con piano di mitigazione e owner | Risk register attivo |
+| 3 | AI assessment | 3 use case concreti con stima ROI, costi, timeline | AI Strategy approvata da CEO |
+| 4 | Integration strategy | Anticorruption layer design per integrazioni PA critiche | Contract test suite attiva |
+
+### 7.4 Fase 2 — Esecuzione e Misurazione (Mese 4+)
+
+**Ritmo mensile:**
+- 2-3 iniziative attive (mix Filone 1 + Filone 2) con KPI tracciati
+- Report mensile: cosa e migliorato, cosa no, perche, prossimi step
+- Retrospettiva con team su processi (cosa funziona del nuovo, cosa no)
+- CEO sync bisettimanale: allineamento business ↔ tech
+- Roadmap aggiornata come documento vivo
+
+**Revisione trimestrale:**
+- KPI vs baseline: dove siamo migliorati?
+- Decisione: continuare, scalare up, scalare down, cambiare focus
+- Nuovi obiettivi per il trimestre successivo
+
+### 7.5 KPI concreti proposti
+
+| KPI | Cosa misura | Come si migliora | Target 6 mesi |
+|-----|-------------|------------------|---------------|
+| **Deployment frequency** | Quanto spesso rilasciate | CI/CD, feature flags, test automatici | Da baseline a +100% |
+| **Lead time** | Da "ticket accettato" a "in produzione" | Ridurre handoff, automatizzare, parallelizzare | Da baseline a -40% |
+| **MTTR** | Tempo medio risoluzione incidenti | Observability, playbook, on-call strutturato | Da baseline a -50% |
+| **Change failure rate** | % deploy che causano problemi | Test strategy, code review, canary | Da baseline a <15% |
+| **Team satisfaction** | Survey trimestrale (1-10) | 1:1, ascolto, azioni concrete, autonomia | Da baseline a +20% |
+| **Integration failure rate** | Fallimenti integrazioni PA / mese | Contract testing, circuit breaker, monitoring | Da baseline a -70% |
+| **Onboarding time** | Tempo perche nuovo dev sia produttivo | Docs, ADR, runbook, pairing | Da baseline a -50% |
 
 ---
 
@@ -424,25 +688,35 @@ O se parti con 1 gg/sett:
 
 ### Se ti chiedono "Come lavori concretamente?"
 
-> "Dedico 2 giorni a settimana alla vostra azienda. Un giorno e governance e team — standup, 1:1, review architetturali. L'altro e strategia e stakeholder — sync col CEO, roadmap, metriche. Nei giorni in cui non ci sono, rispondo in 4 ore su Teams per le cose urgenti. Ogni mese consegno un report scritto con decisioni, stato, rischi."
+> "Il mio approccio si basa su due filoni paralleli. Il primo e immediato: ottimizzare i vostri flussi — come il team lavora, come rilasciate, come gestite gli incidenti. Best practice operative che portano risultati in settimane, non mesi. Il secondo e strategico: dove va l'architettura nei prossimi 3-5 anni, come scalate a 2.000 Comuni, dove l'AI vi da vantaggio competitivo reale.
+>
+> Il primo mese e tutto ascolto — capisco come funzionate oggi, misuro la baseline. Poi definiamo insieme obiettivi concreti con tempi e KPI. Ogni mese consegno un report con numeri: cosa e migliorato, cosa no, e perche."
 
 ### Se ti chiedono "Che risultati hai ottenuto?"
 
-> "Nell'ultimo anno ho portato una piattaforma da deploy ogni 6 settimane a deploy settimanali. Ho ridotto del 91% il tempo di deploy. Con l'AI integrata nel processo, ho dimostrato risparmi del 77-82% sui costi di sviluppo su task specifici. Ma il risultato piu importante: team piu autonomo, che sa prendere decisioni anche quando non ci sono."
+> "Nell'ultimo anno ho portato una piattaforma da deploy ogni 6 settimane a deploy settimanali — +400% di frequenza. Ho ridotto del 91% il tempo di deploy. Con l'AI integrata nel processo, ho dimostrato risparmi del 77-82% sui costi di sviluppo su task specifici. Ma il risultato piu importante: team piu autonomo, che sa prendere decisioni anche quando non ci sono."
 
 ### Se ti chiedono "Perche non il full-time?"
 
-> "Perche non vi serve un CTO 5 giorni a settimana. Vi servono le decisioni giuste, non le ore. Con 2 giorni di alta qualita avete la stessa seniority che paghereste 180K l'anno full-time — a meta del costo, zero rischio, con la possibilita di scalare up o down."
+> "Perche non vi serve un CTO 5 giorni a settimana. Vi servono le decisioni giuste, non le ore. Con 2 giorni di alta qualita avete la stessa seniority che paghereste 180K l'anno full-time — a meta del costo, zero rischio, con la possibilita di scalare up o down. E con un vantaggio: la prospettiva esterna permanente. Dopo 23 anni di prodotto, avere occhi freschi ogni settimana e un asset."
 
 ### Se ti chiedono "Come gestisci il conflitto con TicketOne?"
 
-> "Il modello fractional per definizione prevede piu clienti. Non c'e conflitto di interesse perche operate in settori completamente diversi. La mia agenda e strutturata per dare a ciascun cliente giorni dedicati e focus totale."
+> "Il modello fractional per definizione prevede piu clienti. Non c'e conflitto di interesse perche operate in settori completamente diversi — ticketing sportivo e ristorazione collettiva. La mia agenda e strutturata: giorni dedicati con focus totale su un solo cliente per giorno."
 
 ### Se ti chiedono "Conosci il nostro settore?"
 
-> "Non conosco la ristorazione collettiva nel dettaglio — ma conosco i problemi che affronta un'azienda software con 15 anni di prodotto, clienti enterprise, e un team che deve evolvere. Il settore lo imparo nelle prime settimane; la governance tecnica, l'architettura, e la leadership di team sono le stesse ovunque."
+> "Conosco i vostri NUMERI: 750.000 prenotazioni al giorno, 1.000 Comuni, integrazioni PagoPA, SPID, App IO. So che trattate dati di minori e pazienti — classificazione GDPR massima. So che avete 5 certificazioni ISO. Il settore ristorazione collettiva nel dettaglio lo apprendo nel primo mese — ma i problemi architetturali, di scaling, di team, di compliance sono identici a quelli che gestisco ogni giorno su 30 milioni di transazioni/anno."
+
+### Se ti chiedono "Come ci aiuti con l'AI?"
+
+> "Due livelli. Primo: AI nel vostro processo di sviluppo — code review assistita, generazione test, analisi requisiti. Risparmio -50/70% sui costi di task specifici, dimostrato con numeri. Secondo: AI nel vostro prodotto — ma qui serve prima capire dove il ROI e reale. Predizione sprechi alimentari? Classificazione diete? Chatbot per genitori? Lo capiamo insieme nella fase di assessment. Non porto hype — porto use case con stima costi e benefici."
+
+### Se ti chiedono "Cosa fai il primo mese?"
+
+> "Ascolto. Codifico. Misuro. Il primo mese non cambio NIENTE — capisco come funzionate, mappo l'architettura, parlo con ogni persona del team, misuro la baseline dei KPI. A fine mese vi consegno un documento 'State of the Stack' con: dove siete, dove potete andare, cosa rischia, e un piano d'azione per i 90 giorni successivi con 6 obiettivi concreti — 3 operativi e 3 strategici."
 
 ---
 
 *Documento companion di: PREP_Call_EticaSoluzioni_20260616.md*  
-*v1.0 | 2026-06-16*
+*v2.0 | 2026-06-18 — Aggiornato con ricerca web completa + metodo due filoni*

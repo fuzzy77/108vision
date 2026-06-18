@@ -8,265 +8,417 @@
 
 ---
 
-## 1. COSA SAPPIAMO DI ETICA SOLUZIONI
+## INDICE
 
-### Fatti [verificato da LinkedIn + conversazione]
+1. [Struttura della Call](#1-struttura-della-call) — Timing, fasi, cosa dire quando
+2. [Intro: Chi e Etica Soluzioni](#2-intro-chi-e-etica-soluzioni) — Dati da citare per mostrare che hai studiato
+3. [Presentazione: Chi sono io](#3-presentazione-chi-sono-io) — Script completo per presentarti
+4. [Il mio approccio: Due Filoni + Metodo](#4-il-mio-approccio-due-filoni--metodo) — Cosa gli proponi
+5. [Discovery: Domande da fare](#5-discovery-domande-da-fare) — Cosa devi capire da loro
+6. [Pricing e Opzioni](#6-pricing-e-opzioni) — Range, modelli, entry point
+7. [Obiezioni e Risposte](#7-obiezioni-e-risposte) — Le piu probabili e come gestirle
+8. [Red Flags e Scenario Planning](#8-red-flags-e-scenario-planning) — Segnali di allarme e scenari possibili
+9. [Tecniche Comunicative](#9-tecniche-comunicative) — Pattern retorici da usare
+10. [Checklist Pre-Call](#10-checklist-pre-call) — Cosa fare prima
+
+---
+
+## 1. STRUTTURA DELLA CALL
+
+### Principi comunicativi per la call
+
+- **Regola 80/20**: primi 15 minuti → 80% loro parlano, 20% tu. Secondi 15 minuti → inverti.
+- **Mirror & Match**: ricalca il loro linguaggio. Se dicono "team", non dire "risorse". Se dicono "prodotto", non dire "piattaforma".
+- **Pain before solution**: mai presentare la soluzione prima di aver fatto emergere il dolore.
+- **Specifico batte generico**: "ho portato deploy da 6 settimane a settimanale" batte "miglioro i processi".
+
+### Timeline (30 minuti)
+
+```
+MIN 0-2   │ APERTURA — Warm-up + aggancio
+          │ • Ringrazia, chi c'e, conferma tempo
+          │ • Frase di apertura (sotto)
+          │
+MIN 2-5   │ INTRO SU DI LORO — Mostri che hai studiato
+          │ • Citi 2-3 dati specifici su Etica (vedi sezione 2)
+          │ • "Prima di raccontarvi di me, ho fatto i compiti..."
+          │ • Transizione: "Ma voglio capire da voi..."
+          │
+MIN 5-14  │ DISCOVERY — Fai parlare LORO
+          │ • Domande chiave (sezione 5)
+          │ • Ascolto attivo: annuisci, riformula, approfondisci
+          │ • TECNICA: "Interessante. E come gestite [X] oggi?"
+          │ • Prendi nota mentale: pain, dimensione, trigger
+          │
+MIN 14-15 │ PONTE — Collegamento loro→te
+          │ • "Ok, ho capito il quadro. Mi ritrovo in quello
+          │    che descrivete perche gestisco quotidianamente
+          │    un contesto molto simile. Vi racconto..."
+          │
+MIN 15-22 │ PRESENTAZIONE — Chi sei + approccio
+          │ • Chi sono (60 secondi — sezione 3)
+          │ • Due filoni (2 minuti — sezione 4)
+          │ • Metodo: Know-How → Step → KPI (1 minuto)
+          │ • Risultati concreti (1 minuto — numeri)
+          │ • TECNICA: collega ogni punto a qualcosa che LORO
+          │   hanno detto nella discovery
+          │
+MIN 22-26 │ PROPOSTA — Next step concreto
+          │ • Tech Assessment come entry point
+          │ • Range di prezzo (NON numero fisso)
+          │ • "Il primo mese non cambio niente — capisco"
+          │
+MIN 26-30 │ CHIUSURA — Call to action
+          │ • "C'e qualcosa che non vi ho detto?"
+          │ • "Chi altro va coinvolto?"
+          │ • "Vi mando una proposta scritta entro 3 giorni"
+          │ • Conferma follow-up
+```
+
+### Frase di apertura
+
+> "Grazie per il tempo. Prima di raccontarvi di me, vorrei condividere una cosa: ho studiato quello che fate e devo dire che i numeri sono impressionanti — 750.000 pasti al giorno, piu di 1.000 Comuni serviti, cinque certificazioni ISO. Non e banale per nessuna azienda, tantomeno una PMI italiana. Sono curioso di capire cosa vi ha portato a cercare una figura di direzione tecnica proprio ora."
+
+**Perche funziona:**
+- Mostra preparazione (rispetto)
+- Valida il loro lavoro (non arrivi a "sistemare il caos")
+- Passa subito a LORO (non parli di te per 10 minuti)
+- Apre con curiosita, non con vendita
+- La domanda finale e aperta e rivela il trigger
+
+---
+
+## 2. INTRO: CHI E ETICA SOLUZIONI
+
+### Dati da citare in call (per mostrare che hai studiato)
+
+Scegli 2-3 di questi. Non citarli tutti — sembrerebbe uno stalker.
+
+| Dato | Frase da usare |
+|------|----------------|
+| 750K pasti/giorno | "Gestite tre quarti di milione di prenotazioni al giorno — e un volume da big tech, non da PMI" |
+| 1.000+ Comuni | "Piu di mille Comuni italiani si affidano a voi — siete il riferimento nazionale" |
+| 23 anni | "Ventitri anni di prodotto in produzione — non e facile mantenere quella continuita" |
+| 5 certificazioni ISO | "Cinque ISO, tra cui 27001 e 22301 — avete una governance che molte aziende 10x la vostra taglia non hanno" |
+| School.Net + Easy Lunch + Ospedale.Net | "Non e un prodotto solo — e un portfolio che copre scuole, ospedali e aziende" |
+| PagoPA + SPID + App IO | "Siete integrati con tutto l'ecosistema PA italiano — quella complessita la conosco bene" |
+| Team AI & Analytics | "Ho visto che avete gia un team AI — significa che non state fermo, state cercando direzione" |
+
+### Profilo completo (per te — non da recitare)
 
 | Dato | Valore |
 |------|--------|
-| **Nome** | Etica Soluzioni |
-| **Sede** | Abbiategrasso (MI) |
-| **Anni di attivita** | 15+ |
-| **Settore** | Software per ristorazione collettiva (mense aziendali, scolastiche, ospedaliere, PA) |
-| **Clienti** | Enti pubblici + grandi organizzazioni |
-| **Prodotto** | Piattaforme software proprietarie |
-| **Ruolo cercato** | Direttore Tecnico (full-time) |
-| **RAL dichiarata** | 50.000 - 70.000+ EUR (CCNL Commercio) |
-| **HR** | Diletta Papari |
+| **Fondata** | 2003, da due professionisti IT |
+| **Sedi** | Legale: Trento. Operativa: Abbiategrasso (MI) |
+| **Clienti** | 1.500+ (1.000+ Comuni) |
+| **Scale** | 1M utenti, 750K prenotazioni/giorno |
+| **Certificazioni** | ISO 9001, 27001, 27017, 27018, 22301 |
+| **Prodotti** | School.Net (flagship), Ospedale.Net, Easy Lunch, Cedole Librarie Net, ComunicApp, DomusAPP, Ticket Manager, PagoPA intermediation |
+| **Integrazioni PA** | PagoPA, App IO, SPID/CIE, ANPR, AIE, AgID, FatturaPA |
+| **Architettura** | Cloud-based (Easy Lunch esplicitamente), sviluppo interno R&D |
+| **Team AI** | Posizioni Data Analyst "AI & Analytics" aperte |
+| **Market share** | ~12-15% del mercato mense scolastiche (1.000/8.000 Comuni) |
 
-### Inferenze [probabile — da verificare in call]
+### Cosa probabilmente NON sanno che sai
 
-- **Team tecnico**: probabilmente 5-15 sviluppatori (PMI con 15 anni = team stabile ma potenzialmente legacy)
-- **Stack**: probabile Java/.NET + DB relazionale (settore PA = compliance, stabilita, deployment on-prem)
-- **Problema**: cercano un "Direttore Tecnico" = manca leadership tecnica strutturata. Forse il fondatore tecnico sta uscendo, o il team e cresciuto senza governance
-- **Maturita AI**: probabilmente bassa (settore ristorazione collettiva non e early adopter)
-- **Maturita DevOps**: probabilmente media-bassa (PA = deploy lenti, validazione lunga)
-- **Budget**: se offrono 50-70K full-time, il budget per un fractional 2-3gg/settimana e sostenibile
+- Che l'architettura e cloud-based
+- Che hanno un team AI
+- Che PrenoDroid ha modalita offline (=architettura offline-first complessa)
+- Che coprono trasporto scolastico, centri estivi, nidi (non solo mensa)
+- Che Cedole Librarie Net integra con ANPR
 
-### Cosa NON sappiamo [ignoto — domande da fare]
-
-- Dimensione team tecnico
-- Stack tecnologico
-- Perche cercano ora (trigger: persona uscita? crescita? problema?)
-- Chi decide (CEO? Fondatore? Board?)
-- Se hanno gia avuto un Direttore Tecnico prima
-- Stato del prodotto (legacy? in riscrittura? stabile?)
-- Se lavorano con clienti PA via gare d'appalto (vincoli temporali rigidi)
+**Strategia**: non rivelare TUTTO subito. Tieni qualcosa per la discovery — "Ah, come gestite la parte offline di PrenoDroid a livello architetturale? E un pattern interessante" → mostra competenza senza arroganza.
 
 ---
 
-## 2. POSIZIONAMENTO — COSA DIRE
+## 3. PRESENTAZIONE: CHI SONO IO
 
-### Apertura (primi 2 minuti)
+### Il principio: 60 secondi di credibilita, poi COLLEGAMENTO al loro mondo
 
-> "Grazie per il tempo. Come vi avevo accennato, non cerco un ruolo dipendente classico ma porto la stessa seniority e responsabilita con un modello diverso — il Fractional CTO. Vi spiego brevemente cosa significa nella pratica, poi vorrei capire meglio la vostra situazione per vedere se ha senso."
+Non fare il curriculum. Fai la **storia di rilevanza**: ogni pezzo che citi deve connettersi a qualcosa di LORO.
 
-### Il messaggio chiave (adattato a loro)
+### Script "Chi sono" (60-90 secondi)
 
-> "Avete 15 anni di prodotto e un team che funziona. Non vi serve qualcuno che scriva codice — vi serve qualcuno che dia **direzione strategica** alle scelte tecniche, che costruisca processi scalabili, e che faccia da ponte tra il business e la tecnologia. Il modello fractional vi da questa seniority senza il costo e il rischio di un full-time che magari non vi serve 5 giorni su 5."
+> "Mi presento in trenta secondi, poi vi spiego come lavoro.
+>
+> Sono Elios Scoglio, Software & Architecture Manager. Da dieci anni lavoro su piattaforme mission-critical — oggi gestisco l'architettura di un sistema che processa trenta milioni di transazioni l'anno, con vincoli di compliance fiscale, integrazioni con la Polizia di Stato, e un requisito di zero-downtime.
+>
+> In pratica: 93 componenti, 7 livelli architetturali, 3 team di sviluppo che devono andare nella stessa direzione. Non scrivo codice — definisco la direzione tecnica, i processi, e gli standard. Mi assicuro che le prossime cento decisioni del team siano quelle giuste.
+>
+> La cosa che vi riguarda: il sistema che gestisco ha 23 anni di storia — come il vostro. Nasce legacy, e lo stiamo modernizzando senza fermarlo. Integriamo con 7 sistemi esterni della PA. Trattiamo dati sensibili sotto GDPR ogni giorno. E i 750.000 prenotazioni al giorno che gestite voi? Noi ne facciamo 30 milioni l'anno in un settore dove un'ora di downtime costa centomila euro.
+>
+> Non vi racconto questo per impressionarvi — ve lo racconto perche la complessita che voi vivete ogni giorno e esattamente quella che io gestisco ogni giorno. Non e un salto nel buio — e un match."
 
-### Differenziatori specifici per questo cliente
+### Elementi retorici usati nello script
 
-1. **Background enterprise reale** — 10+ anni su piattaforme mission-critical (ticketing nazionale, compliance fiscale, 30M+ transazioni/anno)
-2. **Non solo strategia** — porto processi concreti: CI/CD, architettura, observability, team development
-3. **Esperienza PA/compliance** — lavoro quotidianamente con vincoli normativi (SIAE, Polizia di Stato, GDPR)
-4. **Leadership tecnica strutturata** — ADR, roadmap, metriche, governance. Non "consigli verbali"
-5. **AI adoption pragmatica** — non hype, ma integrazione concreta dove il ROI e dimostrabile
+| Tecnica | Dove |
+|---------|------|
+| **Brevita promessa** | "In trenta secondi" → crea aspettativa, abbassa resistenza |
+| **Numero specifico** | 30M, 93, 7, 3, 23, 750K → credibilita senza aggettivi |
+| **Parallelo diretto** | "23 anni come il vostro" → collego il MIO mondo al LORO |
+| **Understatement** | "Non per impressionarvi" → anti-arroganza, crea fiducia |
+| **Chiusura forte** | "Non e un salto nel buio — e un match" → frame di sicurezza |
 
-### Cosa NON dire
+### Credenziali da NON citare (a meno che chiedano)
 
-- Non parlare di TicketOne come se fosse piu importante del loro prodotto
-- Non sminuire il settore ristorazione collettiva (e un mercato enorme e stabile)
-- Non promettere risultati specifici prima del Tech Assessment
-- Non criticare il loro stack/team senza averlo visto
-- Non parlare di pricing finche non hai capito il problema
+- Il nome TicketOne/Eventim (non serve, e potrebbe sembrare "io lavoro per uno grosso")
+- Titoli di studio (irrilevante)
+- Anni di esperienza generici ("ho 15 anni di esperienza" = vuoto)
+- Lista di tecnologie (non interessa alla HR/CEO)
+
+### Credenziali da citare SE CHIEDONO approfondimento
+
+| Se chiedono | Rispondi |
+|-------------|----------|
+| "Che settore?" | "Ticketing nazionale — concerti, sport, 30M biglietti/anno. Diverso dal vostro, ma identica complessita: mission-critical, compliance, integrazioni PA, multi-tenant." |
+| "Che tecnologie?" | "Il mio stack oggi: .NET 8, Java Spring Boot, gRPC, Redis, SQL Server, Oracle. Ma il CTO non e legato a uno stack — e legato alla capacita di prendere decisioni architetturali corrette su qualsiasi stack." |
+| "Hai mai lavorato per PMI?" | "La piattaforma che gestisco serve PMI (organizzatori eventi). Conosco i vincoli: budget limitato, team piccoli, rilasci che non possono fallire. E proprio per PMI che il modello fractional ha piu senso." |
+| "Hai esperienza con PA?" | "Quotidiana. Integro con la Polizia di Stato (VRO), la SIAE (sigilli fiscali), e ogni modifica richiede compliance GDPR totale. Lavoro con sistemi che se sbagliano generano sanzioni." |
 
 ---
 
-## 3. DOMANDE DA FARE (in ordine di priorita)
+## 4. IL MIO APPROCCIO: DUE FILONI + METODO
 
-### Must-ask (prima meta della call)
+### Come introdurlo in call (dopo la discovery)
 
-| # | Domanda | Perche conta |
-|---|---------|--------------|
-| 1 | "Cosa vi ha portato a cercare un Direttore Tecnico proprio ora? C'e un evento scatenante?" | Trigger = urgenza = leva |
-| 2 | "Com'e strutturato il team tecnico oggi? Quante persone, che ruoli?" | Dimensione = scope = pricing |
-| 3 | "Chi prende le decisioni tecniche oggi?" | Capire il vuoto che devi riempire |
-| 4 | "Avete gia avuto una figura simile in passato?" | Aspettative + eventuali brutte esperienze |
-| 5 | "Il vostro prodotto principale — e stabile e in manutenzione, o in evoluzione attiva?" | Legacy vs greenfield = tipo di lavoro |
+> "Sulla base di quello che mi avete raccontato, vi spiego come lavoro. Il mio approccio si basa su due filoni paralleli — uno guarda al presente, l'altro alla visione futura."
 
-### Nice-to-ask (se c'e tempo)
+### Filone 1 — PRESENTE: Concretizzare e ottimizzare
 
-| # | Domanda | Perche conta |
-|---|---------|--------------|
-| 6 | "I vostri clienti sono prevalentemente PA o anche privati?" | Vincoli di gara, certificazioni, deploy |
-| 7 | "Qual e la sfida tecnica piu grande che affrontate oggi?" | Pain reale vs pain dichiarato |
-| 8 | "Tra 12 mesi, cosa deve essere cambiato perche diciate 'e stato un anno di successo'?" | Outcome desiderato = proposta mirata |
-| 9 | "Avete gia valutato consulenti tecnici in passato? Com'e andata?" | Obiezioni nascoste |
-| 10 | "Chi sara il mio interlocutore principale — il CEO, un responsabile prodotto, il team?" | Capire la governance interna |
+> "Il primo filone e pratico e immediato. Guardo come lavorate oggi — i flussi, le best practice, le modalita operative — e ottimizzo. Non rivoluzioni. Miglioramenti concreti che il team sente nelle prime settimane. Pipeline piu veloce, code review strutturata, incident management chiaro, comunicazione fluida tra tech e business."
 
-### Domanda chiave per qualificare
+**Frase di ancoraggio**: "Far funzionare meglio quello che gia funziona."
+
+### Filone 2 — VISIONE: Architettura, scale, AI
+
+> "Il secondo filone guarda avanti. Dove va l'architettura nei prossimi 3-5 anni? Cosa succede quando passate da 1.000 a 2.000 Comuni? Dove l'AI vi da vantaggio competitivo reale, non hype? Queste sono decisioni che costano 6-12 mesi se sbagli — il mio lavoro e non sbagliare."
+
+**Frase di ancoraggio**: "Vedere dove andare prima di arrivarci."
+
+### Il Metodo: Know-How → Step → KPI
+
+> "Come funziona in pratica? Il primo mese non cambio NIENTE. Ascolto, codifico, misuro. Capisco il vostro mondo. A fine mese consegno un documento con: dove siete, dove potete andare, cosa rischia. Poi definiamo insieme obiettivi concreti con tempi e KPI — numeri veri, misurabili, mese per mese. Se dopo 3 mesi i numeri non migliorano, qualcosa non va e ne parliamo."
+
+**Perche funziona comunicativamente:**
+- "Non cambio niente" → toglie la paura del nuovo arrivato che stravolge tutto
+- "Ascolto, codifico, misuro" → tre verbi concreti, niente fuffa
+- "Numeri veri" → differenziazione da consulenti che danno "consigli"
+- "Se non migliorano ne parliamo" → trasparenza radicale, costruisce fiducia
+
+---
+
+## 5. DISCOVERY: DOMANDE DA FARE
+
+### Principio: la domanda giusta rivela piu di 10 domande generiche
+
+Fai 4-5 domande max nella call di 30 minuti. Scegli in base al flusso.
+
+### Must-ask (primi 10 minuti)
+
+| # | Domanda | Perche conta | Cosa ascolti |
+|---|---------|--------------|--------------|
+| 1 | "Cosa vi ha portato a cercare un Direttore Tecnico proprio ora?" | Trigger = urgenza = leva | Persona uscita? Crescita? Problema? M&A? |
+| 2 | "Com'e strutturato il team tecnico oggi? Quante persone, che ruoli?" | Dimensione = scope = pricing | <10 = Starter. 10-20 = Standard. 20+ = Intensive |
+| 3 | "Chi prende le decisioni tecniche oggi?" | Il vuoto che riempi | Se "nessuno" → urgente. Se "il CTO che esce" → transizione |
+| 4 | "Qual e la sfida tecnica piu grande che affrontate oggi?" | Pain reale vs dichiarato | Se tecnica = bene. Se "non sappiamo" = hai la leva massima |
+
+### Domanda killer (alla fine della discovery)
 
 > "Se potessi risolvere UN solo problema tecnico nei prossimi 90 giorni, quale sarebbe?"
 
-Questa domanda rivela il pain reale. Se non sanno rispondere, il problema e di direzione (ottimo per te). Se rispondono qualcosa di troppo operativo ("fixare il bug X"), il ruolo potrebbe non essere giusto.
+**Cosa rivela:**
+- Se rispondono qualcosa strategico → perfetto per te
+- Se rispondono qualcosa operativo ("fixare il bug X") → forse vogliono un dev senior, non un CTO
+- Se non sanno rispondere → hanno bisogno di DIREZIONE (la tua proposta e perfetta)
+
+### Domande-approfondimento (da usare come follow-up naturale)
+
+> "E come gestite [X] oggi?"
+> "Cosa succede quando [X] va storto?"
+> "Chi se ne occupa attualmente?"
+> "Da quanto tempo e cosi?"
+
+Queste non sono domande da "lista" — sono da usare per scavare quando senti qualcosa di interessante.
 
 ---
 
-## 4. OPZIONI DI INGAGGIO — PRICING
+## 6. PRICING E OPZIONI
 
-### Logica di pricing
+### Il principio: non vendere il prezzo — vendi il modello
 
-- **RAL equivalente proposta**: 50-70K full-time = ~275-390 EUR/giorno (220gg)
-- **Daily rate FCTO (senior, enterprise)**: 800-1.200 EUR/giorno
-- **Rapporto**: 2-3x il costo giornaliero dipendente — giustificato dalla seniority, zero oneri, zero rischio
+Non dare mai un numero secco. Dai un RANGE legato al valore.
 
-### 4 Opzioni strutturate
+### Le 4 opzioni (da NON presentare tutte — scegli 1-2 in base alla discovery)
 
-| Opzione | Giorni/mese | EUR/mese | Cosa include | Per chi |
-|---------|-------------|----------|--------------|---------|
-| **A — Starter** | 4 gg/mese (1 gg/sett) | 4.000 - 4.800 | Governance strategica, 1 sessione team, report mensile, async 4h | Team piccolo (<8), problema circoscritto |
-| **B — Standard** | 8 gg/mese (2 gg/sett) | 7.000 - 8.000 | Governance + team development + architettura + hiring support | Team medio (8-15), evoluzione attiva |
-| **C — Intensive** | 12 gg/mese (3 gg/sett) | 10.000 - 12.000 | Full CTO scope: strategia + team + architettura + processi + AI | Team grande (15+), trasformazione |
-| **D — Bridge** | 16 gg/mese (4 gg/sett) | 14.000 - 16.000 | Quasi full-time, per transizioni critiche (max 6 mesi) | Emergenza: CTO uscito, scaling rapido |
+| Opzione | Giorni/mese | EUR/mese | Per chi |
+|---------|-------------|----------|---------|
+| **A — Starter** | 4 (1 gg/sett) | 4.000 - 4.800 | Team piccolo, problema circoscritto |
+| **B — Standard** | 8 (2 gg/sett) | 7.000 - 8.000 | Team 10-20, evoluzione attiva |
+| **C — Intensive** | 12 (3 gg/sett) | 10.000 - 12.000 | Team 20+, trasformazione |
+| **D — Bridge** | 16 (4 gg/sett) | 14.000 - 16.000 | Emergenza/transizione (max 6 mesi) |
 
-### La MIA proposta ideale: Opzione B (2 giorni/settimana)
+### Come presentare il prezzo in call
 
-**Perche B e il sweet spot per questo cliente:**
-- 15 anni di prodotto = non serve una rivoluzione ma una guida strutturata
-- 2 gg/sett = presenza sufficiente per costruire fiducia col team
-- Budget sostenibile rispetto alla RAL che offrivano (7-8K/mese vs 4.200-5.800/mese lordo azienda per 50-70K RAL)
-- Lascia spazio per altri clienti (108 Vision multi-cliente)
+> "Il modello e semplice: un retainer mensile fisso che copre N giorni di presenza. Non vendo ore — vendo direzione e risultati misurabili. Il range dipende dallo scope che emerge oggi, ma per darvi un'idea: per un'azienda della vostra complessita, un impegno di 2 giorni a settimana si posiziona tra i 7 e gli 8 mila euro al mese. Che e meno della meta di un CTO senior full-time."
 
-### Proposta di entry: Tech Assessment + 3 mesi
+### Entry point: Tech Assessment
 
-**Fase 0 — Tech Assessment (entry point basso)**
-- **Durata**: 2 giorni
-- **Costo**: 2.000 EUR (detratti dal primo mese se si prosegue)
-- **Output**: Report "State of the Stack" — team, architettura, processi, rischi, priorita
-- **Impegno zero**: se non proseguono, hanno comunque un deliverable di valore
+> "Vi propongo di partire con un Tech Assessment — due giorni, output concreto: un report su architettura, team, processi, rischi e priorita. Se poi decidiamo di proseguire, il costo viene detratto dal primo mese. Se non proseguiamo, avete comunque un deliverable di valore. Zero rischio."
 
-**Fase 1 — Primo trimestre (commitment minimo)**
-- **Durata**: 3 mesi
-- **Impegno**: 2 giorni/settimana (Opzione B)
-- **Deliverable mensili**: ADR, roadmap, report, team 1:1, CEO sync
-- **KPI**: deployment frequency, lead time, team satisfaction, incident rate
-- **Review**: a fine trimestre si decide se continuare, aumentare o ridurre
+---
 
-**Fase 2 — Ongoing (dal mese 4)**
-- Rinnovo mensile senza vincoli
-- Possibilita di scalare up/down (da 1 a 3 gg/sett)
-- Exit pianificato quando assumono un CTO full-time (successo!)
+## 7. OBIEZIONI E RISPOSTE
 
-### Come presentare il prezzo
+### Tecnica: FORMULA (Feel — Felt — Found)
 
-> "Il modello e semplice: un retainer mensile fisso che copre N giorni di presenza, piu disponibilita async per le urgenze. Non vendo ore — vendo direzione e risultati misurabili. Vi propongo di partire con un Tech Assessment di 2 giorni per validare che ci sia fit reciproco, poi valutiamo insieme l'ingaggio mensile."
+> "Capisco [la preoccupazione]. Anche [altri] hanno avuto lo stesso dubbio. Quello che hanno trovato e [risultato]."
 
-### Obiezioni prevedibili e risposte
+### Le 7 obiezioni piu probabili
 
 | Obiezione | Risposta |
 |-----------|----------|
-| "E troppo per il nostro budget" | "Quanto vi costa oggi NON avere direzione tecnica? Un incidente in produzione, un'assunzione sbagliata, 6 mesi di debito tecnico accumulato?" |
-| "Ma 2 giorni bastano?" | "Con 15 anni di esperienza enterprise, in 2 giorni faccio quello che un junior fa in 2 settimane. Non sono ore di esecuzione — sono ore di decisione." |
-| "Preferiamo un full-time" | "Lo capisco. Ma un CTO full-time con la mia seniority costa 120-150K+ benefit. Con il fractional avete la stessa competenza a 1/3 del costo, senza rischio di hiring sbagliato." |
-| "Possiamo fare un mese di prova?" | "Il Tech Assessment e esattamente questo: 2 giorni, output concreto, zero vincolo. Ma un mese solo non basta per dare valore reale — il minimo per risultati misurabili e 3 mesi." |
-| "Ci serve qualcuno on-site tutti i giorni" | "Se il problema e operativo quotidiano, vi serve un Engineering Manager, non un CTO. Posso aiutarvi a trovarlo e a definire il profilo." |
+| **"Costa troppo per noi"** | "Capisco. Ma quanto vi costa oggi NON avere direzione tecnica? Una decisione architetturale sbagliata costa 6-12 mesi. Un'assunzione sbagliata costa 100K. Con il fractional avete seniority enterprise a meta del costo di un full-time." |
+| **"Ci serve qualcuno full-time"** | "Lo capisco. Ma un CTO con questa seniority full-time costa 150-180K all-in. Con il fractional: stessa competenza, 2 giorni di alta qualita, possibilita di scalare. E se dopo 12 mesi volete un full-time, vi aiuto a trovarlo e a fare l'onboarding." |
+| **"Due giorni bastano?"** | "In 2 giorni a settimana di decisioni strategiche faccio quello che un junior fa in 2 settimane di esecuzione. Non sono ore di codice — sono ore di direzione. I 5 giorni servono per scrivere codice; per prendere le decisioni giuste, ne bastano 2." |
+| **"Come fai a capire il nostro business?"** | "Non lo capiro in 2 giorni — lo capiro in 4 settimane. Il primo mese e SOLO ascolto. Ma la governance tecnica, l'architettura, la leadership di team sono le stesse ovunque. Il dominio specifico lo imparo; le competenze che porto non si improvvisano." |
+| **"Possiamo fare un mese di prova?"** | "Il Tech Assessment E la prova: 2 giorni, output concreto, zero vincolo. Pero un mese non basta per risultati reali — il minimo per vedere valore misurabile e 3 mesi. E poi si rivaluta insieme." |
+| **"Abbiamo gia provato consulenti"** | "Che tipo di consulente? E cosa non ha funzionato? [ASCOLTA] La differenza: io non scrivo un report e sparisco. Sono al tavolo ogni settimana. Dopo 3 mesi conosco il codice, il team, i vincoli. Non sono esterno — sono parte del sistema." |
+| **"Ci serve qualcuno che scriva anche codice"** | "Se il bisogno primario e scrivere codice, vi serve un senior developer — e un profilo diverso. Il CTO non codifica perche nel momento in cui lo fa, smette di vedere la strategia. Ma posso aiutarvi a trovare e valutare quel profilo." |
 
 ---
 
-## 5. STRUTTURA DELLA CALL (30 minuti)
+## 8. RED FLAGS E SCENARIO PLANNING
 
-### Minuti 0-3: Warm-up
-- Ringrazia, chiedi chi c'e in call, conferma il tempo disponibile
-- "Vi faccio una domanda diretta: cosa vi ha portato a cercare un Direttore Tecnico?"
-
-### Minuti 3-12: Discovery (TU ASCOLTI)
-- Domande 1-5 della sezione 3
-- Prendi nota mentale: dimensione team, trigger, pain, aspettative
-- NON parlare di te — fai parlare loro
-
-### Minuti 12-18: Posizionamento (TU PARLI)
-- "Ok, ho capito. Vi racconto come lavoro io..."
-- Pitch FCTO adattato a quello che hai sentito
-- Risultati concreti (numeri dal track 108-CTO: +50% team satisfaction, -91% deploy time, +400% deploy frequency)
-- Differenziatori specifici per il loro caso
-
-### Minuti 18-25: Modello e prossimi passi
-- Spiega il modello: Tech Assessment → 3 mesi → ongoing
-- Range di prezzo (NON dare un numero fisso — "dipende dallo scope, ma per darvi un'idea il range e X-Y")
-- Proponi il Tech Assessment come primo passo concreto
-
-### Minuti 25-30: Chiusura
-- "C'e qualcosa che non vi ho detto e vorreste sapere?"
-- "Chi altro nel team dovrebbe essere coinvolto nella decisione?"
-- "Vi mando una proposta scritta entro [3 giorni] con le opzioni. Poi ne parliamo."
-- Ringrazia, conferma follow-up
-
----
-
-## 6. RED FLAGS DA MONITORARE
+### Red Flags da monitorare durante la call
 
 | Segnale | Cosa significa | Azione |
 |---------|---------------|--------|
-| "Ci serve qualcuno che scriva anche codice" | Vogliono un dev senior economico | Chiarire subito la distinzione. Se insistono: declina |
-| "Budget massimo 3-4K/mese" | Sotto la soglia di qualita | Proponi Starter (1gg/sett) o declina |
-| "Trial di 2 settimane gratis" | Non capiscono il valore | Offri il Tech Assessment (pagato) come trial |
-| Nessun decisore in call | HR sta facendo screening | Chiedi di parlare col CEO/fondatore come passo successivo |
-| "Abbiamo gia provato con consulenti e non ha funzionato" | Esperienza bruciata | Chiedi cosa e andato male — differenziati su quel punto |
-| Cambio argomento ogni 2 minuti | Confusione interna | Segnale che hanno BISOGNO di direzione — ottimo per te |
+| "Ci serve qualcuno che scriva codice" | Vogliono un dev senior economico | Chiarire subito. Se insistono: declina |
+| "Budget max 3-4K/mese" | Sotto soglia di qualita | Proponi Starter (1gg/sett) o declina |
+| "Trial 2 settimane gratis" | Non capiscono il valore | Offri Tech Assessment (pagato) |
+| Nessun decisore in call | HR fa screening | Chiedi di parlare col CEO dopo |
+| Cambio argomento ogni 2 min | Confusione interna | OTTIMO per te — hanno BISOGNO di direzione |
+| "Il fondatore decide tutto" | Possibile micromanagement | Verificare autonomia decisionale nel ruolo |
+
+### Scenari post-call
+
+| Scenario | Cosa fare |
+|----------|-----------|
+| **A — "Andiamo avanti"** | Proponi Tech Assessment entro 2 settimane. Manda conferma scritta in 24h. |
+| **B — "Interessante, ci pensiamo"** | Manda proposta scritta in 48h. Follow-up dopo 5 giorni. |
+| **C — "Ci serve full-time"** | "Capisco. Se cambiate idea, resto disponibile." Professionale, non insistere. |
+| **D — "Ci piace ma budget basso"** | Proponi Opzione A (1 gg/sett). "Partiamo lean, se il valore e chiaro scaliamo." |
+| **E — "Mix part-time + fractional?"** | Non decidere in call. "Ci penso e vi faccio sapere in 48h." |
 
 ---
 
-## 7. DOMANDE PER ME (Elios) — DA DECIDERE PRIMA DELLA CALL
+## 9. TECNICHE COMUNICATIVE
 
-1. **Disponibilita reale**: quanti giorni/settimana puoi dedicare considerando TicketOne? Max 2 gg/sett e realistico? O preferisci partire con 1 gg/sett?
+### Pattern retorici da usare
 
-2. **On-site vs remoto**: Abbiategrasso e a ~40 min da Milano. Sei disposto ad andare on-site 1-2 volte/settimana? O preferisci full remote con visit mensile?
+**1. Regola del 3**
+Ogni concetto va espresso in 3 punti. Il cervello umano ricorda triadi.
+- "Ascolto. Codifico. Misuro."
+- "Architettura. Team. Strategia."
+- "Prima misuro, poi propongo, poi eseguo."
 
-3. **Pricing floor**: il tuo playbook dice "sotto 5K non accettare". Per 2 gg/sett (8 gg/mese) il floor sarebbe 7K. Sei flessibile per un primo cliente (es. 6K per i primi 3 mesi)?
+**2. Specifico > Generico**
+Mai dire "miglioro i processi". Sempre dire "porto deploy da 6 settimane a settimanale".
+I numeri specifici creano credibilita istantanea.
 
-4. **Compatibilita con TicketOne**: il tuo contratto T1 permette attivita esterne? Hai bisogno di informare qualcuno? C'e un vincolo di non-compete su settori specifici?
+**3. Contrasto (Before/After)**
+"Da X a Y" e il pattern piu potente per comunicare valore.
+- "Da 4 ore di deploy a 22 minuti"
+- "Da analisi di 3 giorni a 2 ore"
+- "Da nessuna governance a decisioni tracciabili"
 
-5. **P.IVA**: sei gia operativo come libero professionista? Regime forfettario? Ordinario? Questo impatta il netto e la fatturazione.
+**4. Framing di sicurezza**
+Mai vendere il cambiamento. Vendi la SICUREZZA del cambiamento.
+- "Zero rischio" (Tech Assessment)
+- "Il primo mese non cambio niente"
+- "Se non funziona, non rinnoviamo"
 
-6. **Timeline**: quando potresti iniziare realisticamente? Subito? Dopo 1 mese di notice?
+**5. Mirror (ricalco)**
+Riformula quello che dicono con parole leggermente diverse. Dimostra ascolto e crea connessione.
+- Loro: "Il team lavora bene ma senza direzione"
+- Tu: "Quindi il team e capace, ma manca chi coordina la strategia — ho capito bene?"
 
-7. **Il nome "108 Vision"**: lo presenti come brand o vai come Elios Scoglio consulente individuale? Per un primo cliente forse il nome personale e piu rassicurante.
+**6. Anchoring (ancoraggio)**
+Dai il numero alto PRIMA del tuo prezzo.
+- "Un CTO senior full-time costa 180K all-in. Il mio modello a 2 giorni costa meno della meta."
 
----
+**7. Perdita > Guadagno (Loss aversion)**
+"Quanto vi COSTA non avere direzione?" funziona 2x meglio di "Quanto guadagnate con me?"
+- "Una decisione architetturale sbagliata costa 6-12 mesi di rework"
+- "Un'assunzione sbagliata a 70K = 100K bruciati"
 
-## 8. MATERIALE DA PREPARARE POST-CALL
+**8. Social proof implicito**
+Non dire "ho tanti clienti". Mostra competenza attraverso dettagli che solo chi ha esperienza conosce.
+- "I picchi li gestisco con circuit breaker e backpressure"
+- "Il contract testing e obbligatorio quando i team rilasciano indipendentemente"
 
-Se la call va bene, prepara entro 48 ore:
+### Tono da mantenere
 
-- [ ] **Proposta scritta** (1-2 pagine): chi sei, cosa fai, come funziona, opzioni, prezzi, prossimi passi
-- [ ] **CV aggiornato** in versione "Fractional CTO" (non da dipendente)
-- [ ] **Case study sintetico** (1 pagina): risultati ottenuti in contesto analogo (FORE-165 ROI, o risultati T1 anonimizzati)
-- [ ] **Slide "Il Modello Fractional"** (5 slide max): per chi nella loro azienda non era in call
+| SI | NO |
+|----|-----|
+| Sicuro ma curioso | Arrogante o saccente |
+| Specifico e concreto | Vago e generico |
+| Ascolta piu di quanto parla | Monologo di 10 minuti |
+| Parla il loro linguaggio | Gergo tecnico incomprensibile alla HR |
+| Valorizza il loro lavoro | Critica o sminuisce quello che hanno fatto |
+| Propone, non impone | "Dovete fare X" (direttivo) |
 
----
+### Frasi da avere pronte (non da recitare — da avere in testa)
 
-## 9. SCENARIO PLANNING
+> **Sul valore:**
+> "Il mio lavoro e fare in modo che le prossime 100 decisioni tecniche del team siano migliori."
 
-### Scenario A — "Ci piace, andiamo avanti"
-→ Proponi Tech Assessment (2gg) come prossimo passo. Schedulalo entro 2 settimane.
+> **Sulla differenza:**
+> "Un dev senior risolve i problemi di oggi. Io prevengo quelli di domani."
 
-### Scenario B — "Interessante ma dobbiamo parlarne internamente"
-→ Manda proposta scritta. Chiedi quando avrai risposta. Follow-up dopo 5 giorni.
+> **Sulla continuita:**
+> "Non sono un consulente che scrive un report e sparisce. Dopo 3 mesi sono parte del sistema."
 
-### Scenario C — "Il modello non fa per noi, ci serve un full-time"
-→ "Lo capisco. Se cambiate idea sul modello, resto disponibile. Vi auguro il meglio nella ricerca." Resta professionale, non insistere.
+> **Sul rischio:**
+> "Il rischio non e provare il fractional. Il rischio e continuare senza direzione per altri 12 mesi."
 
-### Scenario D — "Ci piace ma il budget e troppo"
-→ Proponi Opzione A (1 gg/sett, 4K/mese) come entry point. "Partiamo lean, se dopo 3 mesi il valore e chiaro, scaliamo."
-
-### Scenario E — "Possiamo fare un mix? Part-time fisso + fractional?"
-→ Valuta con attenzione. Un contratto misto (es. collaborazione coordinata + P.IVA) e complesso ma possibile. Non decidere in call — "ci penso e vi faccio sapere."
+> **Sull'AI:**
+> "Porto AI dove ha senso — non come hype ma come strumento. Ve lo dimostro con numeri, non con slide."
 
 ---
 
 ## 10. CHECKLIST PRE-CALL
 
-- [ ] LinkedIn di Etica Soluzioni e fondatori controllati
-- [ ] Sito web aziendale letto (prodotti, clienti, team)
-- [ ] Diletta Papari — capire se e HR interna o recruiter esterno
-- [ ] Decidere le 7 domande della sezione 7
-- [ ] Preparare 1-2 frasi di apertura
-- [ ] Avere a portata di mano i numeri (risultati, pricing)
-- [ ] Setting tranquillo, videocamera accesa, sfondo neutro
-- [ ] Blocco note per appunti (o file aperto)
+### Da fare PRIMA
+
+- [ ] Rileggere questo documento (30 min)
+- [ ] Rileggere KNOWHOW sezione 6-7 (15 min)
+- [ ] Decidere disponibilita reale (2 gg/sett? quale giorno?)
+- [ ] Decidere pricing floor (7K per 2gg/sett? flessibile a 6K per i primi 3 mesi?)
+- [ ] Verificare compatibilita contratto TicketOne
+- [ ] Preparare 2-3 frasi di apertura (scegliere quale usare in base al feeling)
+- [ ] Setting: stanza tranquilla, videocamera accesa, sfondo neutro
+- [ ] Blocco note aperto per appunti
+- [ ] Avere i NUMERI a portata (risultati, pricing range)
+
+### Da decidere PRIMA della call
+
+1. **Disponibilita**: quanti gg/settimana reali? Con TicketOne 5 gg, dove li metti?
+2. **On-site vs remoto**: Abbiategrasso ~40 min da MI. Disposto ad andarci? Quanto spesso?
+3. **Pricing floor**: sotto quanto NON scendi? 6K? 5K?
+4. **P.IVA**: operativo? Regime? (impatta fatturazione)
+5. **Timeline start**: quando puoi iniziare? Subito? 1 mese?
+6. **Brand**: ti presenti come "108 Vision" o "Elios Scoglio"? Per primo cliente forse meglio nome personale.
+
+### Da preparare DOPO la call (se va bene)
+
+- [ ] Proposta scritta (1-2 pagine) entro 48h
+- [ ] CV versione "Fractional CTO" (non da dipendente)
+- [ ] Case study sintetico (1 pagina, risultati anonimizzati)
+- [ ] Slide "Il Modello Fractional" (5 slide — la PPTX e gia pronta)
 
 ---
 
-*Documento: v1.0 | 2026-06-16*  
-*Prossimo step: rispondere alle 7 domande (sez. 7), fare i compiti (sez. 10), call.*
+*Documento: v2.0 | 2026-06-18*  
+*Companion: PREP_Call_EticaSoluzioni_KNOWHOW.md (dati approfonditi + know-how completo)*  
+*Presentazione: PRES_EticaSoluzioni_EliosScoglio.pptx*
