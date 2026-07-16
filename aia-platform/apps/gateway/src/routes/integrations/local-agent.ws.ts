@@ -18,6 +18,7 @@
 
 import { nanoid } from 'nanoid';
 import { z } from 'zod';
+import { runAgentChat, getTenantAgents } from '../../services/agent-chat.service.js';
 
 // --- Incoming message schema ------------------------------------------------
 // Validates structure and sizes of every message received from a local agent.
@@ -26,24 +27,42 @@ import { z } from 'zod';
 
 const AgentMessageSchema = z.object({
   id: z.string().max(100),
-  type: z.enum(['request', 'response', 'event', 'heartbeat', 'register']),
+  type: z.enum(['request', 'response', 'event', 'heartbeat', 'register', 'chat', 'tool_result']),
   action: z.string().max(200).optional(),
   params: z.record(z.unknown()).optional(),
   result: z.unknown().optional(),
   error: z.string().max(1000).optional(),
   capabilities: z.array(z.string().max(100)).max(100).optional(),
+  // Chat-specific fields
+  message: z.string().max(32000).optional(),
+  agentId: z.string().max(100).optional(),
+  model: z.string().max(50).optional(),
+  conversationId: z.string().max(100).optional(),
+  // Tool result fields
+  toolCallId: z.string().max(100).optional(),
 }).passthrough();
 
 // --- Types ---
 
 export interface AgentMessage {
   id: string;
-  type: 'request' | 'response' | 'event' | 'heartbeat' | 'register';
+  type: 'request' | 'response' | 'event' | 'heartbeat' | 'register' | 'chat' | 'tool_result';
   action?: string;
   params?: Record<string, unknown>;
   result?: unknown;
   error?: string;
   capabilities?: string[];
+  message?: string;
+  agentId?: string;
+  model?: string;
+  conversationId?: string;
+  toolCallId?: string;
+}
+
+interface PendingToolCall {
+  resolve: (result: unknown) => void;
+  reject: (error: Error) => void;
+  timeout: ReturnType<typeof setTimeout>;
 }
 
 interface ConnectedAgent {
@@ -54,6 +73,7 @@ interface ConnectedAgent {
   lastHeartbeat: number;
   ws: WebSocketLike;
   pendingRequests: Map<string, PendingRequest>;
+  pendingToolCalls: Map<string, PendingToolCall>;
 }
 
 interface PendingRequest {
@@ -102,6 +122,7 @@ class LocalAgentRegistry {
       lastHeartbeat: Date.now(),
       ws,
       pendingRequests: new Map(),
+      pendingToolCalls: new Map(),
     };
 
     this.agents.set(agentId, agent);
@@ -176,6 +197,8 @@ class LocalAgentRegistry {
         if (message.capabilities) {
           this.setCapabilities(agentId, message.capabilities);
         }
+        // Send tenant config (agents list, models) to the desktop agent
+        this.sendTenantConfig(agent);
         break;
 
       case 'response': {
@@ -203,7 +226,6 @@ class LocalAgentRegistry {
 
       case 'event':
         // Agent-initiated events (e.g., file change notifications)
-        // For now, log them — future: push to SSE or event bus
         console.log(JSON.stringify({
           level: 'info',
           message: 'Local agent event',
@@ -212,6 +234,26 @@ class LocalAgentRegistry {
           action: message.action,
         }));
         break;
+
+      case 'chat':
+        // Desktop agent shell is sending a chat message for LLM processing
+        this.handleChatMessage(agent, message);
+        break;
+
+      case 'tool_result': {
+        // Desktop agent returning a tool execution result
+        const pendingTool = agent.pendingToolCalls.get(message.toolCallId ?? message.id);
+        if (pendingTool) {
+          clearTimeout(pendingTool.timeout);
+          agent.pendingToolCalls.delete(message.toolCallId ?? message.id);
+          if (message.error) {
+            pendingTool.reject(new Error(message.error));
+          } else {
+            pendingTool.resolve(message.result);
+          }
+        }
+        break;
+      }
 
       default:
         break;
@@ -348,6 +390,77 @@ class LocalAgentRegistry {
       agentId,
       tenantId: agent.tenantId,
     }));
+  }
+
+  /**
+   * Handle a chat message from the desktop agent shell.
+   * Runs the full LLM pipeline (RAG, tools, streaming) and sends results back via WS.
+   */
+  private handleChatMessage(agent: ConnectedAgent, message: AgentMessage): void {
+    const chatId = message.id;
+
+    runAgentChat(
+      {
+        tenantId: agent.tenantId,
+        userId: undefined,
+        message: message.message ?? '',
+        agentId: message.agentId,
+        model: message.model as 'fast-cheap' | 'balanced' | 'powerful' | undefined,
+        conversationId: message.conversationId,
+      },
+      {
+        onToken: (content) => {
+          agent.ws.send(JSON.stringify({ id: chatId, type: 'token', content }));
+        },
+        onToolCall: (toolCallId, tool, params) => {
+          return new Promise((resolve, reject) => {
+            const timeout = setTimeout(() => {
+              agent.pendingToolCalls.delete(toolCallId);
+              reject(new Error('Tool call timeout (60s)'));
+            }, 60_000);
+
+            agent.pendingToolCalls.set(toolCallId, { resolve, reject, timeout });
+
+            agent.ws.send(JSON.stringify({
+              id: toolCallId,
+              type: 'tool_call',
+              tool,
+              params,
+            }));
+          });
+        },
+        onDone: (usage) => {
+          agent.ws.send(JSON.stringify({ id: chatId, type: 'done', usage }));
+        },
+        onError: (error) => {
+          agent.ws.send(JSON.stringify({ id: chatId, type: 'error', message: error }));
+        },
+      },
+      agent.capabilities,
+    ).catch((err) => {
+      agent.ws.send(JSON.stringify({
+        id: chatId,
+        type: 'error',
+        message: err instanceof Error ? err.message : 'Chat processing failed',
+      }));
+    });
+  }
+
+  /**
+   * Send tenant configuration (agents, models) to the desktop agent on connect.
+   */
+  private sendTenantConfig(agent: ConnectedAgent): void {
+    getTenantAgents(agent.tenantId).then((agentsList) => {
+      agent.ws.send(JSON.stringify({
+        id: nanoid(10),
+        type: 'config',
+        agents: agentsList,
+        models: ['fast-cheap', 'balanced', 'powerful'],
+        tenantId: agent.tenantId,
+      }));
+    }).catch(() => {
+      // Config send is non-critical
+    });
   }
 
   /**

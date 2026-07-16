@@ -23,6 +23,7 @@ import { join, dirname, extname, basename } from 'node:path';
 import { watch } from 'chokidar';
 import { validatePath } from '../security.js';
 import type { AgentConfig } from '../config.js';
+import { fuzzyReplace, FuzzyEditError } from './fuzzy-edit.js';
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const MAX_SEARCH_RESULTS = 1000;
@@ -336,7 +337,7 @@ export function editFile(
   path: string,
   edits: Array<{ oldText: string; newText: string; replaceAll?: boolean }>,
   config: AgentConfig,
-): { applied: number; path: string; size: number } {
+): { applied: number; path: string; size: number; strategies: string[] } {
   const validatedPath = validatePath(path, config.allowedDirectories);
   if (!validatedPath) {
     throw new Error(`Access denied: path "${path}" is outside allowed directories`);
@@ -357,25 +358,27 @@ export function editFile(
 
   let content = readFileSync(validatedPath, 'utf-8');
   let applied = 0;
+  const strategies: string[] = [];
 
   for (const edit of edits) {
     if (!edit.oldText) {
       throw new Error('Each edit must have a non-empty oldText');
     }
 
-    if (edit.replaceAll) {
-      const before = content;
-      content = content.split(edit.oldText).join(edit.newText);
-      if (content !== before) applied++;
-    } else {
-      const idx = content.indexOf(edit.oldText);
-      if (idx === -1) {
+    try {
+      const result = fuzzyReplace(content, edit.oldText, edit.newText, {
+        replaceAll: edit.replaceAll,
+      });
+      content = result.content;
+      strategies.push(result.strategy);
+      applied++;
+    } catch (err) {
+      if (err instanceof FuzzyEditError) {
         throw new Error(
-          `oldText not found in file. First 50 chars of search: "${edit.oldText.slice(0, 50)}"`,
+          `Edit failed (${err.code}): ${err.message}`,
         );
       }
-      content = content.slice(0, idx) + edit.newText + content.slice(idx + edit.oldText.length);
-      applied++;
+      throw err;
     }
   }
 
@@ -386,6 +389,7 @@ export function editFile(
     applied,
     path: validatedPath,
     size: newStats.size,
+    strategies,
   };
 }
 

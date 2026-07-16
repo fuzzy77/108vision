@@ -1,36 +1,58 @@
 ---
+import { ogLocales, type Locale } from '@/i18n/config';
+
 interface Props {
   title: string;
   description: string;
   ogImage: string;
   canonical: string;
   noIndex?: boolean;
+  locale?: Locale;
+  alternateLocale?: Locale;
+  alternateUrl?: string;
 }
 
-const { title, description, ogImage, canonical, noIndex = false } = Astro.props;
+const {
+  title,
+  description,
+  ogImage,
+  canonical,
+  noIndex = false,
+  locale = 'it',
+  alternateLocale,
+  alternateUrl,
+} = Astro.props;
 ---
 
 <title>{title}</title>
 <meta name="description" content={description} />
 <link rel="canonical" href={canonical} />
 
+{alternateLocale && alternateUrl && (
+  <>
+    <link rel="alternate" hreflang={alternateLocale} href={alternateUrl} />
+    <link rel="alternate" hreflang={locale} href={canonical} />
+    <link rel="alternate" hreflang="x-default" href={locale === 'it' ? canonical : alternateUrl} />
+  </>
+)}
+
 {noIndex && <meta name="robots" content="noindex, nofollow" />}
 
-<!-- Open Graph -->
 <meta property="og:type" content="website" />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
 <meta property="og:image" content={ogImage} />
 <meta property="og:url" content={canonical} />
-<meta property="og:locale" content="it_IT" />
+<meta property="og:locale" content={ogLocales[locale as Locale]} />
+{alternateLocale && (
+  <meta property="og:locale:alternate" content={ogLocales[alternateLocale as Locale]} />
+)}
 <meta property="og:site_name" content="108 Vision" />
 
-<!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content={title} />
 <meta name="twitter:description" content={description} />
 <meta name="twitter:image" content={ogImage} />
 
-<!-- Additional SEO -->
 <meta name="author" content="108 Vision | Elios Scoglio" />
 <meta name="generator" content={Astro.generator} />

@@ -1,0 +1,105 @@
+---
+import CleanLayout from '@/layouts/CleanLayout.astro';
+import {
+  type Locale,
+  type ProfiloSlug,
+  useTranslations,
+  localizedPath,
+  getProfiloContent,
+} from '@/i18n';
+
+interface Props {
+  locale: Locale;
+  profileSlug: ProfiloSlug;
+}
+
+const { locale, profileSlug } = Astro.props;
+const c = getProfiloContent(profileSlug, locale);
+const t = useTranslations(locale);
+const cf = t.contactForm;
+const privacyPath = localizedPath('/privacy', locale);
+---
+
+<CleanLayout locale={locale} title={c.meta.title} description={c.meta.description} noIndex={true}>
+  <section class="py-20 bg-white">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center gap-4 mb-8">
+        <img src="/logo-108-mark.svg" alt="108 Vision" class="w-12 h-12" />
+        <div>
+          <h1 class="text-3xl font-bold text-slate-900">{c.pageTitle}</h1>
+          <p class="text-primary-600 font-medium">{c.subtitle}</p>
+        </div>
+      </div>
+
+      <div class="p-6 bg-primary-50 rounded-xl border-l-4 border-primary-500 mb-12">
+        <h2 class="font-semibold text-slate-900 mb-2">{c.forCompaniesTitle}</h2>
+        <p class="text-slate-700 leading-relaxed">{c.forCompaniesText}</p>
+      </div>
+
+      <div class="prose max-w-none mb-12">
+        <h2 class="text-2xl font-bold text-slate-900 mb-4">{c.summaryTitle}</h2>
+        <p class="text-lg text-slate-600 leading-relaxed">{c.summaryText}</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-12">
+        {c.skillAreas.map((area) => (
+          <div class="p-4 bg-slate-50 rounded-xl">
+            <h3 class="font-semibold text-slate-900 mb-2">{area.title}</h3>
+            <p class="text-sm text-slate-600">{area.description}</p>
+          </div>
+        ))}
+      </div>
+
+      <div class="p-8 bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl text-center">
+        <h3 class="text-xl font-bold text-white mb-3">{c.cvTitle}</h3>
+        <p class="text-slate-300 mb-6">{c.cvDescription}</p>
+        <a
+          href={c.cvPath}
+          download
+          class="inline-flex items-center px-6 py-3 text-sm font-semibold text-slate-900 bg-white rounded-lg hover:bg-slate-100 transition-colors"
+        >
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          {c.cvButton}
+        </a>
+      </div>
+
+      <div class="mt-16 p-8 bg-slate-50 rounded-2xl border border-slate-200">
+        <h3 class="text-xl font-bold text-slate-900 mb-2 text-center">{c.contactTitle}</h3>
+        <p class="text-sm text-slate-500 text-center mb-6">{c.contactSubtitle}</p>
+        <form action="https://formspree.io/f/YOUR_FORM_ID" method="POST" class="space-y-4 max-w-lg mx-auto">
+          <input type="hidden" name="_subject" value={c.formSubject} />
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="name" class="block text-sm font-medium text-slate-700 mb-1">{cf.name} *</label>
+              <input type="text" id="name" name="name" required class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm" placeholder={cf.placeholderName} />
+            </div>
+            <div>
+              <label for="email" class="block text-sm font-medium text-slate-700 mb-1">{cf.email} *</label>
+              <input type="email" id="email" name="email" required class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm" placeholder={cf.placeholderEmail} />
+            </div>
+          </div>
+          <div>
+            <label for="company" class="block text-sm font-medium text-slate-700 mb-1">{cf.company}</label>
+            <input type="text" id="company" name="company" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm" placeholder={cf.placeholderCompany} />
+          </div>
+          <div>
+            <label for="message" class="block text-sm font-medium text-slate-700 mb-1">{cf.message} *</label>
+            <textarea id="message" name="message" required rows="3" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm resize-y" placeholder={cf.placeholderMessage}></textarea>
+          </div>
+          <div class="flex items-start gap-2">
+            <input type="checkbox" id="privacy" name="privacy" required class="mt-1 w-4 h-4 text-primary-600 border-slate-300 rounded focus:ring-primary-500" />
+            <label for="privacy" class="text-xs text-slate-500">
+              {locale === 'it' ? 'Acconsento al trattamento dei dati.' : 'I consent to data processing.'}{' '}
+              <a href={privacyPath} class="underline text-primary-600">{t.footer.privacy}</a>
+            </label>
+          </div>
+          <button type="submit" class="w-full px-6 py-3 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 transition-colors text-sm">
+            {cf.submit}
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+</CleanLayout>

@@ -3,8 +3,10 @@ import BaseLayout from './BaseLayout.astro';
 import Hero from '@/components/Hero.astro';
 import CTASection from '@/components/CTASection.astro';
 import BreadcrumbNav from '@/components/BreadcrumbNav.astro';
+import { type Locale, useTranslations, localizedPath } from '@/i18n';
 
 interface Props {
+  locale?: Locale;
   title: string;
   description: string;
   heroTitle: string;
@@ -15,24 +17,35 @@ interface Props {
 }
 
 const {
+  locale = 'it',
   title,
   description,
   heroTitle,
   heroSubtitle,
-  ctaText = 'Prenota una call gratuita',
-  ctaLink = '/contatti',
+  ctaText,
+  ctaLink,
   breadcrumbs,
 } = Astro.props;
+
+const t = useTranslations(locale);
+const contactPath = localizedPath('/contatti', locale);
+const resolvedCtaText = ctaText ?? t.common.bookCall;
+const resolvedCtaLink = ctaLink ?? contactPath;
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout locale={locale} title={title} description={description}>
   <BreadcrumbNav items={breadcrumbs} />
-  <Hero title={heroTitle} subtitle={heroSubtitle} ctaText={ctaText} ctaLink={ctaLink} />
+  <Hero
+    title={heroTitle}
+    subtitle={heroSubtitle}
+    ctaText={resolvedCtaText}
+    ctaLink={resolvedCtaLink}
+  />
   <slot />
   <CTASection
-    title="Pronto a iniziare?"
-    description="Prenota una call gratuita di 30 minuti per capire come posso aiutarti."
-    ctaText={ctaText}
-    ctaLink={ctaLink}
+    title={t.common.readyToStart}
+    description={t.common.ctaDescription}
+    ctaText={resolvedCtaText}
+    ctaLink={resolvedCtaLink}
   />
 </BaseLayout>

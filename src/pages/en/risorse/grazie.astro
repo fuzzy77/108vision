@@ -1,0 +1,65 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Footer from '../../components/Footer.astro';
+import Header from '../../components/Header.astro';
+import { getLangFromUrl, useTranslations, useLocalizedPath } from '../../i18n/utils';
+import { Image } from 'astro:assets';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const localizedPath = useLocalizedPath(lang);
+
+const { filename = 'default-lead-magnet.pdf' } = Astro.url.searchParams;
+
+// Dynamic download logic to initiate download on page load
+Astro.response.headers.set('Refresh', `0;url=/assets/pdf/${filename}`);
+---
+
+<BaseLayout title={t('general.grazieTitle')} description={t('general.grazieMessage')} locale={lang}>
+  <Fragment slot="head">
+    <Header locale={lang} />
+  </Fragment>
+  <main class="min-h-screen pt-16 flex flex-col items-center justify-center bg-gradient-to-br from-gray-100 to-white">
+    <div class="container mx-auto px-4 max-w-2xl text-center py-16">
+      <Image
+        src="/assets/thank-you.webp"
+        alt="Thank You"
+        width={200}
+        height={200}
+        class="mx-auto mb-8"
+      />
+      <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
+        {t('general.grazieTitle')}
+      </h1>
+      <p class="text-lg text-gray-700 mb-8">
+        {t('general.grazieMessage')}
+        <a href={`/assets/pdf/${filename}`} class="text-blue-600 hover:underline font-medium">
+          {t('general.clickHere')}
+        </a>
+      </p>
+      <a
+        href={localizedPath('/risorse')}
+        class="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-300"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5 mr-2"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M10 19l-7-7m0 0l7-7m-7 7h18"
+          ></path>
+        </svg>
+        {t('general.backToResources')}
+      </a>
+    </div>
+  </main>
+  <Fragment slot="footer">
+    <Footer locale={lang} />
+  </Fragment>
+</BaseLayout>

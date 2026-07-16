@@ -1,0 +1,67 @@
+---
+import ServiceLayout from '@/layouts/ServiceLayout.astro';
+import FeatureGrid from '@/components/FeatureGrid.astro';
+import PricingTable from '@/components/PricingTable.astro';
+import ServicePdfSection from '@/components/ServicePdfSection.astro';
+import { type Locale, useTranslations, localizedPath, getWellbeingContent } from '@/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const c = getWellbeingContent(locale);
+const homePath = localizedPath('/', locale);
+const contactPath = localizedPath('/contatti', locale);
+---
+
+<ServiceLayout
+  locale={locale}
+  title={c.meta.title}
+  description={c.meta.description}
+  heroTitle={c.hero.title}
+  heroSubtitle={c.hero.subtitle}
+  breadcrumbs={[
+    { label: t.common.home, href: homePath },
+    { label: c.breadcrumb },
+  ]}
+>
+  <section class="py-20 bg-white">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl font-bold text-slate-900 mb-8 text-center">{c.problem.heading}</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center mb-12">
+        {c.problem.stats.map((stat) => (
+          <div class="p-6">
+            <div class="text-4xl font-bold text-red-500 mb-2">{stat.value}</div>
+            <p class="text-sm text-slate-600">{stat.text}</p>
+          </div>
+        ))}
+      </div>
+      <div class="text-center">
+        <p class="text-lg text-slate-600 max-w-2xl mx-auto">{c.problem.conclusion}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-20 bg-slate-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl font-bold text-slate-900 mb-4">{c.features.heading}</h2>
+      </div>
+      <FeatureGrid features={c.features.items} columns={3} />
+    </div>
+  </section>
+
+  <section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl font-bold text-slate-900 mb-4">{t.service.packagesHeading}</h2>
+        <p class="text-lg text-slate-600">{t.service.packagesSubheading}</p>
+      </div>
+      <PricingTable plans={c.plans} recommendedLabel={t.service.recommended} defaultCtaLink={contactPath} />
+    </div>
+  </section>
+
+  <ServicePdfSection locale={locale} guidePath={c.pdfGuidePath} />
+</ServiceLayout>

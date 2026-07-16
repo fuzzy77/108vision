@@ -131,6 +131,96 @@ cd apps/dashboard && pnpm dev
 cd apps/client && pnpm dev
 ```
 
+---
+
+## Local Development — Website Only (`aia-website/`)
+
+The marketing website (`108vision.it`) is built with **Astro + TinaCMS** and deployed on Vercel. You can run it locally for UI changes, copy edits, or debugging without touching the platform at all.
+
+### Prerequisites
+
+- Node.js 20+
+- npm (bundled with Node)
+- Optional: a real `BREVO_API_KEY` to test the lead magnet form end-to-end
+
+### Quick Start
+
+```bash
+cd aia-website
+npm install
+
+# Start dev server with TinaCMS visual editor
+npm run dev
+```
+
+The site starts at **http://localhost:4321** (Astro default).  
+TinaCMS local editor available at **http://localhost:4321/admin** — no cloud credentials needed in local mode.
+
+> TinaCMS in local mode reads/writes content files directly from disk (no cloud sync). The `TINA_CLIENT_ID` and `TINA_TOKEN` env vars are only required on Vercel for the cloud editor.
+
+### Without TinaCMS (faster, no editor UI)
+
+If you only need to check pages and styling without the CMS editor:
+
+```bash
+cd aia-website
+npx astro dev
+```
+
+Same result at http://localhost:4321, but skips TinaCMS startup (~3s faster).
+
+### Environment Variables for Local Dev
+
+Create `aia-website/.env.local` (gitignored automatically by Astro):
+
+```bash
+# Required only to test the lead magnet form submission
+BREVO_API_KEY=your_key_here
+
+# Leave empty for local dev — TinaCMS runs in local mode
+# TINA_CLIENT_ID=
+# TINA_TOKEN=
+```
+
+Without `BREVO_API_KEY`, the form returns a 503 error — all other pages work fine.
+
+### Build and Preview (production simulation)
+
+```bash
+cd aia-website
+
+# Build (same command Vercel runs)
+npm run build:tina
+
+# Serve the built output locally
+npm run preview
+# → http://localhost:4321 (static output)
+```
+
+Use `preview` to catch issues that only appear in production builds (e.g. missing prerender flags, broken static paths).
+
+### Troubleshooting
+
+#### TinaCMS fails to start
+```
+Error: TINA_CLIENT_ID is required
+```
+This means the env var is being picked up from somewhere. Check that you don't have a `.env` with TinaCMS cloud vars. In local mode they must be absent or empty.
+
+#### Port 4321 already in use
+```bash
+# Change port
+npx astro dev --port 4322
+```
+
+#### Form returns 503 in local dev
+Expected if `BREVO_API_KEY` is not set. Add it to `.env.local` to test the full flow.
+
+#### Build fails with adapter errors
+The `@astrojs/vercel` adapter is configured for static output (`output: 'static'` in `astro.config.mjs`). The `/api/subscribe` route has `export const prerender = false` which keeps it as a serverless function on Vercel but also works in local dev via `tinacms dev -c "astro dev"`.
+
+---
+
 ### Verify everything works
 
 ```bash

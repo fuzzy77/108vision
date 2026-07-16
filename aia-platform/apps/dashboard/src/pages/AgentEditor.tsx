@@ -9,9 +9,10 @@ import { Slider } from '@/components/ui/Slider';
 import { Switch } from '@/components/ui/Switch';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { AgentTestChat } from '@/components/AgentTestChat';
-import { MODEL_TIERS, AGENT_CATEGORIES } from '@/lib/constants';
+import { AGENT_CATEGORIES } from '@/lib/constants';
 import { navigate } from '@/lib/utils';
 import { useTenant, useTenantCollections } from '@/hooks/useTenants';
+import { useTenantModels } from '@/hooks/useModels';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api, apiForTenant } from '@/lib/api';
 import type { Agent } from '@/types';
@@ -56,6 +57,7 @@ function AgentEditorPage({ agentId, tenantId }: AgentEditorPageProps) {
   const effectiveTenantId = tenantId || agent?.tenantId;
   const { data: tenant } = useTenant(effectiveTenantId);
   const { data: collections } = useTenantCollections(effectiveTenantId);
+  const { data: availableModels } = useTenantModels(effectiveTenantId);
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -71,13 +73,13 @@ function AgentEditorPage({ agentId, tenantId }: AgentEditorPageProps) {
   useEffect(() => {
     if (agent) {
       setName(agent.name);
-      setDescription(agent.description);
+      setDescription(agent.description ?? '');
       setSystemPrompt(agent.systemPrompt);
-      setModelPreference(agent.modelPreference);
-      setTemperature(agent.temperature);
-      setCategory(agent.category);
-      setSelectedCollections(agent.knowledgeCollections);
-      setEnabledTools(agent.tools);
+      setModelPreference(agent.model ?? agent.modelPreference ?? 'balanced');
+      setTemperature(Number(agent.temperature) || 0.7);
+      setCategory((agent as any).config?.category ?? agent.category ?? 'general');
+      setSelectedCollections(agent.knowledgeBaseIds ?? agent.knowledgeCollections ?? []);
+      setEnabledTools((agent as any).config?.tools ?? agent.tools ?? []);
       setIsActive(agent.isActive);
       const config = (agent as unknown as { config?: { principlesOverrides?: Record<string, boolean> } }).config;
       if (config?.principlesOverrides) {
@@ -129,22 +131,17 @@ function AgentEditorPage({ agentId, tenantId }: AgentEditorPageProps) {
       name,
       description,
       systemPrompt,
-      modelPreference: modelPreference as Agent['modelPreference'],
+      model: modelPreference as 'fast-cheap' | 'balanced' | 'powerful',
       temperature,
-      category: category as Agent['category'],
-      knowledgeCollections: selectedCollections,
-      tools: enabledTools,
+      knowledgeBaseIds: selectedCollections,
       isActive,
-      config: { principlesOverrides },
+      config: { principlesOverrides, tools: enabledTools, category },
     } as Partial<Agent>);
   };
 
   const handleTestMessage = async (message: string): Promise<string> => {
     const tid = effectiveTenantId;
     if (!tid) throw new Error('Nessun tenant selezionato');
-    // Use the /api/chat endpoint (tenant-scoped) with a test system prompt.
-    // This requires an agentId; for new agents without an id, we use the test endpoint if available,
-    // otherwise fall back to a synthetic response indicating the agent isn't saved yet.
     if (!agentId) {
       return `[Test non disponibile per nuovi agenti non salvati. Salva prima l'agente, poi testalo.]`;
     }
@@ -162,8 +159,36 @@ function AgentEditorPage({ agentId, tenantId }: AgentEditorPageProps) {
     if (!res.ok) {
       throw new Error(`Errore ${res.status}`);
     }
-    const data = await res.json() as { content?: string; message?: string; reply?: string };
-    return data.content ?? data.message ?? data.reply ?? '(nessuna risposta)';
+
+    // Parse SSE stream and collect tokens
+    const reader = res.body?.getReader();
+    if (!reader) throw new Error('No response body');
+
+    const decoder = new TextDecoder();
+    let fullText = '';
+    let buffer = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop() ?? '';
+
+      for (const line of lines) {
+        if (line.startsWith('data: ')) {
+          const data = line.slice(6);
+          if (data === '[DONE]') continue;
+          try {
+            const parsed = JSON.parse(data);
+            if (parsed.content) fullText += parsed.content;
+          } catch { /* skip non-JSON lines */ }
+        }
+      }
+    }
+
+    return fullText || '(nessuna risposta)';
   };
 
   if (isLoading && agentId) {
@@ -280,9 +305,9 @@ function AgentEditorPage({ agentId, tenantId }: AgentEditorPageProps) {
             <CardContent className="space-y-6">
               <Select
                 label="Preferenza modello"
-                options={Object.entries(MODEL_TIERS).map(([key, val]) => ({
-                  value: key,
-                  label: `${val.label} — ${val.description}`,
+                options={(availableModels ?? []).map((m) => ({
+                  value: m.id,
+                  label: `${m.label} — ${m.description}`,
                 }))}
                 value={modelPreference}
                 onChange={(e) => setModelPreference(e.target.value)}

@@ -14,8 +14,9 @@ import { EmailAccountCard } from '@/components/integrations/EmailAccountCard';
 import { EmailAccountForm } from '@/components/integrations/EmailAccountForm';
 import { CrawlJobCard } from '@/components/integrations/CrawlJobCard';
 import { LocalAgentStatus as LocalAgentStatusWidget } from '@/components/integrations/LocalAgentStatus';
+import { ExternalToolsTab } from '@/components/integrations/ExternalToolsTab';
 import { formatRelative } from '@/lib/utils';
-import { Mail, Globe, Monitor, Plus, Loader2 } from 'lucide-react';
+import { Mail, Globe, Monitor, Plug, Plus, Loader2 } from 'lucide-react';
 import type { EmailAccount, TestEmailConnectionResult, LocalAgentAction } from '@/types';
 
 function IntegrationsPage() {
@@ -79,8 +80,13 @@ function IntegrationsPage() {
         </div>
       </div>
 
-      <Tabs defaultValue="email">
+      <Tabs defaultValue="tools">
         <TabsList>
+          <TabsTrigger value="tools">
+            <span className="flex items-center gap-1.5">
+              <Plug className="h-3.5 w-3.5" /> Strumenti Esterni
+            </span>
+          </TabsTrigger>
           <TabsTrigger value="email">
             <span className="flex items-center gap-1.5">
               <Mail className="h-3.5 w-3.5" /> Account Email
@@ -97,6 +103,11 @@ function IntegrationsPage() {
             </span>
           </TabsTrigger>
         </TabsList>
+
+        {/* External Tools Tab */}
+        <TabsContent value="tools">
+          <ExternalToolsTab />
+        </TabsContent>
 
         {/* Email Accounts Tab */}
         <TabsContent value="email">

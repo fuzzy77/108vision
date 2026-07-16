@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { z } from 'zod';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-config({ path: resolve(__dirname, '..', '..', '.env') });
+config({ path: resolve(__dirname, '..', '..', '.env'), override: true });
 
 const envSchema = z.object({
   DATABASE_URL: z.string().url(),

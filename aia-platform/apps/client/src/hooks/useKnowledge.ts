@@ -8,6 +8,11 @@ export function useKnowledge() {
   const documentsQuery = useQuery({
     queryKey: ['documents'],
     queryFn: () => api.getDocuments(),
+    refetchInterval: (query) => {
+      const docs = query.state.data;
+      const hasProcessing = docs?.some((d) => d.status === 'processing');
+      return hasProcessing ? 3000 : false;
+    },
   });
 
   const uploadMutation = useMutation({

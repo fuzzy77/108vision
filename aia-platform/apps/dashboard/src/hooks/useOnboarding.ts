@@ -70,7 +70,7 @@ export function useCreateOnboarding() {
         });
 
         const token = getToken();
-        await fetch('/api/knowledge/documents/upload', {
+        await fetch('/api/knowledge/upload', {
           method: 'POST',
           headers: {
             ...(token ? { Authorization: `Bearer ${token}` } : {}),

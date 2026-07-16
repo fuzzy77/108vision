@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useUIStore } from '@/stores/ui.store';
-import { useTenant, useTenantAgents, useTenantDocuments, useTenantConversations, useConversationMessages, useTenantUsers, useInviteTenantUser, useUpdateTenantUser, useRemoveTenantUser } from '@/hooks/useTenants';
+import { useTenant, useTenantAgents, useTenantDocuments, useTenantConversations, useConversationMessages, useTenantUsers, useInviteTenantUser, useUpdateTenantUser, useRemoveTenantUser, useUpdateTenant } from '@/hooks/useTenants';
+import { usePlans } from '@/hooks/usePlans';
 import { useTenantUsage } from '@/hooks/useUsage';
 import { useGraphEntities } from '@/hooks/useGraph';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs';
@@ -22,10 +23,11 @@ import { Switch } from '@/components/ui/Switch';
 import { STATUS_COLORS, PLAN_TYPES, type PlanType } from '@/lib/constants';
 import { formatCurrency, formatDate, formatRelative, formatTokens, navigate } from '@/lib/utils';
 import { uploadForTenant } from '@/lib/api';
-import { Bot, FileText, MessageSquare, Plus, Upload, Settings, AlertTriangle, ExternalLink, Pencil, Network, Monitor, Loader2, Users, UserPlus, Trash2, Shield } from 'lucide-react';
+import { Bot, FileText, MessageSquare, Plus, Upload, Settings, AlertTriangle, ExternalLink, Pencil, Network, Monitor, Loader2, Users, UserPlus, Trash2, Shield, Key } from 'lucide-react';
 import { DesktopMonitor } from '@/components/desktop/DesktopMonitor';
 import { TriagePanel } from '@/components/desktop/TriagePanel';
 import { JobListPanel } from '@/components/desktop/JobListPanel';
+import { ApiKeyManager } from '@/components/ApiKeyManager';
 import type { Message, TenantUser } from '@/types';
 
 interface TenantDetailPageProps {
@@ -156,6 +158,11 @@ function TenantDetailPage({ tenantId }: TenantDetailPageProps) {
           <TabsTrigger value="desktop">
             <span className="flex items-center gap-1.5">
               <Monitor className="h-3.5 w-3.5" /> Desktop
+            </span>
+          </TabsTrigger>
+          <TabsTrigger value="api-keys">
+            <span className="flex items-center gap-1.5">
+              <Key className="h-3.5 w-3.5" /> API Keys
             </span>
           </TabsTrigger>
           <TabsTrigger value="settings">Impostazioni</TabsTrigger>
@@ -487,62 +494,14 @@ function TenantDetailPage({ tenantId }: TenantDetailPageProps) {
           </div>
         </TabsContent>
 
+        {/* API Keys Tab */}
+        <TabsContent value="api-keys">
+          <ApiKeyManager tenantId={tenantId} />
+        </TabsContent>
+
         {/* Settings Tab */}
         <TabsContent value="settings">
-          <div className="max-w-2xl space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Informazioni generali</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <Input label="Nome azienda" defaultValue={tenant.name} />
-                <Select
-                  label="Piano"
-                  options={[
-                    { value: 'starter', label: 'Starter' },
-                    { value: 'professional', label: 'Professional' },
-                    { value: 'enterprise', label: 'Enterprise' },
-                  ]}
-                  defaultValue={tenant.plan}
-                />
-                <Input label="Email referente" defaultValue={tenant.contactEmail} />
-                <Button>Salva modifiche</Button>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Alert budget</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <Input
-                  label="Soglia di allarme mensile"
-                  type="number"
-                  defaultValue={String(tenant.config.budgetAlert || '')}
-                  helperText="Ricevi una notifica quando il costo supera questa soglia"
-                />
-                <Button variant="outline">Configura alert</Button>
-              </CardContent>
-            </Card>
-
-            <Card className="border-red-200 dark:border-red-800">
-              <CardHeader>
-                <CardTitle className="text-base text-red-600 dark:text-red-400 flex items-center gap-2">
-                  <AlertTriangle className="h-4 w-4" /> Zona pericolosa
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Disattiva cliente</p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">Il cliente non potra piu usare gli agenti</p>
-                  </div>
-                  <Switch checked={tenant.status !== 'active'} onChange={() => {}} />
-                </div>
-                <Button variant="destructive" size="sm">Elimina cliente</Button>
-              </CardContent>
-            </Card>
-          </div>
+          <TenantSettingsForm tenant={tenant} tenantId={tenantId} />
         </TabsContent>
       </Tabs>
     </div>
@@ -832,6 +791,106 @@ function GraphTabContent({ tenantId }: { tenantId: string }) {
               height={300}
             />
           )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+// --- Tenant Settings Form ---
+
+function TenantSettingsForm({ tenant, tenantId }: { tenant: { name: string; plan: string; contactEmail: string; status: string; config: { budgetAlert?: number }; planId?: string }; tenantId: string }) {
+  const updateTenant = useUpdateTenant();
+  const { data: plans } = usePlans();
+  const [name, setName] = useState(tenant.name);
+  const [planId, setPlanId] = useState(tenant.planId ?? '');
+  const [contactEmail, setContactEmail] = useState(tenant.contactEmail);
+  const [budgetAlert, setBudgetAlert] = useState(String(tenant.config?.budgetAlert ?? ''));
+
+  useEffect(() => {
+    setName(tenant.name);
+    setPlanId(tenant.planId ?? '');
+    setContactEmail(tenant.contactEmail);
+    setBudgetAlert(String(tenant.config?.budgetAlert ?? ''));
+  }, [tenant]);
+
+  const handleSave = () => {
+    updateTenant.mutate({
+      id: tenantId,
+      name,
+      planId: planId || undefined,
+      config: { budgetAlert: budgetAlert ? Number(budgetAlert) : undefined },
+    } as any);
+  };
+
+  return (
+    <div className="max-w-2xl space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Informazioni generali</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <Input label="Nome azienda" value={name} onChange={(e) => setName(e.target.value)} />
+          <Select
+            label="Piano"
+            options={(plans ?? []).map((p) => ({ value: p.id, label: p.name }))}
+            value={planId}
+            onChange={(e) => setPlanId(e.target.value)}
+          />
+          <Input label="Email referente" value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Alert budget</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <Input
+            label="Soglia di allarme mensile (EUR)"
+            type="number"
+            value={budgetAlert}
+            onChange={(e) => setBudgetAlert(e.target.value)}
+            helperText="Ricevi una notifica quando il costo mensile supera questa soglia"
+          />
+        </CardContent>
+      </Card>
+
+      <div className="flex justify-end">
+        <Button onClick={handleSave} disabled={updateTenant.isPending}>
+          {updateTenant.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+          Salva modifiche
+        </Button>
+      </div>
+      {updateTenant.isSuccess && (
+        <p className="text-sm text-emerald-600">Salvato con successo</p>
+      )}
+      {updateTenant.isError && (
+        <p className="text-sm text-red-500">Errore: {(updateTenant.error as Error)?.message}</p>
+      )}
+
+      <Card className="border-red-200 dark:border-red-800">
+        <CardHeader>
+          <CardTitle className="text-base text-red-600 dark:text-red-400 flex items-center gap-2">
+            <AlertTriangle className="h-4 w-4" /> Zona pericolosa
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Disattiva cliente</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Il cliente non potra piu usare gli agenti</p>
+            </div>
+            <Switch
+              checked={tenant.status !== 'active'}
+              onChange={() => {
+                updateTenant.mutate({
+                  id: tenantId,
+                  status: tenant.status === 'active' ? 'inactive' : 'active',
+                } as any);
+              }}
+            />
+          </div>
         </CardContent>
       </Card>
     </div>

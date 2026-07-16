@@ -1,0 +1,71 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import BreadcrumbNav from '@/components/BreadcrumbNav.astro';
+import CTASection from '@/components/CTASection.astro';
+import {
+  type Locale,
+  useTranslations,
+  localizedPath,
+  getRisorseIndexContent,
+} from '@/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const content = getRisorseIndexContent(locale);
+const homePath = localizedPath('/', locale);
+const contactPath = localizedPath('/contatti', locale);
+const risorseBase = localizedPath('/risorse', locale);
+---
+
+<BaseLayout locale={locale} title={content.meta.title} description={content.meta.description}>
+  <BreadcrumbNav
+    items={[
+      { label: t.common.home, href: homePath },
+      { label: content.breadcrumb },
+    ]}
+  />
+
+  <section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <p class="text-sm font-semibold text-primary-600 uppercase tracking-wider mb-3">{content.eyebrow}</p>
+        <h1 class="text-4xl font-bold text-slate-900 mb-4">{content.heading}</h1>
+        <p class="text-lg text-slate-600 max-w-2xl mx-auto">{content.subheading}</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {content.guides.map((guide) => (
+          <a
+            href={`${risorseBase}/${guide.slug}`}
+            class="group flex flex-col p-6 bg-white border border-slate-200 rounded-xl hover:border-primary-300 hover:shadow-md transition-all duration-200"
+          >
+            <span class="inline-block text-xs font-semibold text-primary-600 bg-primary-50 px-2.5 py-1 rounded-full mb-3 self-start">
+              {guide.tag}
+            </span>
+            <h2 class="text-base font-semibold text-slate-900 mb-2 group-hover:text-primary-700 transition-colors leading-snug">
+              {guide.title}
+            </h2>
+            <p class="text-sm text-slate-500 mb-4 flex-1">{guide.description}</p>
+            <span class="text-sm font-semibold text-primary-600 group-hover:text-primary-700 flex items-center gap-1">
+              {content.downloadCta}
+              <svg class="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <CTASection
+    title={content.cta.title}
+    description={content.cta.description}
+    ctaText={content.cta.ctaText}
+    ctaLink={contactPath}
+  />
+</BaseLayout>

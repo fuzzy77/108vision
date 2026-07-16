@@ -173,6 +173,41 @@ knowledge.get('/search', async (c) => {
 });
 
 /**
+ * GET /api/knowledge/collections — Virtual collections for agent config.
+ * Returns one collection per tenant (all ready documents grouped together).
+ * The dashboard uses this to let admins pick which knowledge to attach to an agent.
+ */
+knowledge.get('/collections', async (c) => {
+  const tenantId = c.get('tenantId') as string;
+  const db = getDb();
+
+  const documents = await db
+    .select({
+      id: kbDocuments.id,
+      title: kbDocuments.title,
+      chunkCount: kbDocuments.chunkCount,
+    })
+    .from(kbDocuments)
+    .where(and(eq(kbDocuments.tenantId, tenantId), eq(kbDocuments.status, 'ready')));
+
+  const totalChunks = documents.reduce((sum, d) => sum + (d.chunkCount ?? 0), 0);
+
+  return c.json({
+    items: [
+      {
+        id: tenantId,
+        tenantId,
+        name: 'Knowledge Base',
+        description: 'Tutti i documenti caricati',
+        documentsCount: documents.length,
+        totalChunks,
+        createdAt: new Date().toISOString(),
+      },
+    ],
+  });
+});
+
+/**
  * DELETE /api/knowledge/documents/:id — Remove a document and its vectors.
  */
 knowledge.delete('/documents/:id', async (c) => {

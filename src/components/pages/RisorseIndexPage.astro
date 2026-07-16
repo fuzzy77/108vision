@@ -1,0 +1,60 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Footer from '../Footer.astro';
+import Header from '../Header.astro';
+import Hero from '../Hero.astro';
+import LeadMagnetCard from '../LeadMagnetCard.astro';
+import { getLangFromUrl, useTranslations, useLocalizedPath } from '../../i18n/utils';
+import leadMagnets from '../../i18n/pages/lead-magnets';
+import ContactForm from '../ContactForm.astro';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const localizedPath = useLocalizedPath(lang);
+
+const allLeadMagnets = Object.keys(leadMagnets).filter(slug => slug !== 'general').map(slug => ({
+  slug,
+  ...leadMagnets[slug][lang],
+  href: localizedPath(`/risorse/${slug}`),
+}));
+
+export interface Props {
+  locale: 'it' | 'en';
+}
+
+const { locale } = Astro.props;
+
+const pageTitle = t('risorse.index.title');
+const pageDescription = t('risorse.index.description');
+---
+
+<BaseLayout title={pageTitle} description={pageDescription} locale={locale}>
+  <Fragment slot="head">
+    <Header {locale} />
+  </Fragment>
+  <main class="min-h-screen pt-16">
+    <Hero
+      title={pageTitle}
+      subtitle={pageDescription}
+      image="/assets/hero-bg-1.webp"
+      alt="Risorse"
+    />
+    <section class="py-16 md:py-24 bg-gradient-to-br from-gray-100 to-white">
+      <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {allLeadMagnets.map((leadMagnet) => (
+            <LeadMagnetCard
+              title={leadMagnet.title}
+              description={leadMagnet.description}
+              href={leadMagnet.href}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+    <ContactForm {locale} />
+  </main>
+  <Fragment slot="footer">
+    <Footer {locale} />
+  </Fragment>
+</BaseLayout>

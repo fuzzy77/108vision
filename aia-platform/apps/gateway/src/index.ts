@@ -27,6 +27,8 @@ import { graph } from './routes/graph.js';
 import { tenantRouter } from './routes/tenant.js';
 import { memoryRouter } from './routes/memory.js';
 import { desktopAgentDownload } from './routes/desktop-agent-download.js';
+import { proxyRouter } from './routes/proxy/index.js';
+import { mcpRouter } from './routes/mcp/index.js';
 import { connect as connectNeo4j, close as closeNeo4j, initializeGraphSchema } from '@aia/graph';
 import {
   getLocalAgentRegistry,
@@ -88,14 +90,23 @@ app.onError(errorHandler);
 
 // --- Routes ---
 
-// Health checks (no auth required)
+// Health checks (no auth required) — mounted on both /health and /api/health
+// so the frontend can reach it via the existing /api proxy without extra vite config
 app.route('/health', health);
+app.route('/api/health', health);
 
 // Auth routes (no auth required — login, register, etc.)
 app.route('/api/auth', authRoutes);
 
 // Desktop Agent download (no auth required — user downloads before login)
 app.route('/api/desktop-agent', desktopAgentDownload);
+
+// OpenAI/Anthropic-compatible proxy (API key auth, rate limited, usage tracked)
+// Mounted at /v1 — clients expect /v1/chat/completions, /v1/models, /v1/embeddings, /v1/messages
+app.route('/v1', proxyRouter);
+
+// MCP server (Model Context Protocol) — knowledge, memory, agents access for external tools
+app.route('/mcp', mcpRouter);
 
 // Protected API routes
 const api = new Hono();
@@ -325,7 +336,9 @@ process.on('uncaughtException', (error) => {
     error: error.message,
     stack: error.stack,
   }));
-  process.exit(1);
+  if (env.NODE_ENV === 'production') {
+    process.exit(1);
+  }
 });
 
 export { app };

@@ -6,7 +6,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const FALLBACK_VERSION = '0.3.0';
+const FALLBACK_VERSION = '0.5.1';
 
 function readPackageVersion(): string {
   const candidates = [

@@ -211,7 +211,7 @@ CREATE TABLE IF NOT EXISTS shared.memories (
     category VARCHAR(30) DEFAULT 'general',
     source VARCHAR(20) DEFAULT 'user',
     conversation_id UUID,
-    embedding vector(1536),
+    embedding vector(1024),
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );

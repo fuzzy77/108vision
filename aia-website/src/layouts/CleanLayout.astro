@@ -1,6 +1,12 @@
 ---
 import SEOHead from '@/components/SEOHead.astro';
 import '@/styles/global.css';
+import {
+  defaultLocale,
+  htmlLang,
+  type Locale,
+  getAlternateLocaleUrl,
+} from '@/i18n';
 
 interface Props {
   title: string;
@@ -8,15 +14,27 @@ interface Props {
   ogImage?: string;
   canonical?: string;
   noIndex?: boolean;
+  locale?: Locale;
 }
 
-const { title, description, ogImage, canonical, noIndex = false } = Astro.props;
+const {
+  title,
+  description,
+  ogImage,
+  canonical,
+  noIndex = false,
+  locale = (Astro.currentLocale as Locale) ?? defaultLocale,
+} = Astro.props;
+
 const siteUrl = 'https://www.108vision.it';
 const fullTitle = `${title} | 108 Vision`;
+const canonicalUrl = canonical || Astro.url.href;
+const alternateLocale: Locale = locale === 'it' ? 'en' : 'it';
+const alternateUrl = `${siteUrl}${getAlternateLocaleUrl(Astro.url.pathname, alternateLocale)}`;
 ---
 
 <!doctype html>
-<html lang="it">
+<html lang={htmlLang[locale]}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -29,8 +47,11 @@ const fullTitle = `${title} | 108 Vision`;
       title={fullTitle}
       description={description}
       ogImage={ogImage || `${siteUrl}/og-default.png`}
-      canonical={canonical || Astro.url.href}
+      canonical={canonicalUrl}
       noIndex={noIndex}
+      locale={locale}
+      alternateLocale={alternateLocale}
+      alternateUrl={alternateUrl}
     />
   </head>
   <body class="min-h-screen bg-white text-slate-900 antialiased">

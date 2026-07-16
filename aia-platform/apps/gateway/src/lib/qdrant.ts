@@ -29,7 +29,7 @@ export async function ensureCollection(tenantId: string): Promise<void> {
   if (!exists) {
     await client.createCollection(collectionName, {
       vectors: {
-        size: 1536, // text-embedding-3-small dimension
+        size: 1024, // Alibaba text-embedding-v3 default dimension
         distance: 'Cosine',
       },
       optimizers_config: {

@@ -1,17 +1,5 @@
 ---
-import LeadMagnetLayout from '@/layouts/LeadMagnetLayout.astro';
+import LeadMagnetPage from '@/components/pages/LeadMagnetPage.astro';
 ---
-<LeadMagnetLayout
-  title="Guida Data & Analytics per PMI"
-  description="Come trasformare i dati aziendali in decisioni. Data audit, KPI framework, BI tools, data culture."
-  pdfSlug="data-analytics"
-  heroTitle="Da dati a decisioni: analytics per PMI italiane"
-  heroSubtitle="La tua azienda ha dati ovunque ma nessuno li usa per decidere. Questa guida ti insegna a costruire una cultura del dato in 90 giorni."
-  bullets={[
-    'Data audit: dove sono i tuoi dati e quanto valgono',
-    'KPI framework: scegliere le 5 metriche che contano davvero',
-    'Visualizzazione: dashboard che il management capisce e usa',
-    'BI tools per PMI italiane: confronto costi e capacità',
-    'Data culture: come far diventare i dati un abito mentale del team',
-  ]}
-/>
+
+<LeadMagnetPage locale="it" magnetSlug="guida-data-analytics" />

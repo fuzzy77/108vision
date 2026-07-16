@@ -1,0 +1,46 @@
+---
+import { localeLabels, type Locale } from '@/i18n/config';
+import { getAlternateLocaleUrl } from '@/i18n/utils';
+
+interface Props {
+  currentLocale: Locale;
+}
+
+const { currentLocale } = Astro.props;
+const alternateLocale: Locale = currentLocale === 'it' ? 'en' : 'it';
+const alternateUrl = getAlternateLocaleUrl(Astro.url.pathname, alternateLocale);
+---
+
+<div class="flex items-center gap-1 text-sm font-medium" role="navigation" aria-label="Language">
+  {currentLocale === 'it' ? (
+    <>
+      <span class="px-2 py-1 text-primary-600 bg-primary-50 rounded-md" aria-current="true">
+        {localeLabels.it}
+      </span>
+      <span class="text-slate-300" aria-hidden="true">|</span>
+      <a
+        href={alternateUrl}
+        class="px-2 py-1 text-slate-500 hover:text-primary-600 rounded-md hover:bg-primary-50 transition-colors"
+        hreflang="en"
+        lang="en"
+      >
+        {localeLabels.en}
+      </a>
+    </>
+  ) : (
+    <>
+      <a
+        href={alternateUrl}
+        class="px-2 py-1 text-slate-500 hover:text-primary-600 rounded-md hover:bg-primary-50 transition-colors"
+        hreflang="it"
+        lang="it"
+      >
+        {localeLabels.it}
+      </a>
+      <span class="text-slate-300" aria-hidden="true">|</span>
+      <span class="px-2 py-1 text-primary-600 bg-primary-50 rounded-md" aria-current="true">
+        {localeLabels.en}
+      </span>
+    </>
+  )}
+</div>

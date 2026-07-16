@@ -1,0 +1,68 @@
+---
+import BlogLayout from '@/layouts/BlogLayout.astro';
+import { type Locale, localizedPath } from '@/i18n';
+import { getBlogPost, type BlogSection } from '@/i18n/pages/blog';
+
+interface Props {
+  locale: Locale;
+  slug: string;
+}
+
+const { locale, slug } = Astro.props;
+const post = getBlogPost(locale, slug);
+
+if (!post) {
+  return Astro.redirect(localizedPath('/blog', locale));
+}
+
+const contactPath = localizedPath('/contatti', locale);
+---
+
+<BlogLayout
+  locale={locale}
+  title={post.title}
+  description={post.description}
+  date={post.date}
+  author={post.author}
+  tags={post.tags}
+  readTime={post.readTime}
+>
+  {post.sections.map((section: BlogSection) => {
+    if (section.type === 'h2') {
+      return <h2>{section.text}</h2>;
+    }
+    if (section.type === 'h3') {
+      return <h3>{section.text}</h3>;
+    }
+    if (section.type === 'p') {
+      return <p>{section.text}</p>;
+    }
+    if (section.type === 'ul') {
+      return (
+        <ul>
+          {section.items.map((item) => (
+            <li>
+              {item.label ? (
+                <>
+                  <strong>{item.label}</strong> {item.text}
+                </>
+              ) : (
+                item.text
+              )}
+            </li>
+          ))}
+        </ul>
+      );
+    }
+    if (section.type === 'cta') {
+      return (
+        <p>
+          {section.before}
+          <a href={contactPath}>{section.linkText}</a>
+          {section.after}
+        </p>
+      );
+    }
+    return null;
+  })}
+</BlogLayout>

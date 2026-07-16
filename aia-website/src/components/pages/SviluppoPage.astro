@@ -1,0 +1,149 @@
+---
+import ServiceLayout from '@/layouts/ServiceLayout.astro';
+import FeatureGrid from '@/components/FeatureGrid.astro';
+import PricingTable from '@/components/PricingTable.astro';
+import ServicePdfSection from '@/components/ServicePdfSection.astro';
+import { type Locale, useTranslations, localizedPath, getSviluppoContent } from '@/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const c = getSviluppoContent(locale);
+const homePath = localizedPath('/', locale);
+const contactPath = localizedPath('/contatti', locale);
+---
+
+<ServiceLayout
+  locale={locale}
+  title={c.meta.title}
+  description={c.meta.description}
+  heroTitle={c.hero.title}
+  heroSubtitle={c.hero.subtitle}
+  breadcrumbs={[
+    { label: t.common.home, href: homePath },
+    { label: c.breadcrumb },
+  ]}
+>
+  <section class="py-16 bg-white">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {c.modePicker.map((mode) => (
+          <a href={mode.anchor} class="group p-8 bg-slate-50 rounded-2xl border-2 border-slate-200 hover:border-primary-400 transition-all">
+            <div class="text-3xl mb-4">{mode.icon}</div>
+            <h3 class="text-xl font-bold text-slate-900 mb-2 group-hover:text-primary-700">{mode.title}</h3>
+            <p class="text-sm text-slate-600">{mode.text}</p>
+            <p class="text-sm font-semibold text-primary-600 mt-4">{mode.idealFor}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section id="progetto" class="py-20 bg-slate-50">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <p class="text-sm font-semibold text-primary-600 uppercase tracking-wider mb-3">{c.project.section.label}</p>
+        <h2 class="text-3xl font-bold text-slate-900 mb-4">{c.project.section.title}</h2>
+        <p class="text-lg text-slate-600">{c.project.section.subtitle}</p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+        {c.project.painPoints.map((point) => (
+          <div class="p-5 bg-white rounded-lg border border-slate-200">
+            <p class="text-sm text-slate-600">
+              <span class="font-semibold text-slate-900">{point.quote}</span> — {point.text}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl font-bold text-slate-900 mb-4">{c.project.features.heading}</h2>
+      </div>
+      <FeatureGrid features={c.project.features.items} columns={3} />
+    </div>
+  </section>
+
+  <section class="py-20 bg-slate-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl font-bold text-slate-900 mb-4">{c.project.plans.heading}</h2>
+        <p class="text-lg text-slate-600">{c.project.plans.subheading}</p>
+      </div>
+      <PricingTable plans={c.project.plans.items} recommendedLabel={t.service.recommended} defaultCtaLink={contactPath} />
+    </div>
+  </section>
+
+  <ServicePdfSection
+    locale={locale}
+    guidePath={c.project.guide.path}
+    title={c.project.guide.title}
+    description={c.project.guide.description}
+    cta={c.project.guide.cta}
+  />
+
+  <section id="factory" class="py-20 bg-slate-50">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <p class="text-sm font-semibold text-primary-600 uppercase tracking-wider mb-3">{c.factory.section.label}</p>
+        <h2 class="text-3xl font-bold text-slate-900 mb-4">{c.factory.section.title}</h2>
+        <p class="text-lg text-slate-600">{c.factory.section.subtitle}</p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+        {c.factory.painPoints.map((point) => (
+          <div class="p-6 bg-white rounded-xl border border-slate-200">
+            <div class="text-3xl mb-3">{point.icon}</div>
+            <p class="text-sm font-semibold text-slate-900 mb-1">{point.title}</p>
+            <p class="text-sm text-slate-600">{point.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl font-bold text-slate-900 mb-4">{c.factory.features.heading}</h2>
+      </div>
+      <FeatureGrid features={c.factory.features.items} columns={3} />
+    </div>
+  </section>
+
+  <section class="py-20 bg-slate-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl font-bold text-slate-900 mb-4">{c.factory.plans.heading}</h2>
+        <p class="text-lg text-slate-600">{c.factory.plans.subheading}</p>
+      </div>
+      <PricingTable plans={c.factory.plans.items} recommendedLabel={t.service.recommended} defaultCtaLink={contactPath} />
+    </div>
+  </section>
+
+  <ServicePdfSection
+    locale={locale}
+    guidePath={c.factory.guide.path}
+    title={c.factory.guide.title}
+    description={c.factory.guide.description}
+    cta={c.factory.guide.cta}
+  />
+
+  <section class="py-16 bg-slate-50">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-2xl font-bold text-slate-900 mb-4">{c.cta.heading}</h2>
+      <p class="text-slate-600 mb-8">{c.cta.text}</p>
+      <a
+        href={contactPath}
+        class="inline-flex items-center px-8 py-3 text-sm font-semibold text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors shadow-sm"
+      >
+        {c.cta.button}
+      </a>
+    </div>
+  </section>
+</ServiceLayout>

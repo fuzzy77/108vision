@@ -1,0 +1,54 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import BlogCard from '@/components/BlogCard.astro';
+import BreadcrumbNav from '@/components/BreadcrumbNav.astro';
+import { type Locale, useTranslations, localizedPath } from '@/i18n';
+import { getBlogContent } from '@/i18n/pages/blog';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const content = getBlogContent(locale);
+const homePath = localizedPath('/', locale);
+---
+
+<BaseLayout
+  locale={locale}
+  title={content.meta.title}
+  description={content.meta.description}
+>
+  <BreadcrumbNav
+    items={[
+      { label: t.common.home, href: homePath },
+      { label: content.heading },
+    ]}
+  />
+
+  <section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h1 class="text-4xl font-bold text-slate-900 mb-4">{content.heading}</h1>
+        <p class="text-lg text-slate-600 max-w-2xl mx-auto">
+          {content.subtitle}
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {content.posts.map((post) => (
+          <BlogCard
+            locale={locale}
+            title={post.title}
+            excerpt={post.excerpt}
+            date={post.date}
+            slug={post.slug}
+            tags={post.tags}
+            readTime={post.readTime}
+          />
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

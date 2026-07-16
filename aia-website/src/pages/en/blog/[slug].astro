@@ -1,0 +1,15 @@
+---
+import BlogPostPage from '@/components/pages/BlogPostPage.astro';
+import { getBlogSlugs } from '@/i18n/pages/blog';
+
+export function getStaticPaths() {
+  return getBlogSlugs().map((slug) => ({
+    params: { slug },
+    props: { slug },
+  }));
+}
+
+const { slug } = Astro.props;
+---
+
+<BlogPostPage locale="en" slug={slug} />

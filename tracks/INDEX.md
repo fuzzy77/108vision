@@ -122,6 +122,8 @@ Vision/
 - [manuale-deploy-hetzner.md](108-ai/platform-docs/manuale-deploy-hetzner.md) — Manuale deploy Hetzner
 - [security-hardening-backlog.md](108-ai/platform-docs/security-hardening-backlog.md) — Backlog security hardening
 - [base-principles.md](108-ai/platform-docs/base-principles.md) — Principi base template
+- [PLAN-integration-opencode-goose-mcp.md](108-ai/platform-docs/PLAN-integration-opencode-goose-mcp.md) — Piano integrazione OpenCode/MCP (Opzione B: Embed)
+- [coding-engine-setup-guide.md](108-ai/platform-docs/coding-engine-setup-guide.md) — Guida setup completa Coding Engine (locale + cloud)
 
 **Desktop Agent docs (`108-ai/local-agent-docs/`)**
 
@@ -147,6 +149,7 @@ Vision/
 
 - [108CTO-Playbook.md](108-cto/108CTO-Playbook.md) — Framework operativo Fractional CTO
 - [108CTO-Manuale.md](108-cto/108CTO-Manuale.md) — Guida ruolo e deliverable
+- [108CTO-Principi-Tecnici.md](108-cto/108CTO-Principi-Tecnici.md) — Studio tecnico: 15 aree fondamentali (architettura, testing, security, AI, team, costi)
 - [108CTO-Sito.md](108-cto/108CTO-Sito.md) — Copy pagina sito
 - [PREP_Call_EticaSoluzioni_20260616.md](108-cto/PREP_Call_EticaSoluzioni_20260616.md) — Prep call Etica Soluzioni
 - [PREP_Call_EticaSoluzioni_KNOWHOW.md](108-cto/PREP_Call_EticaSoluzioni_KNOWHOW.md) — Know-how Etica Soluzioni
@@ -297,7 +300,8 @@ Materiali di studio interni per il consulente. Non per il cliente.
 
 ### Infrastruttura & Deploy (`infra/`)
 
-- [VPS-Coolify-Setup-Manual.md](infra/VPS-Coolify-Setup-Manual.md) — Setup VPS economica + Coolify self-hosted
+- [manuale-deploy-completo-hetzner.md](infra/manuale-deploy-completo-hetzner.md) — **Deploy completo** tutti i servizi su Hetzner (AIA Platform + Sito 108vision.it + WellBeing API)
+- [VPS-Coolify-Setup-Manual.md](infra/VPS-Coolify-Setup-Manual.md) — Setup VPS economica + Coolify self-hosted (alternativa)
 - [Railway-WellBeingApi-Setup-Manual.md](infra/Railway-WellBeingApi-Setup-Manual.md) — Deploy .NET API su Railway + PostgreSQL
 
 ---

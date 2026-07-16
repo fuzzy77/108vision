@@ -90,9 +90,19 @@ if (firstArg === '--install' || firstArg === 'install') {
   // Explicit shell mode
   startShell();
 } else {
-  // No args: if TTY (interactive terminal) → shell, otherwise → agent mode
+  // No args: if TTY (interactive terminal) → auto-install + shell, otherwise → agent mode
   if (process.stdin.isTTY) {
-    startShell();
+    (async () => {
+      const result = await ensureInstalled();
+      if (result && result.action === 'fresh') {
+        const { printInstallSuccess } = await import('./installer.js');
+        printInstallSuccess(result);
+        process.stdout.write('\n  Avvio shell interattiva...\n\n');
+      } else if (result && result.action === 'updated') {
+        process.stdout.write(`\n  [OK] Aggiornato a v${getAppVersion()}\n\n`);
+      }
+      startShell();
+    })();
   } else {
     startAgent();
   }

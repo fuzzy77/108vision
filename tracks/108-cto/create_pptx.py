@@ -59,27 +59,47 @@ hline(slide, 1.0, 3.5, 3.0)
 text(slide, 1.0, 4.0, 10, 0.6, 'Presentazione per Etica Soluzioni', size=18, color=INK_200)
 text(slide, 1.0, 6.2, 10, 0.5, '108 Vision — Costruiamo la direzione, non solo il codice.', size=14, color=INK_800)
 
-# ===== SLIDE 2: CHI SONO =====
+# ===== SLIDE 2: CHI E' 108 VISION =====
 slide = dark_slide()
-text(slide, 1.0, 0.6, 10, 0.8, 'Chi sono', size=36, bold=True)
+text(slide, 1.0, 0.6, 10, 0.8, 'Chi e 108 Vision', size=36, bold=True)
 bar(slide, 1.4)
-items = [
-    '10+ anni su piattaforme mission-critical ad alto traffico',
-    '30M transazioni/anno — zero-downtime obbligatorio',
-    '93 componenti, 7 livelli architetturali, 3 team coordinati',
-    'Compliance quotidiana: SIAE, Polizia di Stato, GDPR',
-    '7+ integrazioni esterne con circuit breaker e monitoring',
-    'Legacy modernization: CORBA (23 anni) → microservizi gRPC',
+text(slide, 1.2, 1.8, 10, 0.5, '25 anni di esperienza su sistemi in produzione. Risultati misurati, non promessi.', size=16, color=INK_200)
+
+# Left column: experiences
+text(slide, 1.2, 2.5, 5.5, 0.4, 'COSA ABBIAMO FATTO', size=13, bold=True, color=VIOLET_400)
+experiences = [
+    'Piattaforma immobiliare nazionale — refactoring completo processi di delivery',
+    'Cloud provider enterprise — trasformazione qualita e rilascio su larga scala',
+    'Piattaforma ticketing 30M transazioni/anno — governance architetturale, 93 componenti, 3 team',
+    'Compliance mission-critical — fiscale, Polizia di Stato, GDPR, PCI',
+    'Legacy modernization — sistema 23 anni (CORBA → microservizi gRPC)',
+    'AI adoption pragmatica — integrata nel ciclo di sviluppo con ROI dimostrato',
 ]
-tf = text(slide, 1.2, 2.0, 10.5, 5.0, '', size=18, color=INK_200)
-for item in items:
+tf = text(slide, 1.2, 3.0, 5.8, 3.5, '', size=14, color=INK_200)
+for item in experiences:
     p = tf.add_paragraph()
     p.text = f'→  {item}'
-    p.font.size = Pt(18)
+    p.font.size = Pt(14)
     p.font.color.rgb = INK_200
     p.font.name = 'Inter'
-    p.space_before = Pt(14)
-text(slide, 1.0, 6.6, 11, 0.4, 'Non scrivo codice. Faccio in modo che le decisioni tecniche siano quelle giuste.', size=14, bold=True, color=VIOLET_400)
+    p.space_before = Pt(8)
+
+# Right column: results
+text(slide, 7.5, 2.5, 5.0, 0.4, 'RISULTATI MISURATI', size=13, bold=True, color=VIOLET_400)
+results_list = [
+    ('Lead time', '-60%'),
+    ('Bug rate', '-98%'),
+    ('Deploy frequency', '+400%'),
+    ('Tempo deploy', '-91%'),
+    ('Costo sviluppo (AI)', '-77%'),
+    ('Team satisfaction', '+50%'),
+]
+for i, (label, number) in enumerate(results_list):
+    y = 3.0 + i * 0.6
+    text(slide, 7.5, y, 3.0, 0.4, label, size=14, color=INK_200)
+    text(slide, 10.5, y, 2.0, 0.4, number, size=18, bold=True, color=VIOLET_400)
+
+text(slide, 1.0, 6.6, 11, 0.4, 'Costruiamo la direzione, non solo il codice. Il valore e nelle decisioni giuste, non nelle righe scritte.', size=14, bold=True, color=VIOLET_400)
 
 # ===== SLIDE 3: COSA FACCIO =====
 slide = dark_slide()
@@ -155,6 +175,137 @@ for item in ['Revisione architetturale completa', 'AI strategy (prodotto + proce
     p.font.name = 'Inter'
     p.space_before = Pt(6)
 text(slide, 7.1, 5.6, 4.8, 0.4, 'Decisioni misurabili con ADR.', size=12, bold=True, color=VIOLET_400)
+
+# ===== SLIDE 5B: PRINCIPI — OVERVIEW =====
+slide = dark_slide()
+text(slide, 1.0, 0.6, 10, 0.8, 'I principi dietro ogni decisione', size=36, bold=True)
+bar(slide, 1.4)
+text(slide, 1.2, 2.0, 10, 0.6, '15 pilastri tecnici organizzati in 4 macro-aree:', size=16, color=INK_200)
+pillars = [
+    ('COSTRUIRE', 'Architettura, Design, Qualita', 'Cosa stiamo costruendo e come?'),
+    ('VERIFICARE', 'Testing, Delivery, Osservabilita', 'Come sappiamo che funziona?'),
+    ('PROTEGGERE', 'Sicurezza, Dati, Scalabilita', 'Come lo difendiamo?'),
+    ('GUIDARE', 'Team, Debito, AI, Decisioni, Costi, Comunicazione', 'Come funzionano le persone?'),
+]
+for i, (area, topics, question) in enumerate(pillars):
+    y = 2.8 + i * 1.05
+    box = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(1.2), Inches(y), Inches(10.8), Inches(0.85))
+    box.fill.solid()
+    box.fill.fore_color.rgb = INK_900
+    box.line.color.rgb = VIOLET_700
+    box.line.width = Pt(1)
+    text(slide, 1.5, y + 0.08, 2.8, 0.4, area, size=16, bold=True, color=VIOLET_400)
+    text(slide, 4.5, y + 0.08, 4.5, 0.4, topics, size=14, color=INK_200)
+    text(slide, 9.2, y + 0.08, 2.8, 0.4, question, size=13, color=INK_800)
+text(slide, 1.0, 6.7, 11, 0.4, 'Non teoria accademica. Framework operativo testato su sistemi enterprise reali.', size=13, bold=True, color=VIOLET_400)
+
+# ===== SLIDE 5C: PRINCIPI — COSTRUIRE =====
+slide = dark_slide()
+text(slide, 1.0, 0.6, 10, 0.8, 'COSTRUIRE — Principi architetturali', size=36, bold=True)
+bar(slide, 1.4)
+build_principles = [
+    ('Trade-off espliciti', 'Non esiste giusto. Esiste adatto a un costo dichiarato.'),
+    ('ADR obbligatori', 'Se non e scritto, tra 6 mesi diventa folklore.'),
+    ('Bounded Context', 'Progetta dai linguaggi del business, non dalle tabelle.'),
+    ('Resilienza B-T-R-C', 'Bulkhead → Timeout → Retry → Circuit Breaker. Sempre.'),
+    ('API-First', 'Contratto prima, codice dopo. Il sistema scala sul contratto.'),
+    ('Modular Monolith', 'Non estrarre un servizio finche il confine non esiste gia.'),
+]
+for i, (title, desc) in enumerate(build_principles):
+    y = 2.0 + i * 0.82
+    text(slide, 1.5, y, 4.0, 0.4, title, size=16, bold=True, color=VIOLET_400)
+    text(slide, 5.8, y, 6.5, 0.4, desc, size=15, color=INK_200)
+text(slide, 1.0, 6.7, 11, 0.4, 'Ogni principio ha una fitness function misurabile e un ADR di supporto.', size=13, color=INK_800)
+
+# ===== SLIDE 5D: PRINCIPI — VERIFICARE =====
+slide = dark_slide()
+text(slide, 1.0, 0.6, 10, 0.8, 'VERIFICARE — Dal codice alla produzione', size=36, bold=True)
+bar(slide, 1.4)
+verify_principles = [
+    ('Testing', 'Coverage alto ≠ fiducia alta.\nTesta il comportamento, non come e scritto dentro.'),
+    ('Delivery', 'Deploy e un evento tecnico noioso.\nRelease e una decisione di prodotto.'),
+    ('Osservabilita', 'In produzione non hai il debugger.\nHai solo Log, Metriche, Trace.'),
+]
+for i, (title, desc) in enumerate(verify_principles):
+    y = 2.2 + i * 1.5
+    box = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(1.2), Inches(y), Inches(10.8), Inches(1.3))
+    box.fill.solid()
+    box.fill.fore_color.rgb = INK_900
+    box.line.color.rgb = VIOLET_700
+    box.line.width = Pt(1)
+    text(slide, 1.6, y + 0.15, 3.0, 0.5, title, size=18, bold=True, color=VIOLET_400)
+    text(slide, 5.0, y + 0.15, 6.8, 1.0, desc, size=15, color=INK_200)
+verify_kpis = [
+    'Pipeline < 10 min',
+    'Rollback < 5 min',
+    'Golden Signals su ogni servizio',
+    'Contract test tra team',
+]
+tf = text(slide, 1.2, 6.0, 11, 0.6, '', size=13, color=INK_800)
+for kpi in verify_kpis:
+    p = tf.add_paragraph()
+    p.text = f'✓  {kpi}'
+    p.font.size = Pt(13)
+    p.font.color.rgb = INK_800
+    p.font.name = 'Inter'
+
+# ===== SLIDE 5E: PRINCIPI — PROTEGGERE & GUIDARE =====
+slide = dark_slide()
+text(slide, 1.0, 0.6, 10, 0.8, 'PROTEGGERE & GUIDARE', size=36, bold=True)
+bar(slide, 1.4)
+# Left column: Proteggere
+text(slide, 1.2, 2.0, 5.0, 0.4, 'PROTEGGERE', size=14, bold=True, color=VIOLET_400)
+protect_items = [
+    'Security by Design — default = negare accesso',
+    'SAST + dep scan + secret detection in CI',
+    'PostgreSQL a meno che... (motivo specifico)',
+    'Scala verticale finche costa meno',
+    'Cache il 20% hot, load test a 2x picco',
+]
+tf = text(slide, 1.2, 2.5, 5.3, 3.5, '', size=14, color=INK_200)
+for item in protect_items:
+    p = tf.add_paragraph()
+    p.text = f'→  {item}'
+    p.font.size = Pt(14)
+    p.font.color.rgb = INK_200
+    p.font.name = 'Inter'
+    p.space_before = Pt(10)
+# Right column: Guidare
+text(slide, 7.0, 2.0, 5.5, 0.4, 'GUIDARE', size=14, bold=True, color=VIOLET_400)
+guide_items = [
+    'Cognitive load sostenibile (semplifica)',
+    '15% sprint per debito — non negoziabile',
+    'AI come sistema, non come demo',
+    'Reversibile = decidi ora; Type 1 = ADR',
+    'Mai sorprese, sempre opzioni, quantifica',
+]
+tf2 = text(slide, 7.0, 2.5, 5.5, 3.5, '', size=14, color=INK_200)
+for item in guide_items:
+    p = tf2.add_paragraph()
+    p.text = f'→  {item}'
+    p.font.size = Pt(14)
+    p.font.color.rgb = INK_200
+    p.font.name = 'Inter'
+    p.space_before = Pt(10)
+text(slide, 1.0, 6.2, 11, 0.8, '"Non vendo teoria. Vendo un sistema operativo per decisioni tecniche\nche il CEO puo capire e il team puo eseguire."', size=15, bold=True, color=VIOLET_400, align=PP_ALIGN.CENTER)
+
+# ===== SLIDE 5F: PRINCIPI — VALORE PER VOI =====
+slide = dark_slide()
+text(slide, 1.0, 0.6, 10, 0.8, 'Cosa significa per Etica Soluzioni', size=36, bold=True)
+bar(slide, 1.4)
+value_mapping = [
+    ('ADR + Fitness Functions', 'Decisioni architetturali tracciate e verificabili'),
+    ('B-T-R-C su ogni integrazione PA', 'PagoPA/SPID/AppIO down non blocca il sistema'),
+    ('Golden Signals + SLO', 'Sapete in 30 sec se c\'e un problema, non dal cliente'),
+    ('15% debito + prioritizzazione', 'Il prodotto evolve senza accumulare costo nascosto'),
+    ('Deploy ≠ Release + Feature Flags', 'Rilasciate quando volete, rollback in 5 minuti'),
+    ('Cost routing AI', 'Il team AI produce risultati, non fatture sorpresa'),
+]
+for i, (principle, value) in enumerate(value_mapping):
+    y = 2.0 + i * 0.78
+    text(slide, 1.5, y, 5.0, 0.4, principle, size=15, bold=True, color=VIOLET_400)
+    text(slide, 6.8, y, 5.5, 0.4, value, size=15, color=INK_200)
+text(slide, 1.0, 6.7, 11, 0.4, 'Ogni principio si traduce in un risultato misurabile per il business.', size=13, bold=True, color=VIOLET_400)
 
 # ===== SLIDE 6: METODO =====
 slide = dark_slide()

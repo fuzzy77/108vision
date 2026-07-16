@@ -1,17 +1,5 @@
 ---
-import LeadMagnetLayout from '@/layouts/LeadMagnetLayout.astro';
+import LeadMagnetPage from '@/components/pages/LeadMagnetPage.astro';
 ---
-<LeadMagnetLayout
-  title="Guida No-Code Automation per PMI"
-  description="Come automatizzare i processi aziendali senza codice. Process mapping, tool selection, integration patterns, ROI."
-  pdfSlug="nocode-automation"
-  heroTitle="Automatizzare senza codice: guida No-Code per PMI"
-  heroSubtitle="Il 70% dei processi ripetitivi nella tua azienda si può automatizzare senza scrivere una riga di codice. Questa guida ti mostra come."
-  bullets={[
-    'Process mapping: identifica i processi automatizzabili in un pomeriggio',
-    'Tool selection: confronto Make, Zapier, n8n, Power Automate per PMI italiane',
-    'Integration patterns: come collegare i tuoi software senza API',
-    'Calcolo ROI: template per giustificare l\'investimento al management',
-    'Quando smettere di usare no-code e passare allo sviluppo custom',
-  ]}
-/>
+
+<LeadMagnetPage locale="it" magnetSlug="guida-nocode" />

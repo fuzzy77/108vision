@@ -14,16 +14,16 @@ import { Readable } from 'node:stream';
 
 const desktopAgentDownload = new Hono();
 
-const AGENT_VERSION = '0.3.0';
+const AGENT_VERSION = '0.5.1';
 
 const AVAILABLE_BINARIES: Record<string, { filename: string; os: string; arch: string; contentType: string }> = {
-  '108ai-agent.exe': { filename: '108ai-agent.exe', os: 'windows', arch: 'x64', contentType: 'application/octet-stream' },
-  '108ai-agent-macos-x64': { filename: '108ai-agent-macos-x64', os: 'macos', arch: 'x64', contentType: 'application/octet-stream' },
-  '108ai-agent-macos-arm64': { filename: '108ai-agent-macos-arm64', os: 'macos', arch: 'arm64', contentType: 'application/octet-stream' },
-  '108ai-agent-linux': { filename: '108ai-agent-linux', os: 'linux', arch: 'x64', contentType: 'application/octet-stream' },
+  '108ai.exe': { filename: '108ai.exe', os: 'windows', arch: 'x64', contentType: 'application/octet-stream' },
+  '108ai-macos-x64': { filename: '108ai-macos-x64', os: 'macos', arch: 'x64', contentType: 'application/octet-stream' },
+  '108ai-macos-arm64': { filename: '108ai-macos-arm64', os: 'macos', arch: 'arm64', contentType: 'application/octet-stream' },
+  '108ai-linux-x64': { filename: '108ai-linux-x64', os: 'linux', arch: 'x64', contentType: 'application/octet-stream' },
 };
 
-const DIST_DIR = join(process.cwd(), '..', 'local-agent', 'dist', 'bin');
+const DIST_DIR = join(process.cwd(), '..', '..', 'public', 'downloads');
 
 /**
  * GET /api/desktop-agent/releases — List available releases and download links.

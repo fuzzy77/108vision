@@ -1,7 +1,7 @@
 import { eq, and, sql, gte, lte, desc } from 'drizzle-orm';
 import { type Result, success, failure, AppError } from '@aia/shared';
 import { getDb } from '../lib/db.js';
-import { usageDaily, tenants } from '../db/schema.js';
+import { usageDaily, usageRecords, tenants } from '../db/schema.js';
 
 /**
  * Model pricing tiers (cost per 1M tokens in USD).
@@ -40,6 +40,14 @@ export interface UsageByModel {
 
 export interface DailyUsagePoint {
   date: string;
+  inputTokens: number;
+  outputTokens: number;
+  requests: number;
+  costUsd: number;
+}
+
+export interface UsageBySource {
+  source: string;
   inputTokens: number;
   outputTokens: number;
   requests: number;
@@ -220,6 +228,59 @@ export const usageService = {
         new AppError(
           'USAGE_DAILY_FAILED',
           `Failed to retrieve daily usage: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          500,
+        ),
+      );
+    }
+  },
+
+  /**
+   * Get usage breakdown by request source (chat, proxy_openai, proxy_anthropic, etc.)
+   */
+  async getUsageBySource(
+    tenantId: string | undefined,
+    startDate: string,
+    endDate: string,
+  ): Promise<Result<UsageBySource[]>> {
+    try {
+      const db = getDb();
+
+      const conditions = [
+        gte(usageRecords.createdAt, new Date(`${startDate}T00:00:00Z`)),
+        lte(usageRecords.createdAt, new Date(`${endDate}T23:59:59Z`)),
+      ];
+
+      if (tenantId) {
+        conditions.push(eq(usageRecords.tenantId, tenantId));
+      }
+
+      const results = await db
+        .select({
+          source: usageRecords.requestType,
+          inputTokens: sql<number>`COALESCE(SUM(${usageRecords.inputTokens}), 0)::int`,
+          outputTokens: sql<number>`COALESCE(SUM(${usageRecords.outputTokens}), 0)::int`,
+          requests: sql<number>`COUNT(*)::int`,
+          costUsd: sql<number>`COALESCE(SUM(${usageRecords.costEur}::numeric), 0)::float`,
+        })
+        .from(usageRecords)
+        .where(and(...conditions))
+        .groupBy(usageRecords.requestType)
+        .orderBy(desc(sql`COUNT(*)`));
+
+      return success(
+        results.map((r) => ({
+          source: r.source ?? 'chat',
+          inputTokens: r.inputTokens,
+          outputTokens: r.outputTokens,
+          requests: r.requests,
+          costUsd: r.costUsd,
+        })),
+      );
+    } catch (error) {
+      return failure(
+        new AppError(
+          'USAGE_BY_SOURCE_FAILED',
+          `Failed to retrieve usage by source: ${error instanceof Error ? error.message : 'Unknown error'}`,
           500,
         ),
       );

@@ -1,0 +1,36 @@
+---
+import { type Locale, useTranslations, localizedPath } from '@/i18n';
+
+interface Props {
+  locale: Locale;
+  guidePath: string;
+  title?: string;
+  description?: string;
+  cta?: string;
+}
+
+const { locale, guidePath, title, description, cta } = Astro.props;
+const t = useTranslations(locale);
+const href = localizedPath(guidePath, locale);
+const resolvedTitle = title ?? t.service.downloadGuide;
+const resolvedDescription = description ?? t.service.downloadGuideDesc;
+const resolvedCta = cta ?? t.service.downloadPdf;
+---
+
+<section class="py-16 bg-white">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <div class="p-8 bg-gradient-to-br from-primary-50 to-violet-50 rounded-2xl border border-primary-100">
+      <svg class="w-12 h-12 text-primary-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+      </svg>
+      <h3 class="text-xl font-bold text-slate-900 mb-2">{resolvedTitle}</h3>
+      <p class="text-slate-600 mb-6">{resolvedDescription}</p>
+      <a
+        href={href}
+        class="inline-flex items-center px-6 py-3 text-sm font-semibold text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors"
+      >
+        {resolvedCta}
+      </a>
+    </div>
+  </div>
+</section>

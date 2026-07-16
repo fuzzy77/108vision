@@ -1,17 +1,5 @@
 ---
-import LeadMagnetLayout from '@/layouts/LeadMagnetLayout.astro';
+import LeadMagnetPage from '@/components/pages/LeadMagnetPage.astro';
 ---
-<LeadMagnetLayout
-  title="Guida Digital Starter"
-  description="Il primo progetto digitale per chi parte da zero. MVP mindset, vendor selection, budget planning, no-code options."
-  pdfSlug="digital-starter"
-  heroTitle="Il primo progetto digitale: guida per chi parte da zero"
-  heroSubtitle="Non hai un team tech interno. Non sai da dove iniziare. Questa guida ti porta dal 'voglio digitalizzare' al primo sistema funzionante in 30 giorni."
-  bullets={[
-    'MVP mindset: come costruire il minimo che porta valore',
-    'Come valutare e scegliere un fornitore software senza farsi fregare',
-    'Budget planning: quanto costa davvero un progetto digitale',
-    'No-code options: cosa puoi fare senza sviluppatori',
-    'Piano dei primi 30 giorni dalla decisione al go-live',
-  ]}
-/>
+
+<LeadMagnetPage locale="it" magnetSlug="guida-digital-starter" />

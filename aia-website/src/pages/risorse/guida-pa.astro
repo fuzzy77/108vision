@@ -1,17 +1,5 @@
 ---
-import LeadMagnetLayout from '@/layouts/LeadMagnetLayout.astro';
+import LeadMagnetPage from '@/components/pages/LeadMagnetPage.astro';
 ---
-<LeadMagnetLayout
-  title="Guida PA Digitale"
-  description="Innovare nella Pubblica Amministrazione italiana. PNRR, procurement, interoperabilità, SPID/CIE, compliance."
-  pdfSlug="pubblica-amministrazione"
-  heroTitle="Tecnologia per la PA: innovare nella complessità"
-  heroSubtitle="La guida tecnica per chi lavora con o dentro la Pubblica Amministrazione italiana e vuole portare innovazione reale — non solo slide."
-  bullets={[
-    'Opportunità PNRR 2025: dove sono i fondi e come accedervi',
-    'Procurement PA: come navigare il Codice degli Appalti per soluzioni tech',
-    'Interoperabilità: come integrare i sistemi della PA con i propri',
-    'SPID e CIE: integrazione pratica nei servizi digitali',
-    'Framework di compliance: GDPR, AgID, CAD applicati ai progetti concreti',
-  ]}
-/>
+
+<LeadMagnetPage locale="it" magnetSlug="guida-pa" />

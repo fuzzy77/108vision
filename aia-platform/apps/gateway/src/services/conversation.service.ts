@@ -5,7 +5,7 @@ import { conversations, messages } from '../db/schema.js';
 
 export interface CreateConversationInput {
   tenantId: string;
-  userId: string;
+  userId?: string;
   title?: string;
   channel?: 'web' | 'api' | 'whatsapp' | 'widget';
   metadata?: Record<string, unknown>;
@@ -60,7 +60,7 @@ export const conversationService = {
       .insert(conversations)
       .values({
         tenantId: input.tenantId,
-        userId: input.userId,
+        userId: input.userId ?? null,
         title: input.title ?? null,
         channel: input.channel ?? 'web',
         status: 'active',

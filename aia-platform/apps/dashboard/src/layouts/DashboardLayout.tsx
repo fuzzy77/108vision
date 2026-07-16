@@ -4,6 +4,7 @@ import { useUIStore } from '@/stores/ui.store';
 import { useAuth } from '@/hooks/useAuth';
 import { Avatar } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
+import { ServiceStatusBanner } from '@/components/ui/ServiceStatusBanner';
 import {
   LayoutDashboard,
   Users,
@@ -52,7 +53,9 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
   const currentPath = window.location.pathname;
 
   return (
-    <div className="flex h-screen bg-slate-50 dark:bg-slate-900">
+    <div className="flex flex-col h-screen bg-slate-50 dark:bg-slate-900">
+      <ServiceStatusBanner />
+      <div className="flex flex-1 min-h-0">
       {/* Sidebar */}
       <aside
         className={cn(
@@ -224,6 +227,7 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
         <main className="flex-1 overflow-y-auto p-6">
           {children}
         </main>
+      </div>
       </div>
     </div>
   );

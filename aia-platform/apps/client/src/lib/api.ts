@@ -243,7 +243,7 @@ class ApiClient {
     const formData = new FormData();
     formData.append('file', file);
 
-    return this.request<Document>('/knowledge/documents', {
+    return this.request<Document>('/knowledge/upload', {
       method: 'POST',
       body: formData,
     });

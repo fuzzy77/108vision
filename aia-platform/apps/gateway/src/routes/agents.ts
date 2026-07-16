@@ -9,14 +9,16 @@ import { principlesService } from '../services/principles.service.js';
 
 const agentsRouter = new Hono();
 
+const VALID_MODEL_TIERS = ['auto', 'fast-cheap', 'balanced', 'powerful', 'coding', 'vision'] as const;
+
 const createAgentSchema = z.object({
   name: z.string().min(1).max(255),
   description: z.string().optional(),
   systemPrompt: z.string().min(1),
-  model: z.enum(['fast-cheap', 'balanced', 'powerful']).default('balanced'),
+  model: z.enum(VALID_MODEL_TIERS).default('balanced'),
   temperature: z.number().min(0).max(2).default(0.7),
   maxTokens: z.number().int().positive().max(32768).default(4096),
-  knowledgeBaseIds: z.array(z.string().uuid()).optional(),
+  knowledgeBaseIds: z.array(z.string()).optional(),
   config: z.record(z.unknown()).optional(),
 });
 
@@ -24,10 +26,10 @@ const updateAgentSchema = z.object({
   name: z.string().min(1).max(255).optional(),
   description: z.string().optional(),
   systemPrompt: z.string().min(1).optional(),
-  model: z.enum(['fast-cheap', 'balanced', 'powerful']).optional(),
+  model: z.enum(VALID_MODEL_TIERS).optional(),
   temperature: z.number().min(0).max(2).optional(),
   maxTokens: z.number().int().positive().max(32768).optional(),
-  knowledgeBaseIds: z.array(z.string().uuid()).optional(),
+  knowledgeBaseIds: z.array(z.string()).optional(),
   config: z.record(z.unknown()).optional(),
   isActive: z.boolean().optional(),
 });

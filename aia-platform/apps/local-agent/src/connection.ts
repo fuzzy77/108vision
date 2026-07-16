@@ -13,7 +13,7 @@ import { nanoid } from 'nanoid';
 
 export interface AgentMessage {
   id: string;
-  type: 'request' | 'response' | 'event' | 'heartbeat' | 'register' | 'tool_call';
+  type: 'request' | 'response' | 'event' | 'heartbeat' | 'register' | 'tool_call' | 'config' | 'token' | 'done' | 'error' | 'chat' | 'tool_result';
   action?: string;
   /** Tool name for tool_call messages, e.g. "filesystem.readFile" */
   tool?: string;
@@ -72,6 +72,24 @@ export class AgentConnection {
       error,
     };
     this.send(message);
+  }
+
+  /**
+   * Send a raw message object to the gateway (for chat, tool_result, etc.).
+   */
+  sendRaw(message: Record<string, unknown>): void {
+    if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
+      return;
+    }
+    try {
+      this.ws.send(JSON.stringify(message));
+    } catch (error) {
+      console.log(JSON.stringify({
+        level: 'warn',
+        message: 'Failed to send raw message',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      }));
+    }
   }
 
   /**

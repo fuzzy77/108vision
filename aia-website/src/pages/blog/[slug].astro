@@ -1,116 +1,15 @@
 ---
-import BlogLayout from '@/layouts/BlogLayout.astro';
+import BlogPostPage from '@/components/pages/BlogPostPage.astro';
+import { getBlogSlugs } from '@/i18n/pages/blog';
 
 export function getStaticPaths() {
-  return [
-    {
-      params: { slug: 'benvenuto' },
-      props: {
-        title: "Perche ogni PMI ha bisogno di un'AI strategy nel 2025",
-        description: "L'AI non e piu un lusso per le grandi aziende. Ecco come costruire un piano che funziona per le PMI italiane.",
-        date: '2025-01-15',
-        author: 'Elios Scoglio | 108 Vision',
-        tags: ['AI', 'Strategia', 'PMI'],
-        readTime: '5 min',
-      },
-    },
-  ];
+  return getBlogSlugs().map((slug) => ({
+    params: { slug },
+    props: { slug },
+  }));
 }
 
-const { title, description, date, author, tags, readTime } = Astro.props;
+const { slug } = Astro.props;
 ---
 
-<BlogLayout
-  title={title}
-  description={description}
-  date={date}
-  author={author}
-  tags={tags}
-  readTime={readTime}
->
-  <h2>Il contesto: l'AI non aspetta</h2>
-  <p>
-    Nel 2025 l'intelligenza artificiale non e piu una curiosita tecnologica. E uno strumento
-    di produttivita che le aziende piu agili stanno gia usando per:
-  </p>
-  <ul>
-    <li><strong>Ridurre i tempi</strong> di risposta al cliente del 40-60%</li>
-    <li><strong>Automatizzare</strong> task ripetitivi che consumano ore ogni settimana</li>
-    <li><strong>Migliorare</strong> la qualita delle decisioni con dati analizzati in tempo reale</li>
-  </ul>
-  <p>
-    Ma c'e un problema: la maggior parte delle PMI italiane non sa da dove iniziare.
-  </p>
-
-  <h2>Il paradosso delle PMI</h2>
-  <p>
-    Le grandi aziende hanno team AI dedicati, budget milionari e accesso ai migliori talenti.
-    Le PMI no. Ma sono proprio le PMI ad avere il maggior margine di miglioramento.
-  </p>
-  <p>
-    Un'azienda da 20 persone che automatizza il 30% dei task amministrativi libera 2-3 FTE
-    equivalenti. Senza assumere nessuno.
-  </p>
-
-  <h2>I 3 errori che vedo piu spesso</h2>
-
-  <h3>1. Partire dallo strumento, non dal problema</h3>
-  <p>
-    "Vogliamo usare ChatGPT" non e una strategia. La domanda giusta e: "Quale problema
-    di business vogliamo risolvere, e l'AI e lo strumento giusto per farlo?"
-  </p>
-
-  <h3>2. Investire troppo, troppo presto</h3>
-  <p>
-    Non serve un progetto da 100K per iniziare. Un pilot da 3-5K su un caso d'uso specifico
-    ti da dati reali in 4-6 settimane. Poi decidi se scalare.
-  </p>
-
-  <h3>3. Ignorare le persone</h3>
-  <p>
-    L'AI migliore del mondo fallisce se il team non la adotta. Il change management non e
-    un optional: e il 50% del successo.
-  </p>
-
-  <h2>Come costruire una strategia AI per la tua PMI</h2>
-
-  <h3>Step 1: Assessment (1 settimana)</h3>
-  <p>
-    Mappa i tuoi processi. Identifica dove il tempo viene sprecato in task ripetitivi,
-    dove gli errori sono frequenti, dove le decisioni sono lente.
-  </p>
-
-  <h3>Step 2: Prioritizzazione (2 giorni)</h3>
-  <p>
-    Non tutto si puo fare subito. Usa una matrice impatto/effort per scegliere il primo
-    caso d'uso. Deve essere:
-  </p>
-  <ul>
-    <li>Ad alto impatto (ore risparmiate o errori evitati)</li>
-    <li>A basso rischio (non tocca processi critici)</li>
-    <li>Misurabile (KPI chiari prima di iniziare)</li>
-  </ul>
-
-  <h3>Step 3: Pilot (4-6 settimane)</h3>
-  <p>
-    Implementa il primo caso d'uso. Misura. Impara. Il pilot non deve essere perfetto:
-    deve generare dati per decidere il passo successivo.
-  </p>
-
-  <h3>Step 4: Scale o Kill (1 giorno)</h3>
-  <p>
-    Se il pilot funziona, scala. Se non funziona, hai speso poco e imparato molto.
-    In entrambi i casi, hai vinto.
-  </p>
-
-  <h2>Conclusione</h2>
-  <p>
-    L'AI strategy per le PMI non e complicata. E un processo disciplinato di
-    sperimentazione con rischio controllato. Il peggior errore e non iniziare.
-  </p>
-  <p>
-    Se vuoi capire da dove partire nella tua azienda,
-    <a href="/contatti">prenota una discovery call gratuita</a>.
-    30 minuti, nessun impegno.
-  </p>
-</BlogLayout>
+<BlogPostPage locale="it" slug={slug} />

@@ -1,17 +1,5 @@
 ---
-import LeadMagnetLayout from '@/layouts/LeadMagnetLayout.astro';
+import LeadMagnetPage from '@/components/pages/LeadMagnetPage.astro';
 ---
-<LeadMagnetLayout
-  title="Guida Agile & DevOps"
-  description="Agile pragmatico e delivery continua senza dogma. CI/CD pipeline, sprint structure, metriche che contano."
-  pdfSlug="agile-devops"
-  heroTitle="Agile pragmatico: delivery continua senza dogma"
-  heroSubtitle="Non Agile da manuale Scrum. Quello che funziona nelle PMI italiane: consegnare valore velocemente con un team piccolo e budget reale."
-  bullets={[
-    'CI/CD pipeline: come implementarla in 2 settimane',
-    'Struttura sprint che non spreca tempo in cerimonie inutili',
-    '4 metriche che contano davvero (e 6 da ignorare)',
-    'Kanban vs Scrum: come scegliere per il tuo contesto',
-    'Deploy frequency: come passare da mensile a quotidiano',
-  ]}
-/>
+
+<LeadMagnetPage locale="it" magnetSlug="guida-agile-devops" />

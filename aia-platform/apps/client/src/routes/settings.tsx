@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Settings as SettingsIcon, Sun, Moon, Monitor, Zap, Scale, Cpu } from 'lucide-react';
-import { useChatStore, type ModelPreference } from '@/stores/chat.store';
+import { Settings as SettingsIcon, Sun, Moon, Monitor } from 'lucide-react';
+import { useChatStore } from '@/stores/chat.store';
 import { useAgents } from '@/hooks/useAgents';
 import { Button } from '@/components/ui/Button';
 
@@ -35,14 +35,9 @@ const themeOptions: { value: ThemeMode; label: string; icon: typeof Sun }[] = [
   { value: 'system', label: 'System', icon: Monitor },
 ];
 
-const modelOptions: { value: ModelPreference; label: string; description: string; icon: typeof Zap }[] = [
-  { value: 'fast-cheap', label: 'Veloce', description: 'Risposte rapide, costo basso', icon: Zap },
-  { value: 'balanced', label: 'Bilanciato', description: 'Buon equilibrio tra velocità e qualità', icon: Scale },
-  { value: 'powerful', label: 'Potente', description: 'Massima qualità, più lento', icon: Cpu },
-];
 
 export function SettingsPage() {
-  const { modelPreference, selectModel, selectedAgentId, selectAgent } = useChatStore();
+  const { selectedAgentId, selectAgent } = useChatStore();
   const { agents } = useAgents();
   const [theme, setTheme] = useState<ThemeMode>(getStoredTheme);
   const [notifications, setNotifications] = useState(() => {
@@ -99,45 +94,6 @@ export function SettingsPage() {
                   <span className={`text-sm ${isActive ? 'font-medium text-primary-700 dark:text-primary-300' : 'text-slate-600 dark:text-slate-400'}`}>
                     {option.label}
                   </span>
-                </button>
-              );
-            })}
-          </div>
-        </section>
-
-        <section>
-          <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">
-            Default AI Model
-          </h3>
-          <div className="space-y-2">
-            {modelOptions.map((option) => {
-              const Icon = option.icon;
-              const isActive = modelPreference === option.value;
-              return (
-                <button
-                  key={option.value}
-                  onClick={() => selectModel(option.value)}
-                  className={`
-                    w-full flex items-center gap-4 p-4 rounded-xl border-2 text-left transition-all
-                    ${
-                      isActive
-                        ? 'border-primary-500 bg-primary-50 dark:bg-primary-950/30'
-                        : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'
-                    }
-                  `}
-                  aria-pressed={isActive}
-                >
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${isActive ? 'bg-primary-100 dark:bg-primary-900' : 'bg-slate-100 dark:bg-slate-700'}`}>
-                    <Icon className={`w-5 h-5 ${isActive ? 'text-primary-600 dark:text-primary-400' : 'text-slate-500'}`} />
-                  </div>
-                  <div>
-                    <p className={`text-sm font-medium ${isActive ? 'text-primary-700 dark:text-primary-300' : 'text-slate-700 dark:text-slate-200'}`}>
-                      {option.label}
-                    </p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">
-                      {option.description}
-                    </p>
-                  </div>
                 </button>
               );
             })}

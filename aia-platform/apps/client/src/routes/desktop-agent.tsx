@@ -51,10 +51,10 @@ const SETUP_STEPS = [
 ];
 
 const DOWNLOAD_LINKS = [
-  { os: 'Windows', file: '108ai-agent.exe', arch: 'x64' },
-  { os: 'macOS (Intel)', file: '108ai-agent-macos-x64', arch: 'x64' },
-  { os: 'macOS (Apple Silicon)', file: '108ai-agent-macos-arm64', arch: 'arm64' },
-  { os: 'Linux', file: '108ai-agent-linux', arch: 'x64' },
+  { os: 'Windows', file: '108ai.exe', arch: 'x64' },
+  { os: 'macOS (Intel)', file: '108ai-macos-x64', arch: 'x64' },
+  { os: 'macOS (Apple Silicon)', file: '108ai-macos-arm64', arch: 'arm64' },
+  { os: 'Linux', file: '108ai-linux-x64', arch: 'x64' },
 ];
 
 interface CapabilityExample {

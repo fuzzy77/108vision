@@ -117,6 +117,27 @@ adminUsageRouter.get('/daily', async (c) => {
 });
 
 /**
+ * GET /api/admin/usage/by-source — Usage breakdown by request source (chat, proxy_openai, proxy_anthropic, proxy_mcp).
+ */
+adminUsageRouter.get('/by-source', async (c) => {
+  const params = byModelQuerySchema.parse({
+    startDate: c.req.query('startDate'),
+    endDate: c.req.query('endDate'),
+    tenantId: c.req.query('tenantId'),
+  });
+
+  const { start, end } = getDefaultDateRange(params.startDate, params.endDate);
+
+  const result = await usageService.getUsageBySource(params.tenantId, start, end);
+
+  if (!result.success) {
+    throw result.error;
+  }
+
+  return c.json({ items: result.data, startDate: start, endDate: end });
+});
+
+/**
  * GET /api/admin/usage/export — CSV export for invoicing.
  */
 adminUsageRouter.get('/export', async (c) => {

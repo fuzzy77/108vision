@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useUIStore } from '@/stores/ui.store';
-import { useUsageSummary } from '@/hooks/useUsage';
+import { useUsageSummary, useUsageBySource } from '@/hooks/useUsage';
 import { StatsCard } from '@/components/StatsCard';
 import { UsageChart } from '@/components/UsageChart';
 import { ModelBreakdown } from '@/components/ModelBreakdown';
@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/Button';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/Table';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { formatCurrency, formatTokens } from '@/lib/utils';
+import { Badge } from '@/components/ui/Badge';
 import { DollarSign, TrendingUp, AlertTriangle, Download, CreditCard } from 'lucide-react';
 import { format, subDays } from 'date-fns';
 
@@ -22,6 +23,7 @@ function BillingPage() {
   const from = format(subDays(new Date(), 30), 'yyyy-MM-dd');
   const to = format(new Date(), 'yyyy-MM-dd');
   const { data: usage, isLoading, error, refetch } = useUsageSummary({ from, to });
+  const { data: bySource } = useUsageBySource({ from, to });
 
   const totalCost = usage?.totalCost ?? 0;
   const projectedCost = totalCost * (30 / Math.max(1, new Date().getDate()));
@@ -125,6 +127,35 @@ function BillingPage() {
               </CardContent>
             </Card>
           </div>
+
+          {/* Usage by source */}
+          {bySource && bySource.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Per sorgente</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                  {bySource.map((item) => (
+                    <div key={item.source} className="rounded-lg border border-slate-200 dark:border-slate-700 p-3">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Badge color={item.source.startsWith('proxy') ? 'blue' : item.source === 'chat_cached' ? 'emerald' : 'slate'}>
+                          {item.source}
+                        </Badge>
+                      </div>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{item.label}</p>
+                      <p className="text-lg font-semibold text-slate-900 dark:text-slate-100 mt-1">
+                        {formatCurrency(item.cost)}
+                      </p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">
+                        {item.requests.toLocaleString()} req · {formatTokens(item.tokens)}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Per-tenant table */}
           <Card>

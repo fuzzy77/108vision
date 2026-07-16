@@ -1,0 +1,12 @@
+---
+import LeadMagnetLayout from '../../layouts/LeadMagnetLayout.astro';
+
+export interface Props {
+  locale: 'it' | 'en';
+  slug: string;
+}
+
+const { locale, slug } = Astro.props;
+---
+
+<LeadMagnetLayout locale={locale} slug={slug} />

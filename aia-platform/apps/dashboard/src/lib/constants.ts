@@ -1,10 +1,12 @@
-export const MODEL_TIERS = {
-  fast: { label: 'Veloce', description: 'DeepSeek / modelli rapidi ed economici', color: 'emerald' },
-  balanced: { label: 'Bilanciato', description: 'Claude Sonnet / GPT-4o', color: 'blue' },
-  powerful: { label: 'Potente', description: 'Claude Opus / GPT-4', color: 'purple' },
-} as const;
+export const MODEL_TIERS: Record<string, { label: string; description: string; color: string }> = {
+  'fast-cheap': { label: 'Veloce', description: 'DeepSeek V3 — rapido ed economico', color: 'emerald' },
+  balanced: { label: 'Bilanciato', description: 'DeepSeek Reasoner — ragionamento', color: 'blue' },
+  powerful: { label: 'Potente', description: 'Qwen Max — massima qualita', color: 'purple' },
+  coding: { label: 'Coding', description: 'DeepSeek V3 — ottimizzato per codice', color: 'indigo' },
+  vision: { label: 'Vision', description: 'Qwen VL — analisi immagini', color: 'amber' },
+};
 
-export type ModelTier = keyof typeof MODEL_TIERS;
+export type ModelTier = string;
 
 export const PLAN_TYPES = {
   starter: { label: 'Starter', color: 'slate', maxAgents: 2, maxDocs: 50, maxConversations: 500 },

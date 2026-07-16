@@ -5,8 +5,15 @@ import vercel from '@astrojs/vercel';
 
 export default defineConfig({
   site: 'https://www.108vision.it',
-  output: 'hybrid',
+  output: 'static',
   adapter: vercel(),
+  i18n: {
+    defaultLocale: 'it',
+    locales: ['it', 'en'],
+    routing: {
+      prefixDefaultLocale: false,
+    },
+  },
   vite: {
     plugins: [tailwindcss()],
   },

@@ -1,0 +1,78 @@
+---
+import { useTranslations } from '../i18n/utils';
+import leadMagnets from '../i18n/pages/lead-magnets';
+
+export interface Props {
+  locale: 'it' | 'en';
+  slug: string;
+  pdfFileName: string;
+}
+
+const { locale, slug, pdfFileName } = Astro.props;
+const t = useTranslations(locale); // Use local t for general strings
+const currentLeadMagnet = leadMagnets[slug] && leadMagnets[slug][locale] ? leadMagnets[slug][locale] : leadMagnets.general[locale];
+---
+
+<form class="w-full max-w-sm bg-white p-8 rounded-lg shadow-md" method="POST" action="/api/download-lead-magnet">
+  <input type="hidden" name="locale" value={locale} />
+  <input type="hidden" name="slug" value={slug} />
+  <input type="hidden" name="pdfFileName" value={pdfFileName} />
+
+  <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">
+    {currentLeadMagnet.downloadButton || t('general.scaricaOra')}
+  </h2>
+
+  <div class="mb-4">
+    <label for="name" class="block text-gray-700 text-sm font-bold mb-2">
+      {t('general.nome')}
+    </label>
+    <input
+      type="text"
+      id="name"
+      name="name"
+      class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+      required
+    />
+  </div>
+  <div class="mb-4">
+    <label for="email" class="block text-gray-700 text-sm font-bold mb-2">
+      {t('general.email')}
+    </label>
+    <input
+      type="email"
+      id="email"
+      name="email"
+      class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+      required
+    />
+  </div>
+  <div class="mb-6">
+    <label for="company" class="block text-gray-700 text-sm font-bold mb-2">
+      {t('general.azienda')}
+    </label>
+    <input
+      type="text"
+      id="company"
+      name="company"
+      class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+    />
+  </div>
+  <div class="mb-6 flex items-center">
+    <input
+      type="checkbox"
+      id="privacyPolicy"
+      name="privacyPolicy"
+      class="mr-2 leading-tight"
+      required
+    />
+    <label for="privacyPolicy" class="text-sm text-gray-600">
+      {t('general.privacyPolicy')}
+    </label>
+  </div>
+  <button
+    type="submit"
+    class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
+  >
+    {t('general.scaricaOra')}
+  </button>
+</form>

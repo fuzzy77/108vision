@@ -65,8 +65,8 @@ export const ingestionService = {
         return failure(new AppError('INGESTION_EMPTY', 'Document has no indexable content', 400));
       }
 
-      // Step 3: Generate embeddings in batches
-      const batchSize = 50;
+      // Step 3: Generate embeddings in batches (DashScope limit: max 10 texts per request)
+      const batchSize = 10;
       const allVectors: Array<{
         id: string;
         embedding: number[];

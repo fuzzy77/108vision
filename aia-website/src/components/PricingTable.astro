@@ -11,9 +11,11 @@ interface Plan {
 
 interface Props {
   plans: Plan[];
+  recommendedLabel?: string;
+  defaultCtaLink?: string;
 }
 
-const { plans } = Astro.props;
+const { plans, recommendedLabel = 'Consigliato', defaultCtaLink = '/contatti' } = Astro.props;
 ---
 
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
@@ -21,7 +23,7 @@ const { plans } = Astro.props;
     <div class={`relative p-8 rounded-2xl border-2 ${plan.highlighted ? 'border-primary-500 bg-primary-50/30 shadow-xl' : 'border-slate-200 bg-white'}`}>
       {plan.highlighted && (
         <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-primary-600 text-white text-xs font-semibold rounded-full">
-          Consigliato
+          {recommendedLabel}
         </div>
       )}
       <div class="text-center mb-6">
@@ -44,7 +46,7 @@ const { plans } = Astro.props;
         ))}
       </ul>
       <a
-        href={plan.ctaLink || '/contatti'}
+        href={plan.ctaLink || defaultCtaLink}
         class={`block w-full text-center px-4 py-3 rounded-lg font-semibold text-sm transition-colors ${
           plan.highlighted
             ? 'bg-primary-600 text-white hover:bg-primary-700'

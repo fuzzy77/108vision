@@ -1,0 +1,31 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import BreadcrumbNav from '@/components/BreadcrumbNav.astro';
+import { type Locale, useTranslations, localizedPath } from '@/i18n';
+
+interface Props {
+  locale: Locale;
+  page: 'privacy' | 'cookies' | 'terms';
+}
+
+const { locale, page } = Astro.props;
+const t = useTranslations(locale);
+const content = t.legal[page];
+const homePath = localizedPath('/', locale);
+---
+
+<BaseLayout locale={locale} title={content.title} description={content.metaDescription}>
+  <BreadcrumbNav
+    items={[
+      { label: t.common.home, href: homePath },
+      { label: content.heading },
+    ]}
+  />
+  <main class="max-w-3xl mx-auto px-4 py-16">
+    <h1 class="text-3xl font-bold mb-8">{content.heading}</h1>
+    <p class="text-gray-600">
+      {content.body}
+      <a href={`mailto:${content.email}`} class="text-primary-600 underline">{content.email}</a>.
+    </p>
+  </main>
+</BaseLayout>

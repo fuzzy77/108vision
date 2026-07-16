@@ -58,6 +58,7 @@ export function useTenant(id: string | undefined) {
       return {
         id: raw.id as string,
         name: raw.name as string,
+        planId: (raw.planId as string) ?? '',
         sector: (config.sector as string) ?? '',
         plan: (config.plan as string) ?? 'starter',
         status: raw.status as string,

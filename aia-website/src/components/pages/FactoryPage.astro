@@ -1,0 +1,99 @@
+---
+import ServiceLayout from '@/layouts/ServiceLayout.astro';
+import FeatureGrid from '@/components/FeatureGrid.astro';
+import PricingTable from '@/components/PricingTable.astro';
+import ServicePdfSection from '@/components/ServicePdfSection.astro';
+import {
+  type Locale,
+  useTranslations,
+  localizedPath,
+  getFactoryContent,
+} from '@/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const c = getFactoryContent(locale);
+const homePath = localizedPath('/', locale);
+const contactPath = localizedPath('/contatti', locale);
+---
+
+<ServiceLayout
+  locale={locale}
+  title={c.meta.title}
+  description={c.meta.description}
+  heroTitle={c.hero.title}
+  heroSubtitle={c.hero.subtitle}
+  breadcrumbs={[
+    { label: t.common.home, href: homePath },
+    { label: c.breadcrumb },
+  ]}
+>
+  <!-- The Problem -->
+  <section class="py-20 bg-white">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl font-bold text-slate-900 mb-8 text-center">{c.problem.title}</h2>
+      <p class="text-lg text-slate-600 leading-relaxed text-center mb-10">
+        {c.problem.description}
+      </p>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+        <div class="p-6 bg-slate-50 rounded-xl border border-slate-200">
+          <div class="text-3xl mb-3">{c.problem.card1.emoji}</div>
+          <p class="text-sm font-semibold text-slate-900 mb-1">{c.problem.card1.title}</p>
+          <p class="text-sm text-slate-600">{c.problem.card1.description}</p>
+        </div>
+        <div class="p-6 bg-slate-50 rounded-xl border border-slate-200">
+          <div class="text-3xl mb-3">{c.problem.card2.emoji}</div>
+          <p class="text-sm font-semibold text-slate-900 mb-1">{c.problem.card2.title}</p>
+          <p class="text-sm text-slate-600">{c.problem.card2.description}</p>
+        </div>
+        <div class="p-6 bg-slate-50 rounded-xl border border-slate-200">
+          <div class="text-3xl mb-3">{c.problem.card3.emoji}</div>
+          <p class="text-sm font-semibold text-slate-900 mb-1">{c.problem.card3.title}</p>
+          <p class="text-sm text-slate-600">{c.problem.card3.description}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- La Soluzione -->
+  <section class="py-20 bg-slate-50">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-3xl font-bold text-slate-900 mb-6">{c.solution.title}</h2>
+      <p class="text-lg text-slate-600 leading-relaxed">
+        {c.solution.description}
+      </p>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl font-bold text-slate-900 mb-4">{c.features.title}</h2>
+      </div>
+      <FeatureGrid features={c.features.items} columns={3} />
+    </div>
+  </section>
+
+  <!-- Pricing -->
+  <section class="py-20 bg-slate-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl font-bold text-slate-900 mb-4">{c.pricing.title}</h2>
+        <p class="text-lg text-slate-600">{c.pricing.subtitle}</p>
+      </div>
+      <PricingTable
+        plans={c.pricing.plans}
+        recommendedLabel={t.service.recommended}
+        defaultCtaLink={contactPath}
+      />
+    </div>
+  </section>
+
+  <!-- PDF Omaggio -->
+  <ServicePdfSection locale={locale} guidePath={c.pdfGuidePath} />
+</ServiceLayout>

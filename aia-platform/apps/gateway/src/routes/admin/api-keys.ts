@@ -107,6 +107,59 @@ adminApiKeysRouter.post('/', async (c) => {
   return c.json({ ...created, key: rawKey }, 201);
 });
 
+const updateKeySchema = z.object({
+  name: z.string().min(1).max(100).optional(),
+  scopes: z.array(z.string()).optional(),
+});
+
+adminApiKeysRouter.patch('/:keyId', async (c) => {
+  const tenantId = c.req.param('tenantId');
+  const keyId = c.req.param('keyId');
+
+  if (!tenantId || !keyId) {
+    throw new AppError('INVALID_ID', 'Tenant ID and Key ID are required', 400);
+  }
+
+  const body = await c.req.json();
+  const input = updateKeySchema.parse(body);
+
+  const db = getDb();
+
+  const [existing] = await db
+    .select({ id: apiKeys.id, revokedAt: apiKeys.revokedAt })
+    .from(apiKeys)
+    .where(and(eq(apiKeys.id, keyId), eq(apiKeys.tenantId, tenantId)))
+    .limit(1);
+
+  if (!existing) {
+    throw new AppError('API_KEY_NOT_FOUND', 'API key not found', 404);
+  }
+
+  if (existing.revokedAt !== null) {
+    throw new AppError('API_KEY_REVOKED', 'Cannot update a revoked key', 409);
+  }
+
+  const updates: Record<string, unknown> = {};
+  if (input.name !== undefined) updates['name'] = input.name;
+  if (input.scopes !== undefined) updates['scopes'] = input.scopes;
+
+  if (Object.keys(updates).length === 0) {
+    throw new AppError('NO_UPDATES', 'No fields to update', 400);
+  }
+
+  const [updated] = await db
+    .update(apiKeys)
+    .set(updates)
+    .where(and(eq(apiKeys.id, keyId), eq(apiKeys.tenantId, tenantId)))
+    .returning({
+      id: apiKeys.id,
+      name: apiKeys.name,
+      scopes: apiKeys.scopes,
+    });
+
+  return c.json(updated);
+});
+
 adminApiKeysRouter.delete('/:keyId', async (c) => {
   const tenantId = c.req.param('tenantId');
   const keyId = c.req.param('keyId');

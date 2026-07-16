@@ -17,7 +17,7 @@ import { join, resolve } from 'node:path';
 const ROOT = resolve(import.meta.dirname, '..');
 const DIST_DIR = join(ROOT, 'dist', 'bin');
 const ENTRY = join(ROOT, 'src', 'index.ts');
-const APP_NAME = '108ai-agent';
+const APP_NAME = '108ai';
 
 const TARGETS = {
   'windows-x64':  { bunTarget: 'bun-windows-x64',  output: `${APP_NAME}.exe` },
@@ -86,6 +86,7 @@ async function build(targets) {
         '--compile',
         `--target=${config.bunTarget}`,
         `--outfile=${outputPath}`,
+        '--external', 'link-preview-js',
         ENTRY,
       ].join(' ');
 

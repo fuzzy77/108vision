@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { eq, and, sql, desc } from 'drizzle-orm';
 import { AppError } from '@aia/shared';
 import { getDb } from '../../lib/db.js';
-import { tenants, conversations, usageDaily } from '../../db/schema.js';
+import { tenants, plans, conversations, usageDaily } from '../../db/schema.js';
 
 const adminTenantsRouter = new Hono();
 
@@ -128,8 +128,23 @@ adminTenantsRouter.get('/:id', async (c) => {
     })
     .from(sql`(SELECT 1) AS dummy`);
 
+  // Fetch plan details for allowedModels
+  let planAllowedModels: string[] = [];
+  if (tenant.planId) {
+    const [plan] = await db
+      .select({ allowedModels: plans.allowedModels })
+      .from(plans)
+      .where(eq(plans.id, tenant.planId))
+      .limit(1);
+    planAllowedModels = (plan?.allowedModels ?? []) as string[];
+  }
+
   return c.json({
     ...tenant,
+    config: {
+      ...((tenant.config as Record<string, unknown>) ?? {}),
+      allowedModels: planAllowedModels,
+    },
     stats: stats ?? {
       agentsCount: 0,
       documentsCount: 0,

@@ -6,7 +6,7 @@ import { budgetService } from './budget.service.js';
 
 export interface TrackUsageInput {
   tenantId: string;
-  userId: string;
+  userId?: string;
   model: string;
   inputTokens: number;
   outputTokens: number;
@@ -23,7 +23,7 @@ export const usageTrackingService = {
     // Write per-request record
     await db.insert(usageRecords).values({
       tenantId: input.tenantId,
-      userId: input.userId,
+      userId: input.userId ?? null,
       modelName: input.model,
       inputTokens: input.inputTokens,
       outputTokens: input.outputTokens,
@@ -34,13 +34,13 @@ export const usageTrackingService = {
     // Upsert daily aggregate
     await db.execute(sql`
       INSERT INTO shared.usage_daily (id, tenant_id, date, model, input_tokens, output_tokens, requests_count, cost_usd)
-      VALUES (gen_random_uuid(), ${input.tenantId}, ${today}, ${input.model}, ${input.inputTokens}, ${input.outputTokens}, 1, ${String(costUsd)})
+      VALUES (gen_random_uuid(), ${input.tenantId}, ${today}, ${input.model}, ${input.inputTokens}, ${input.outputTokens}, 1, ${sql.raw(costUsd.toFixed(6))})
       ON CONFLICT (tenant_id, date, model)
       DO UPDATE SET
         input_tokens = shared.usage_daily.input_tokens + EXCLUDED.input_tokens,
         output_tokens = shared.usage_daily.output_tokens + EXCLUDED.output_tokens,
         requests_count = shared.usage_daily.requests_count + 1,
-        cost_usd = (shared.usage_daily.cost_usd::numeric + EXCLUDED.cost_usd::numeric)::text
+        cost_usd = shared.usage_daily.cost_usd + EXCLUDED.cost_usd
     `);
 
     // Invalidate budget cache so next request sees updated numbers

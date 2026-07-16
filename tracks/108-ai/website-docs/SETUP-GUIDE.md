@@ -228,6 +228,39 @@ git push
 
 > Solo modifiche dentro `aia-website/` triggerano il build (Vercel ignora il resto grazie al Root Directory setting). Se vuoi che anche modifiche in `tracks/` o `brand/` triggerino un redeploy (es. dopo aggiornamento PDF), vai su **Project Settings → Git → Ignored Build Step** e rimuovi il filtro, oppure triggera manualmente da dashboard.
 
+### 3.4-bis Vercel + Repository Privato — Limitazione Piano Hobby
+
+**Problema**: Il piano Vercel Hobby (gratuito) non supporta il deploy automatico da repository GitHub privati. Se il repo è privato, Vercel non triggera il build su push — il progetto risulta "linked" ma i deploy non partono.
+
+**Soluzione** (workflow manuale finché non si passa a Vercel Pro):
+
+1. **Prima del deploy**: rendi il repo pubblico su GitHub
+   - GitHub → Repository → **Settings** → **General** → **Danger Zone** → **Change repository visibility** → **Make public**
+2. **Fai il push** delle modifiche:
+   ```bash
+   git push origin main
+   # → Vercel triggera il deploy automaticamente
+   ```
+3. **Aspetta** che il deploy si completi (~30-60 secondi) — verifica su Vercel Dashboard → Deployments
+4. **Rimetti privato**: GitHub → Settings → **Make private**
+
+> Tieni il repo privato per default — contiene playbook, pricing, curriculum e materiale commerciale sensibile. Rendilo pubblico solo per il tempo necessario al deploy.
+
+**Alternativa: deploy manuale senza cambiare visibilità**
+
+Se preferisci non cambiare visibilità, puoi forzare un redeploy dalla CLI di Vercel:
+
+```bash
+cd aia-website
+npm install -g vercel   # una sola volta
+
+vercel --prod           # deploy immediato dalla macchina locale
+```
+
+Con la CLI, Vercel carica il build direttamente dalla tua macchina — il repo può restare privato. Richiede `vercel login` la prima volta.
+
+**Quando passare a Vercel Pro** (~20 USD/mese): non appena il sito è attivo con clienti reali. Pro supporta repo privati nativamente e aggiunge: deploy senza pubblicità Vercel, analytics avanzate, team access, funzioni serverless senza cold start.
+
 ### 3.5 Configura dominio custom
 
 1. Su Vercel: **Project Settings** → **Domains**

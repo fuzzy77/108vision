@@ -3,14 +3,64 @@ import { z } from 'zod';
 import { eq, and } from 'drizzle-orm';
 import { AppError } from '@aia/shared';
 import { getDb } from '../lib/db.js';
-import { users, tenants } from '../db/schema.js';
+import { users, tenants, plans } from '../db/schema.js';
 import { requireRole } from '../middleware/auth.js';
 import * as bcrypt from 'bcrypt';
 
 const tenantRouter = new Hono();
 
+const MODEL_TIER_META: Record<string, { label: string; description: string }> = {
+  auto: { label: 'Automatico', description: 'Sceglie il modello migliore in base alla complessita' },
+  'fast-cheap': { label: 'Veloce', description: 'DeepSeek V3 — rapido ed economico' },
+  balanced: { label: 'Bilanciato', description: 'DeepSeek Reasoner — ragionamento' },
+  powerful: { label: 'Potente', description: 'Qwen Max — massima qualita' },
+  coding: { label: 'Coding', description: 'DeepSeek V3 — ottimizzato per codice' },
+  vision: { label: 'Vision', description: 'Qwen VL — analisi immagini' },
+};
+
 // All routes require tenant_admin or platform_admin
 tenantRouter.use('*', requireRole('platform_admin', 'tenant_admin'));
+
+/**
+ * GET /api/tenant/models — List AI models available for this tenant (from plan).
+ * Used by agent editor and settings to show only the models the plan allows.
+ */
+tenantRouter.get('/models', async (c) => {
+  const tenantId = c.get('tenantId') as string;
+  const db = getDb();
+
+  const [tenant] = await db
+    .select({ planId: tenants.planId })
+    .from(tenants)
+    .where(eq(tenants.id, tenantId))
+    .limit(1);
+
+  let allowedModels: string[] = [];
+  if (tenant?.planId) {
+    const [plan] = await db
+      .select({ allowedModels: plans.allowedModels })
+      .from(plans)
+      .where(eq(plans.id, tenant.planId))
+      .limit(1);
+    allowedModels = (plan?.allowedModels ?? []) as string[];
+  }
+
+  // If plan has no restrictions, allow all real tiers
+  if (allowedModels.length === 0) {
+    allowedModels = Object.keys(MODEL_TIER_META).filter((k) => k !== 'auto');
+  }
+
+  // Auto is always available as first option (it routes to allowed tiers)
+  const models = [
+    { id: 'auto', ...MODEL_TIER_META['auto']! },
+    ...allowedModels.filter((id) => id !== 'auto').map((id) => ({
+      id,
+      ...(MODEL_TIER_META[id] ?? { label: id, description: '' }),
+    })),
+  ];
+
+  return c.json({ items: models });
+});
 
 /**
  * GET /api/tenant/users — List users in the caller's tenant.

@@ -8,7 +8,7 @@ CREATE TABLE shared.memories (
   content TEXT NOT NULL,
   tags TEXT[] DEFAULT '{}',
   category VARCHAR(50) DEFAULT 'general',
-  embedding vector(1536),
+  embedding vector(1024),
   source VARCHAR(50) DEFAULT 'user',
   conversation_id UUID REFERENCES shared.conversations(id) ON DELETE SET NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
@@ -31,4 +31,4 @@ CREATE TRIGGER set_updated_at
 COMMENT ON TABLE shared.memories IS 'Persistent AI memory - stores user preferences, project context, decisions. Retrieved via semantic search at conversation start.';
 COMMENT ON COLUMN shared.memories.category IS 'Memory type: general, preference, project, decision, person, workflow';
 COMMENT ON COLUMN shared.memories.source IS 'How the memory was created: user (explicit ask), auto (AI detected important info), system';
-COMMENT ON COLUMN shared.memories.embedding IS '1536-dim vector for semantic similarity search via pgvector';
+COMMENT ON COLUMN shared.memories.embedding IS '1024-dim vector for semantic similarity search via pgvector';

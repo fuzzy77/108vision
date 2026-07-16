@@ -272,13 +272,30 @@ function isAutostartEnabledFromManifest(): boolean {
 }
 
 /**
- * Silent install on agent bootstrap when running from a downloaded binary.
+ * Silent install/update on agent bootstrap.
+ * - If running from a non-install location (e.g. Downloads): install + copy to ~/.108ai/bin
+ * - If running from install location but version changed: update in place
+ * - If already installed and same version: skip
  */
 export async function ensureInstalled(): Promise<InstallResult | null> {
   if (isRunningFromInstallLocation()) {
-    return null;
+    // Already running from install dir — check if manifest version differs (self-update scenario)
+    const manifest = loadInstallManifest();
+    const currentVersion = getAppVersion();
+    if (manifest && manifest.version === currentVersion) {
+      return null;
+    }
+    // Version changed — update manifest
+    saveInstallManifest({
+      version: currentVersion,
+      installedAt: manifest?.installedAt ?? new Date().toISOString(),
+      binaryPath: getInstalledBinaryPath(),
+      autostartEnabled: manifest?.autostartEnabled ?? true,
+    });
+    return { action: 'updated', binaryPath: getInstalledBinaryPath(), pathAdded: false, autostartEnabled: manifest?.autostartEnabled ?? true };
   }
 
+  // Running from outside install dir (e.g. fresh download) — install
   return installAgent({
     silent: true,
     forceCopy: true,

@@ -10,6 +10,7 @@ import { ragService, type RetrievedChunk } from '../services/rag.service.js';
 import { hybridRagService, type HybridRetrievalResult } from '../services/hybrid-rag.service.js';
 import { cacheService } from '../services/cache.service.js';
 import { budgetService } from '../services/budget.service.js';
+import { classifyMessageTier } from '../services/model-router.service.js';
 import { usageTrackingService } from '../services/usage-tracking.service.js';
 import { webSearchService, type WebSearchResult } from '../services/web-search.service.js';
 import { getEnv } from '../lib/env.js';
@@ -129,14 +130,21 @@ chat.post('/', async (c) => {
       .limit(1),
   ]);
 
+  // Plan-level allowed_models
+  const tenantPlan = tenantPlanRows[0];
+  const allowed = (tenantPlan?.allowedModels ?? []) as string[];
+  const effectiveAllowed = allowed.length > 0 ? allowed : ['fast-cheap', 'balanced', 'powerful', 'coding', 'vision'];
+
+  // Auto-routing: classify message complexity and pick the best tier
+  if (modelTier === 'auto' as ModelTier) {
+    modelTier = await classifyMessageTier(input.message, effectiveAllowed);
+  }
+
   // Budget-aware tier enforcement
   modelTier = budgetService.resolveEffectiveTier(modelTier, budgetStatus);
 
   // Plan-level allowed_models enforcement
-  const tenantPlan = tenantPlanRows[0];
-  const allowed = tenantPlan?.allowedModels;
-  if (allowed && allowed.length > 0 && !allowed.includes(modelTier)) {
-    // Downgrade to the best tier that the plan permits
+  if (allowed.length > 0 && !allowed.includes(modelTier)) {
     const fallback = PLAN_TIER_PRIORITY.find((t) => allowed.includes(t));
     modelTier = fallback ?? MODEL_TIERS.FAST_CHEAP as ModelTier;
   }

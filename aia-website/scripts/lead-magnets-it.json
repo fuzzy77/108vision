@@ -1,0 +1,212 @@
+﻿[
+  {
+    "slug": "guida-agile-devops",
+    "title": "Guida Agile & DevOps",
+    "description": "Agile pragmatico e delivery continua senza dogma. CI/CD pipeline, sprint structure, metriche che contano.",
+    "pdfSlug": "agile-devops",
+    "heroTitle": "Agile pragmatico: delivery continua senza dogma",
+    "heroSubtitle": "Non Agile da manuale Scrum. Quello che funziona nelle PMI italiane: consegnare valore velocemente con un team piccolo e budget reale.",
+    "bullets": [
+      "CI/CD pipeline: come implementarla in 2 settimane",
+      "Struttura sprint che non spreca tempo in cerimonie inutili",
+      "4 metriche che contano davvero (e 6 da ignorare)",
+      "Kanban vs Scrum: come scegliere per il tuo contesto",
+      "Deploy frequency: come passare da mensile a quotidiano"
+    ]
+  },
+  {
+    "slug": "guida-ai-pmi",
+    "title": "Guida AI Adoption per PMI",
+    "description": "Framework pratico per adottare l'AI nella tua PMI. Checklist, casi studio, errori da evitare.",
+    "pdfSlug": "ai-adoption",
+    "heroTitle": "Come adottare l'AI nella tua PMI senza bruciare budget",
+    "heroSubtitle": "La guida completa con il framework testato su decine di aziende italiane. Da zero a risultati misurabili.",
+    "bullets": [
+      "Framework AI Readiness Assessment in 5 step",
+      "7 errori fatali che il 90% delle PMI commette",
+      "Checklist operativa per il primo progetto AI",
+      "Casi studio reali con ROI documentato",
+      "Template per proposta al management"
+    ]
+  },
+  {
+    "slug": "guida-architettura",
+    "title": "Guida Scaling Architetturale",
+    "description": "Come scalare la tua architettura software senza riscrivere tutto. Modular monolith, bounded contexts, fitness functions.",
+    "pdfSlug": "architettura",
+    "heroTitle": "Scalare senza riscrivere: guida all'architettura evolutiva",
+    "heroSubtitle": "Il metodo per far crescere il tuo sistema software in modo sostenibile ÔÇö senza big bang rewrite e senza bloccare il business.",
+    "bullets": [
+      "Modular monolith vs microservizi: quando scegliere cosa",
+      "Bounded context: come trovare i confini giusti nel tuo dominio",
+      "Fitness functions: come verificare le regole architetturali",
+      "Strategia di migrazione dal legacy in step incrementali",
+      "Architecture Decision Records (ADR): template pronto all'uso"
+    ]
+  },
+  {
+    "slug": "guida-compliance-ai",
+    "title": "Guida Compliance EU AI Act",
+    "description": "Cosa deve fare la tua azienda per conformarsi all'EU AI Act entro il 2025. Risk classification, documentazione, timeline.",
+    "pdfSlug": "compliance-ai-act",
+    "heroTitle": "EU AI Act: cosa deve fare la tua azienda entro il 2025",
+    "heroSubtitle": "L'AI Act ├¿ legge. Non ├¿ un problema per il futuro. Questa guida ti dice esattamente cosa devi fare, in quale ordine e entro quando.",
+    "bullets": [
+      "Classificazione del rischio: dove si posizionano i tuoi sistemi AI",
+      "Pratiche vietate: cosa devi fermare subito",
+      "Documentazione obbligatoria: il minimo indispensabile per essere compliant",
+      "Timeline 2024-2026: le scadenze che non puoi ignorare",
+      "Quick compliance check: autovalutazione in 10 domande"
+    ]
+  },
+  {
+    "slug": "guida-data-analytics",
+    "title": "Guida Data & Analytics per PMI",
+    "description": "Come trasformare i dati aziendali in decisioni. Data audit, KPI framework, BI tools, data culture.",
+    "pdfSlug": "data-analytics",
+    "heroTitle": "Da dati a decisioni: analytics per PMI italiane",
+    "heroSubtitle": "La tua azienda ha dati ovunque ma nessuno li usa per decidere. Questa guida ti insegna a costruire una cultura del dato in 90 giorni.",
+    "bullets": [
+      "Data audit: dove sono i tuoi dati e quanto valgono",
+      "KPI framework: scegliere le 5 metriche che contano davvero",
+      "Visualizzazione: dashboard che il management capisce e usa",
+      "BI tools per PMI italiane: confronto costi e capacit├á",
+      "Data culture: come far diventare i dati un abito mentale del team"
+    ]
+  },
+  {
+    "slug": "guida-digital-starter",
+    "title": "Guida Digital Starter",
+    "description": "Il primo progetto digitale per chi parte da zero. MVP mindset, vendor selection, budget planning, no-code options.",
+    "pdfSlug": "digital-starter",
+    "heroTitle": "Il primo progetto digitale: guida per chi parte da zero",
+    "heroSubtitle": "Non hai un team tech interno. Non sai da dove iniziare. Questa guida ti porta dal 'voglio digitalizzare' al primo sistema funzionante in 30 giorni.",
+    "bullets": [
+      "MVP mindset: come costruire il minimo che porta valore",
+      "Come valutare e scegliere un fornitore software senza farsi fregare",
+      "Budget planning: quanto costa davvero un progetto digitale",
+      "No-code options: cosa puoi fare senza sviluppatori",
+      "Piano dei primi 30 giorni dalla decisione al go-live"
+    ]
+  },
+  {
+    "slug": "guida-factory",
+    "title": "Guida Development Factory",
+    "description": "Come gestire un team esterno continuativo. Modelli di team, SLA, knowledge transfer, governance ed exit strategy.",
+    "pdfSlug": "factory",
+    "heroTitle": "Team esterno continuativo: guida alla Development Factory",
+    "heroSubtitle": "Hai un team esterno o stai valutando di crearne uno? Questa guida ti insegna a governarlo senza perdere il controllo del prodotto.",
+    "bullets": [
+      "Modelli di team: dedicated, shared, staff augmentation ÔÇö differenze reali",
+      "SLA operativi: cosa misurare e come scriverlo nel contratto",
+      "Knowledge transfer: come evitare che la conoscenza rimanga fuori",
+      "Governance quotidiana: cerimonie, report, decision authority",
+      "Exit strategy: come rientrare il controllo senza disastri"
+    ]
+  },
+  {
+    "slug": "guida-fractional-cto",
+    "title": "Guida Fractional CTO",
+    "description": "Quando e perch├® serve un Fractional CTO. Framework di governance, gestione vendor e team scaling per PMI.",
+    "pdfSlug": "fractional-cto",
+    "heroTitle": "Quando (e perch├®) serve un Fractional CTO",
+    "heroSubtitle": "La guida pratica per capire se un CTO part-time ├¿ la mossa giusta per la tua azienda ÔÇö e come ingaggiarlo correttamente.",
+    "bullets": [
+      "Framework per valutare se ti serve un Fractional CTO ora",
+      "Governance tecnica: cosa gestisce, cosa non gestisce",
+      "Come scalare il team senza sbagliare il primo hire",
+      "Vendor management: come non farti gestire dai fornitori",
+      "Red flag da evitare nel processo di selezione"
+    ]
+  },
+  {
+    "slug": "guida-leadership",
+    "title": "Guida Tech Leadership",
+    "description": "Come fare tech leadership senza burocrazia. Autonomia del team, 1:1 framework, hiring, performance culture.",
+    "pdfSlug": "leadership",
+    "heroTitle": "Tech Leadership senza burocrazia",
+    "heroSubtitle": "La guida operativa per chi guida team tecnici: come costruire autonomia, mantenere la qualit├á e far crescere le persone senza microgestire.",
+    "bullets": [
+      "Framework per delegare senza perdere il controllo",
+      "Template 1:1 settimanale che funziona davvero",
+      "5 segnali che stai assumendo la persona sbagliata",
+      "Performance culture: come misurare senza demotivare",
+      "Knowledge sharing: come non dipendere dall'eroe solitario"
+    ]
+  },
+  {
+    "slug": "guida-nocode",
+    "title": "Guida No-Code Automation per PMI",
+    "description": "Come automatizzare i processi aziendali senza codice. Process mapping, tool selection, integration patterns, ROI.",
+    "pdfSlug": "nocode-automation",
+    "heroTitle": "Automatizzare senza codice: guida No-Code per PMI",
+    "heroSubtitle": "Il 70% dei processi ripetitivi nella tua azienda si pu├▓ automatizzare senza scrivere una riga di codice. Questa guida ti mostra come.",
+    "bullets": [
+      "Process mapping: identifica i processi automatizzabili in un pomeriggio",
+      "Tool selection: confronto Make, Zapier, n8n, Power Automate per PMI italiane",
+      "Integration patterns: come collegare i tuoi software senza API",
+      "Calcolo ROI: template per giustificare l'investimento al management",
+      "Quando smettere di usare no-code e passare allo sviluppo custom"
+    ]
+  },
+  {
+    "slug": "guida-pa",
+    "title": "Guida PA Digitale",
+    "description": "Innovare nella Pubblica Amministrazione italiana. PNRR, procurement, interoperabilit├á, SPID/CIE, compliance.",
+    "pdfSlug": "pubblica-amministrazione",
+    "heroTitle": "Tecnologia per la PA: innovare nella complessit├á",
+    "heroSubtitle": "La guida tecnica per chi lavora con o dentro la Pubblica Amministrazione italiana e vuole portare innovazione reale ÔÇö non solo slide.",
+    "bullets": [
+      "Opportunit├á PNRR 2025: dove sono i fondi e come accedervi",
+      "Procurement PA: come navigare il Codice degli Appalti per soluzioni tech",
+      "Interoperabilit├á: come integrare i sistemi della PA con i propri",
+      "SPID e CIE: integrazione pratica nei servizi digitali",
+      "Framework di compliance: GDPR, AgID, CAD applicati ai progetti concreti"
+    ]
+  },
+  {
+    "slug": "guida-sviluppo-progetto",
+    "title": "Guida Sviluppo Progetto a Scope Fisso",
+    "description": "Come gestire un progetto software a prezzo fisso senza sorprese. Requirements, milestone, acceptance criteria, contratti.",
+    "pdfSlug": "sviluppo-progetto",
+    "heroTitle": "Progetto software a scope fisso: come non farsi fregare",
+    "heroSubtitle": "La guida per chi commissiona un progetto software e vuole sapere esattamente cosa sta comprando ÔÇö prima di firmare.",
+    "bullets": [
+      "Come scrivere requisiti che proteggono sia te che il fornitore",
+      "Milestone e deliverable: come strutturarli in modo vincolante",
+      "Acceptance criteria: come evitare il \"non ├¿ quello che intendevo\"",
+      "Modelli contrattuali: T&M vs fixed price vs time-boxed",
+      "8 red flag che segnalano un fornitore da evitare"
+    ]
+  },
+  {
+    "slug": "guida-trasformazione-digitale",
+    "title": "Guida Trasformazione Digitale",
+    "description": "Il metodo che funziona per la trasformazione digitale nelle PMI italiane. ROI in 90 giorni, integrazione legacy, change management.",
+    "pdfSlug": "trasformazione-digitale",
+    "heroTitle": "Trasformazione digitale per PMI: il metodo che funziona",
+    "heroSubtitle": "Non la trasformazione digitale delle slide di consulenza. Quella concreta, con budget reale, team italiano e risultati in 90 giorni.",
+    "bullets": [
+      "Framework per calcolare il ROI in 90 giorni",
+      "Come integrare i gestionali italiani (TeamSystem, Mexal, Fatture in Cloud)",
+      "Change management: convincere le persone, non solo i processi",
+      "Process mapping: trovare i quick win nascosti",
+      "Piano di 6 settimane dalla diagnosi ai primi risultati"
+    ]
+  },
+  {
+    "slug": "guida-wellbeing",
+    "title": "Guida Tech Wellbeing",
+    "description": "Come prevenire il burnout nel team tech. Segnali precoci, sustainable pace, retention framework.",
+    "pdfSlug": "wellbeing",
+    "heroTitle": "Prevenire il burnout tech: guida per manager",
+    "heroSubtitle": "Il burnout in un team tech costa il doppio di quanto pensi. Questa guida ti insegna a riconoscerlo prima e a prevenirlo con sistemi concreti.",
+    "bullets": [
+      "15 segnali precoci di burnout che i manager ignorano",
+      "Sustainable pace: come misurare la velocit├á sostenibile del team",
+      "Retention framework: cosa tiene le persone (non ├¿ lo stipendio)",
+      "Team health metrics: 3 indicatori da monitorare ogni settimana",
+      "Script per 1:1 focalizzati sul benessere reale"
+    ]
+  }
+]

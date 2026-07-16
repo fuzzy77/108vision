@@ -1,0 +1,103 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import BreadcrumbNav from '@/components/BreadcrumbNav.astro';
+import CTASection from '@/components/CTASection.astro';
+import { type Locale, useTranslations, localizedPath, getChiSiamoContent } from '@/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const c = getChiSiamoContent(locale);
+const homePath = localizedPath('/', locale);
+const contactPath = localizedPath('/contatti', locale);
+---
+
+<BaseLayout locale={locale} title={c.meta.title} description={c.meta.description}>
+  <BreadcrumbNav items={[
+    { label: t.common.home, href: homePath },
+    { label: c.breadcrumb },
+  ]} />
+
+  <section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
+        <div class="lg:col-span-1">
+          <div class="aspect-square bg-gradient-to-br from-primary-100 to-primary-200 rounded-2xl flex items-center justify-center">
+            <div class="text-center">
+              <img src="/logo-108-vision.svg" alt="108 Vision" class="w-48 mx-auto mb-4" />
+              <p class="text-sm text-primary-700 font-medium">{c.hero.founderLabel}</p>
+            </div>
+          </div>
+        </div>
+        <div class="lg:col-span-2">
+          <h1 class="text-4xl font-bold text-slate-900 mb-6">{c.hero.title}</h1>
+          <p class="text-xl text-primary-600 font-medium mb-6">{c.hero.subtitle}</p>
+          <div class="prose max-w-none text-slate-600 space-y-4">
+            {c.hero.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-16 bg-slate-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl font-bold text-slate-900 mb-12 text-center">{c.skills.heading}</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {c.skills.groups.map((group) => (
+          <div class="p-6 bg-white rounded-xl border border-slate-200">
+            <h3 class="font-semibold text-slate-900 mb-3">{group.title}</h3>
+            <ul class="text-sm text-slate-600 space-y-1">
+              {group.items.map((item) => <li>{item}</li>)}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="py-16 bg-white">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl font-bold text-slate-900 mb-8 text-center">{c.philosophy.heading}</h2>
+      <div class="space-y-6">
+        {c.philosophy.items.map((item) => (
+          <div class="p-6 bg-primary-50 rounded-xl border-l-4 border-primary-500">
+            <h3 class="font-semibold text-slate-900 mb-2">{item.title}</h3>
+            <p class="text-sm text-slate-600">{item.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="py-16 bg-slate-50">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl font-bold text-slate-900 mb-12 text-center">{c.experience.heading}</h2>
+      <div class="space-y-8">
+        {c.experience.items.map((item, index, items) => (
+          <div class="flex gap-4">
+            <div class="flex flex-col items-center">
+              <div class="w-3 h-3 bg-primary-600 rounded-full"></div>
+              {index < items.length - 1 && <div class="w-0.5 h-full bg-primary-200"></div>}
+            </div>
+            <div class="pb-8">
+              <p class="text-sm text-primary-600 font-medium">{item.period}</p>
+              <h3 class="font-semibold text-slate-900">{item.title}</h3>
+              <p class="text-sm text-slate-600 mt-1">{item.description}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <CTASection
+    title={c.cta.title}
+    description={c.cta.description}
+    ctaText={c.cta.ctaText}
+    ctaLink={contactPath}
+  />
+</BaseLayout>

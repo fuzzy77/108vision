@@ -219,3 +219,53 @@ export function useTenantUsage(tenantId: string | undefined, period?: { from: st
     enabled: !!tenantId,
   });
 }
+
+// --- Usage breakdown by source (chat, proxy_openai, proxy_anthropic, proxy_mcp) ---
+
+interface GatewayBySource {
+  source: string;
+  inputTokens: number;
+  outputTokens: number;
+  requests: number;
+  costUsd: number;
+}
+
+export interface UsageBySourceItem {
+  source: string;
+  label: string;
+  tokens: number;
+  requests: number;
+  cost: number;
+}
+
+const SOURCE_LABELS: Record<string, string> = {
+  chat: 'Chat Web',
+  chat_cached: 'Chat (cache)',
+  proxy_openai: 'Proxy OpenAI (Cursor, Continue, aider...)',
+  proxy_anthropic: 'Proxy Anthropic (Claude Code)',
+  proxy_mcp: 'MCP Tools',
+};
+
+export function useUsageBySource(period?: { from: string; to: string }, tenantId?: string) {
+  return useQuery({
+    queryKey: ['usage', 'by-source', period, tenantId],
+    queryFn: async (): Promise<UsageBySourceItem[]> => {
+      const now = new Date();
+      const startDate = period?.from ?? format(new Date(now.getFullYear(), now.getMonth(), 1), 'yyyy-MM-dd');
+      const endDate = period?.to ?? format(now, 'yyyy-MM-dd');
+
+      const params: Record<string, string> = { startDate, endDate };
+      if (tenantId) params['tenantId'] = tenantId;
+
+      const result = await api.get<{ items: GatewayBySource[] }>('/admin/usage/by-source', params);
+
+      return result.items.map((item) => ({
+        source: item.source,
+        label: SOURCE_LABELS[item.source] ?? item.source,
+        tokens: item.inputTokens + item.outputTokens,
+        requests: item.requests,
+        cost: item.costUsd,
+      }));
+    },
+  });
+}

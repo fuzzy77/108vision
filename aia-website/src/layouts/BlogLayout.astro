@@ -1,6 +1,8 @@
 ---
 import BaseLayout from './BaseLayout.astro';
 import BreadcrumbNav from '@/components/BreadcrumbNav.astro';
+import { dateLocales, type Locale } from '@/i18n/config';
+import { localizedPath, useTranslations } from '@/i18n';
 
 interface Props {
   title: string;
@@ -10,26 +12,46 @@ interface Props {
   coverImage?: string;
   tags?: string[];
   readTime?: string;
+  locale?: Locale;
 }
 
-const { title, description, date, author, coverImage, tags = [], readTime } = Astro.props;
+const {
+  title,
+  description,
+  date,
+  author,
+  coverImage,
+  tags = [],
+  readTime,
+  locale = 'it',
+} = Astro.props;
 
-const formattedDate = new Date(date).toLocaleDateString('it-IT', {
+const t = useTranslations(locale);
+const formattedDate = new Date(date).toLocaleDateString(dateLocales[locale], {
   year: 'numeric',
   month: 'long',
   day: 'numeric',
 });
+
+const homePath = localizedPath('/', locale);
+const blogPath = localizedPath('/blog', locale);
+
+const authorBio =
+  locale === 'it'
+    ? '15+ anni di esperienza in architettura software, AI e trasformazione digitale. Aiuto PMI e enterprise a costruire sistemi che funzionano davvero.'
+    : '15+ years of experience in software architecture, AI, and digital transformation. I help SMEs and enterprises build systems that actually work.';
 ---
 
-<BaseLayout title={title} description={description} ogImage={coverImage}>
-  <BreadcrumbNav items={[
-    { label: 'Home', href: '/' },
-    { label: 'Blog', href: '/blog' },
-    { label: title },
-  ]} />
+<BaseLayout locale={locale} title={title} description={description} ogImage={coverImage}>
+  <BreadcrumbNav
+    items={[
+      { label: t.common.home, href: homePath },
+      { label: t.nav.blog, href: blogPath },
+      { label: title },
+    ]}
+  />
 
   <article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <!-- Article Header -->
     <header class="mb-10">
       {tags.length > 0 && (
         <div class="flex flex-wrap gap-2 mb-4">
@@ -63,7 +85,6 @@ const formattedDate = new Date(date).toLocaleDateString('it-IT', {
       </div>
     </header>
 
-    <!-- Cover Image -->
     {coverImage && (
       <div class="mb-10 rounded-xl overflow-hidden">
         <img
@@ -75,12 +96,10 @@ const formattedDate = new Date(date).toLocaleDateString('it-IT', {
       </div>
     )}
 
-    <!-- Article Content -->
     <div class="prose max-w-none">
       <slot />
     </div>
 
-    <!-- Author Bio -->
     <footer class="mt-16 pt-8 border-t border-slate-200">
       <div class="flex items-start gap-4">
         <div class="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0">
@@ -88,11 +107,8 @@ const formattedDate = new Date(date).toLocaleDateString('it-IT', {
         </div>
         <div>
           <h3 class="font-semibold text-slate-900">Elios Scoglio</h3>
-          <p class="text-sm text-slate-500 mb-2">Fondatore, 108 Vision | Software Architecture Manager</p>
-          <p class="text-sm text-slate-600">
-            15+ anni di esperienza in architettura software, AI e trasformazione digitale.
-            Aiuto PMI e enterprise a costruire sistemi che funzionano davvero.
-          </p>
+          <p class="text-sm text-slate-500 mb-2">{t.site.founderTitle}</p>
+          <p class="text-sm text-slate-600">{authorBio}</p>
         </div>
       </div>
     </footer>

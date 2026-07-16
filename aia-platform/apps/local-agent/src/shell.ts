@@ -18,6 +18,8 @@ import { join } from 'node:path';
 import { homedir } from 'node:os';
 import { loadConfig, saveConfig, getDefaultGatewayUrl, type AgentConfig } from './config.js';
 import { performBrowserLogin } from './auth.js';
+import { AgentConnection, type AgentMessage } from './connection.js';
+import { handleToolCall } from '@aia/desktop-bridge';
 import { tryLocalExecution } from './local-router.js';
 import { initCache, getCached, getSemanticCached, setCached, getCacheStats, flushToDisk } from './local-cache.js';
 import { findScript, executeScript, updateUsage, listScripts, saveScript } from './script-store.js';
@@ -33,6 +35,9 @@ import { runAutoHealing } from './resources/auto-healer.js';
 import { isLLMBlocked, isModelDowngraded } from './resources/auto-healer.js';
 import { trackTokens } from './resources/config.js';
 import { getCurrentVersion } from './updater.js';
+import { renderToolStart, renderToolDone, renderToolError } from './ui/markdown-render.js';
+import { getRegisteredActions } from './capabilities/index.js';
+import { nanoid } from 'nanoid';
 import {
   initExtensions,
   tryExecuteCustomCommand,
@@ -94,7 +99,6 @@ interface Session {
 const SHELL_DIR = join(homedir(), '.108ai');
 const HISTORY_DIR = join(SHELL_DIR, 'history');
 const SESSIONS_DIR = join(SHELL_DIR, 'sessions');
-const PROMPT = '\x1b[32m108ai\x1b[0m \x1b[90m>\x1b[0m ';
 const PROMPT_CONTINUE = '\x1b[90m  ...\x1b[0m ';
 
 // ---------------------------------------------------------------------------
@@ -108,6 +112,34 @@ let gatewayHttp: string;
 let multilineBuffer: string[] = [];
 let inMultiline = false;
 let sessionModel: string | undefined;
+let shellCwd: string = process.cwd();
+
+function getPrompt(): string {
+  const home = homedir();
+  let display = shellCwd;
+  if (display.startsWith(home)) {
+    display = '~' + display.slice(home.length);
+  }
+  // Shorten if too long
+  if (display.length > 40) {
+    const parts = display.split(/[\\/]/);
+    display = parts.length > 3 ? `.../${parts.slice(-2).join('/')}` : display;
+  }
+  return `\x1b[32m108ai\x1b[0m \x1b[90m${display}\x1b[0m \x1b[90m>\x1b[0m `;
+}
+
+// --- WebSocket Connection State ---
+let wsConnection: AgentConnection | null = null;
+let wsConnected = false;
+let gatewayAgents: Array<{ id: string; name: string; description: string | null; model: string | null }> = [];
+let activeAgentId: string | undefined;
+let sessionConversationId: string | undefined;
+interface PendingChat {
+  resolve: () => void;
+  content: string;
+  tokens: number;
+}
+let pendingChatResolvers = new Map<string, PendingChat>();
 
 // ---------------------------------------------------------------------------
 // Entry Point
@@ -155,6 +187,9 @@ export async function startShell(): Promise<void> {
     }
   }
 
+  // Connect to gateway via WebSocket (for tool-capable chat)
+  connectToGateway();
+
   // Start session
   session = {
     id: `session_${Date.now()}`,
@@ -187,7 +222,7 @@ export async function startShell(): Promise<void> {
   rl = createInterface({
     input: process.stdin,
     output: process.stdout,
-    prompt: PROMPT,
+    prompt: getPrompt(),
     historySize: 500,
   });
 
@@ -230,6 +265,7 @@ export async function startShell(): Promise<void> {
   });
 
   rl.on('close', () => {
+    wsConnection?.disconnect();
     stopResourceMonitor();
     stopJobScheduler();
     stopTriageScheduler();
@@ -243,6 +279,7 @@ export async function startShell(): Promise<void> {
 
   // Graceful shutdown
   process.on('SIGINT', () => {
+    wsConnection?.disconnect();
     stopResourceMonitor();
     stopJobScheduler();
     stopTriageScheduler();
@@ -309,8 +346,9 @@ async function processInput(input: string): Promise<void> {
 
   // --- Pipeline: local → script → cache → LLM ---
 
-  // 1. Local execution
-  const localResult = await tryLocalExecution(input, config);
+  // 1. Local execution (pass shellCwd as first allowed directory for git/file ops)
+  const localConfig = { ...config, allowedDirectories: [shellCwd, ...(config.allowedDirectories ?? [])] };
+  const localResult = await tryLocalExecution(input, localConfig);
   if (localResult) {
     process.stdout.write('\n');
     process.stdout.write(localResult.content);
@@ -373,13 +411,215 @@ async function processInput(input: string): Promise<void> {
     return;
   }
 
-  // 4. LLM call (with conversation context)
+  // 4. LLM call — route via WebSocket (tool-capable) or fallback to HTTP
   process.stdout.write('\n');
-  await callLLM(input);
+  if (wsConnected) {
+    await processInputViaGateway(input);
+  } else {
+    await callLLM(input);
+  }
 }
 
 // ---------------------------------------------------------------------------
-// LLM Call
+// WebSocket Gateway Connection
+// ---------------------------------------------------------------------------
+
+function connectToGateway(): void {
+  if (!config.authToken || !config.tenantId) return;
+
+  // Determine WS URL
+  let wsUrl = config.gatewayUrl;
+  if (!wsUrl) {
+    wsUrl = gatewayHttp
+      .replace(/^https:\/\//, 'wss://')
+      .replace(/^http:\/\//, 'ws://') + '/ws/local-agent';
+  }
+
+  const capabilities = getRegisteredActions();
+
+  wsConnection = new AgentConnection({
+    gatewayUrl: wsUrl,
+    authToken: config.authToken,
+    tenantId: config.tenantId,
+    capabilities,
+    onMessage: (message: AgentMessage) => {
+      handleGatewayMessage(message);
+    },
+    onConnect: () => {
+      wsConnected = true;
+    },
+    onDisconnect: () => {
+      wsConnected = false;
+    },
+  });
+
+  wsConnection.connect();
+}
+
+function handleGatewayMessage(message: AgentMessage): void {
+  const raw = message as unknown as Record<string, unknown>;
+  const msgType = message.type;
+  const msgId = message.id;
+
+  // Config message: agents list from gateway
+  if (msgType === 'config') {
+    const msg = raw as { agents?: Array<{ id: string; name: string; description: string | null; model: string | null }>; models?: string[] };
+    if (msg.agents) gatewayAgents = msg.agents;
+    return;
+  }
+
+  // Token streaming for chat responses
+  if (msgType === 'token') {
+    const content = raw.content as string;
+    const pending = pendingChatResolvers.get(msgId);
+    if (pending) {
+      pending.content += content;
+      process.stdout.write(content);
+    }
+    return;
+  }
+
+  // Tool call from gateway (LLM wants to use a tool on our machine)
+  if (msgType === 'tool_call') {
+    executeToolCallLocally(message);
+    return;
+  }
+
+  // Chat done
+  if (msgType === 'done') {
+    const usage = raw.usage as { totalTokens?: number; model?: string; conversationId?: string } | undefined;
+    if (usage?.conversationId && !sessionConversationId) {
+      sessionConversationId = usage.conversationId;
+    }
+    const pending = pendingChatResolvers.get(msgId);
+    if (pending) {
+      pending.tokens = usage?.totalTokens ?? 0;
+      pending.resolve();
+    }
+    return;
+  }
+
+  // Chat error
+  if (msgType === 'error') {
+    const errorMsg = raw.message as string | undefined;
+    const pending = pendingChatResolvers.get(msgId);
+    if (pending) {
+      process.stdout.write(`  \x1b[31m[ERR]\x1b[0m ${errorMsg ?? 'Unknown error'}\n`);
+      pending.resolve();
+    }
+    return;
+  }
+}
+
+async function executeToolCallLocally(message: AgentMessage): Promise<void> {
+  const tool = message.tool ?? '';
+  const params = message.params ?? {};
+  // Inject shellCwd as default cwd for shell commands
+  if (tool === 'shell.execute' && !(params as { cwd?: string }).cwd) {
+    (params as { cwd?: string }).cwd = shellCwd;
+  }
+  const detail = (params as { path?: string; command?: string }).path ?? (params as { command?: string }).command;
+
+  process.stdout.write(renderToolStart(tool, detail) + '\n');
+
+  const startTime = Date.now();
+  const result = await handleToolCall(tool, params, { allowedPaths: [shellCwd, ...(config.allowedDirectories ?? [])] });
+  const duration = Date.now() - startTime;
+
+  if (result.ok) {
+    process.stdout.write('\x1b[1A\r' + renderToolDone(tool, detail, duration) + '\n');
+    // Send as tool_result so the gateway WS handler routes it correctly
+    wsConnection?.sendRaw({
+      id: message.id,
+      type: 'tool_result',
+      toolCallId: message.id,
+      result: result.result,
+    });
+  } else {
+    process.stdout.write('\x1b[1A\r' + renderToolError(tool, result.error) + '\n');
+    wsConnection?.sendRaw({
+      id: message.id,
+      type: 'tool_result',
+      toolCallId: message.id,
+      error: result.error,
+    });
+  }
+}
+
+/**
+ * Send a chat message via WebSocket to the gateway. The gateway handles RAG,
+ * knowledge base, model routing, and streams tokens + tool_calls back.
+ */
+async function processInputViaGateway(input: string): Promise<void> {
+  const sanitize = sanitizeLlmInput(input);
+  if (!sanitize.safe) {
+    process.stdout.write(`  \x1b[31m[ERR]\x1b[0m ${sanitize.warnings[0] ?? 'Input bloccato'}\n`);
+    return;
+  }
+
+  if (!checkRateLimit(config)) {
+    process.stdout.write(`  \x1b[31m[ERR]\x1b[0m Rate limit exceeded\n`);
+    return;
+  }
+
+  if (isLLMBlocked()) {
+    process.stdout.write('  \x1b[33m[!]\x1b[0m LLM bloccato per emergenza token (auto-healer).\n');
+    return;
+  }
+
+  if (!wsConnection?.isConnected()) {
+    process.stdout.write('  \x1b[33m[!]\x1b[0m Connessione WS persa, fallback a HTTP...\n');
+    await callLLM(input);
+    return;
+  }
+
+  const chatId = nanoid(21);
+  const effectiveModel = isModelDowngraded() ? 'fast-cheap' : sessionModel ?? 'balanced';
+
+  let chatResolve: () => void;
+  const responsePromise = new Promise<void>((resolve) => { chatResolve = resolve; });
+  const pending: PendingChat = { resolve: chatResolve!, content: '', tokens: 0 };
+  pendingChatResolvers.set(chatId, pending);
+
+  try {
+    wsConnection.sendRaw({
+      id: chatId,
+      type: 'chat',
+      message: sanitize.sanitized,
+      model: effectiveModel,
+      agentId: activeAgentId,
+      conversationId: sessionConversationId,
+    });
+  } catch {
+    pendingChatResolvers.delete(chatId);
+    process.stdout.write('  \x1b[33m[!]\x1b[0m Invio fallito, fallback a HTTP...\n');
+    await callLLM(input);
+    return;
+  }
+
+  await responsePromise;
+
+  const content = pending.content;
+  const tokens = pending.tokens;
+  pendingChatResolvers.delete(chatId);
+
+  if (!content.endsWith('\n')) process.stdout.write('\n');
+
+  session.totalTokens += tokens;
+  if (tokens > 0) trackTokens(tokens);
+  printSource('llm', tokens);
+
+  session.messages.push({
+    role: 'assistant',
+    content,
+    timestamp: Date.now(),
+    source: 'llm',
+    tokens,
+  });
+}
+
+// ---------------------------------------------------------------------------
+// LLM Call (HTTP fallback)
 // ---------------------------------------------------------------------------
 
 async function callLLM(input: string): Promise<void> {
@@ -570,6 +810,42 @@ async function handleSlashCommand(input: string): Promise<void> {
   }
 
   if (cmd === 'agent' || cmd === 'agents') {
+    // Handle gateway agent commands first
+    if (args[0] === 'list' && gatewayAgents.length > 0) {
+      process.stdout.write('\n  \x1b[1mGateway Agents\x1b[0m (dalla dashboard)\n\n');
+      for (const a of gatewayAgents) {
+        const marker = a.id === activeAgentId ? '\x1b[32m*\x1b[0m' : ' ';
+        const model = a.model ? `\x1b[90m[${a.model}]\x1b[0m` : '';
+        process.stdout.write(`  ${marker} \x1b[1m${a.name}\x1b[0m ${model}\n`);
+        if (a.description) process.stdout.write(`      \x1b[90m${a.description}\x1b[0m\n`);
+      }
+      if (activeAgentId) {
+        const active = gatewayAgents.find(a => a.id === activeAgentId);
+        process.stdout.write(`\n  Attivo: \x1b[1m${active?.name ?? activeAgentId}\x1b[0m\n`);
+      }
+      process.stdout.write(`\n  Usa: /agent use <nome>\n\n`);
+      // Also show local agents
+      const output = await handleAgentCli(args, getExtensionShellContext());
+      process.stdout.write(output);
+      return;
+    }
+    if (args[0] === 'use' && args[1]) {
+      const name = args.slice(1).join(' ').toLowerCase();
+      const match = gatewayAgents.find(a => a.name.toLowerCase() === name || a.id === name);
+      if (match) {
+        activeAgentId = match.id;
+        process.stdout.write(`  \x1b[32m[OK]\x1b[0m Agent attivo: \x1b[1m${match.name}\x1b[0m (gateway)\n`);
+        return;
+      }
+      // Fall through to local agents handler
+    }
+    if (args[0] === 'reset' || args[0] === 'none') {
+      if (activeAgentId) {
+        activeAgentId = undefined;
+        process.stdout.write('  \x1b[32m[OK]\x1b[0m Agent gateway disattivato\n');
+        return;
+      }
+    }
     const output = await handleAgentCli(args, getExtensionShellContext());
     process.stdout.write(output);
     return;
@@ -663,6 +939,53 @@ async function handleSlashCommand(input: string): Promise<void> {
       printStats();
       break;
 
+    case 'status': {
+      const connStatus = wsConnected ? '\x1b[32mConnesso\x1b[0m' : '\x1b[31mDisconnesso\x1b[0m';
+      process.stdout.write(`\n  Gateway WS: ${connStatus}\n`);
+      process.stdout.write(`  Gateway HTTP: ${gatewayHttp}\n`);
+      process.stdout.write(`  CWD: ${shellCwd}\n`);
+      process.stdout.write(`  Agents disponibili: ${gatewayAgents.length}\n`);
+      if (activeAgentId) {
+        const active = gatewayAgents.find(a => a.id === activeAgentId);
+        process.stdout.write(`  Agent attivo: ${active?.name ?? activeAgentId}\n`);
+      }
+      process.stdout.write(`  Modalita\': ${wsConnected ? 'WS (tool-capable)' : 'HTTP (text-only)'}\n\n`);
+      break;
+    }
+
+    case 'logout': {
+      config.authToken = '';
+      config.tenantId = '';
+      config.tokenExpiresAt = undefined;
+      saveConfig(config);
+      wsConnection?.disconnect();
+      wsConnected = false;
+      gatewayAgents = [];
+      activeAgentId = undefined;
+      process.stdout.write('  Logout completato. Riavvia per ri-autenticarti.\n');
+      break;
+    }
+
+    case 'cd': {
+      if (args.length === 0) {
+        shellCwd = homedir();
+      } else {
+        const target = args.join(' ');
+        const resolved = target.startsWith('/') || target.startsWith('~') || /^[A-Z]:/i.test(target)
+          ? target.replace(/^~/, homedir())
+          : join(shellCwd, target);
+        if (existsSync(resolved)) {
+          shellCwd = resolved;
+        } else {
+          process.stdout.write(`  \x1b[31m[ERR]\x1b[0m Directory non trovata: ${resolved}\n`);
+          break;
+        }
+      }
+      rl.setPrompt(getPrompt());
+      process.stdout.write(`  ${shellCwd}\n`);
+      break;
+    }
+
     case 'model': {
       if (args.length === 0) {
         const current = sessionModel ?? '(default gateway / persona)';
@@ -733,6 +1056,7 @@ async function handleSlashCommand(input: string): Promise<void> {
         totalTokens: 0,
         tokensSaved: 0,
       };
+      sessionConversationId = undefined;
       process.stdout.write('  \x1b[32m[OK]\x1b[0m Nuova sessione iniziata.\n');
       break;
 
@@ -954,6 +1278,8 @@ function printShellBanner(): void {
   process.stdout.write('  \x1b[32m|\x1b[0m                                        \x1b[32m|\x1b[0m\n');
   process.stdout.write('  \x1b[32m+========================================+\x1b[0m\n');
   process.stdout.write('\n');
+  const connLabel = wsConnected ? '\x1b[32mConnesso\x1b[0m' : '\x1b[90min connessione...\x1b[0m';
+  process.stdout.write(`  Gateway: ${connLabel}  \x1b[90m(/status per dettagli)\x1b[0m\n`);
   process.stdout.write('  \x1b[90mScrivi una domanda o un comando. /help per i comandi.\x1b[0m\n');
   process.stdout.write('  \x1b[90mUsa ``` per scrivere testo multi-riga. Ctrl+C per uscire.\x1b[0m\n');
   const activeAgent = formatActivePersonaLabel();
@@ -1098,6 +1424,12 @@ function printHelp(): void {
   /connect <srv>     Collega un servizio (gmail, calendar, imap, chrome)
   /integrations      Mostra servizi collegati
 
+  \x1b[1mNavigazione & Connessione:\x1b[0m
+
+  /cd <path>         Cambia directory di lavoro
+  /status            Stato connessione gateway + info sessione
+  /logout            Disconnetti e cancella token (richiede riavvio)
+
   \x1b[1mScorciatoie:\x1b[0m
 
   \`\`\`                  Inizia/termina input multi-riga
@@ -1109,7 +1441,8 @@ function printHelp(): void {
   1. Esecuzione locale (file, git, sistema) -> 0 token
   2. Script salvati (gia' generati prima) -> 0 token
   3. Cache locale (domanda gia' fatta) -> 0 token
-  4. LLM via gateway (solo se necessario)
+  4. LLM via gateway WS (tool-capable, RAG, knowledge base)
+     Fallback: HTTP se WS non connesso
 
 `);
 }

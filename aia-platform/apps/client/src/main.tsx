@@ -2,6 +2,7 @@ import { StrictMode, lazy, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { RouterProvider, createRouter, createRootRoute, createRoute } from '@tanstack/react-router';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { RootLayout } from '@/routes/__root';
 import { LoginPage } from '@/routes/login';
 import { HomePage } from '@/routes/index';
@@ -144,8 +145,10 @@ if (!rootElement) throw new Error('Root element not found');
 
 createRoot(rootElement).render(
   <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+      </QueryClientProvider>
+    </ErrorBoundary>
   </StrictMode>,
 );

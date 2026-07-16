@@ -1,0 +1,18 @@
+---
+import LeadMagnetLayout from '@/layouts/LeadMagnetLayout.astro';
+import { type Locale, getLeadMagnetContent } from '@/i18n';
+
+interface Props {
+  locale: Locale;
+  magnetSlug: string;
+}
+
+const { locale, magnetSlug } = Astro.props;
+const content = getLeadMagnetContent(magnetSlug, locale);
+
+if (!content) {
+  throw new Error(`Lead magnet not found: ${magnetSlug} (${locale})`);
+}
+---
+
+<LeadMagnetLayout locale={locale} {...content} />
