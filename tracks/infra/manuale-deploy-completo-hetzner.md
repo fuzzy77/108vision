@@ -1093,7 +1093,7 @@ sudo chown deploy:deploy /var/log/108vision-deploy.log
 
 ### 10.2 Webhook server
 
-Installa e configura come descritto nel manuale originale (`tracks/108-ai/platform-docs/manuale-deploy-hetzner.md`, sezione 9).
+Installa e configura come descritto nel manuale originale (`tracks/software-in-mano/prodotti/aia-platform/platform-docs/manuale-deploy-hetzner.md`, sezione 9).
 
 ---
 

@@ -2,7 +2,6 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Hero from '@/components/Hero.astro';
 import ServiceCard from '@/components/ServiceCard.astro';
-import TestimonialCarousel from '@/components/TestimonialCarousel.astro';
 import CTASection from '@/components/CTASection.astro';
 import {
   type Locale,
@@ -20,8 +19,7 @@ const { locale } = Astro.props;
 const t = useTranslations(locale);
 const content = localizeHomeLinks(getHomeContent(locale), locale);
 const contactPath = localizedPath('/contatti', locale);
-const wellbeingPath = localizedPath('/wellbeing-app', locale);
-const aboutPath = localizedPath('/chi-sono', locale);
+const wellbeingPath = localizedPath('/wellbeing', locale);
 ---
 
 <BaseLayout
@@ -34,61 +32,50 @@ const aboutPath = localizedPath('/chi-sono', locale);
     subtitle={content.hero.subtitle}
     ctaText={t.common.bookCall}
     ctaLink={contactPath}
-    learnMoreText={t.common.learnMore}
-    learnMoreLink={aboutPath}
   />
 
-  <section id="servizi" class="py-20 bg-slate-50">
+  <section id="canali" class="py-20 bg-slate-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-16">
         <h2 class="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-          {content.services.heading}
+          {content.channels.heading}
         </h2>
         <p class="text-lg text-slate-600 max-w-2xl mx-auto">
-          {content.services.subheading}
+          {content.channels.subheading}
         </p>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {content.services.items.map((service) => (
-          <ServiceCard {...service} />
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+        {content.channels.items.map((channel) => (
+          <ServiceCard {...channel} />
         ))}
       </div>
     </div>
   </section>
 
-  <section class="py-16 bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-        {content.stats.items.map((stat) => (
-          <div class="p-8">
-            <div class="text-4xl md:text-5xl font-bold text-primary-600 mb-2">{stat.value}</div>
-            <div class="text-sm font-medium text-slate-600 uppercase tracking-wider">{stat.label}</div>
-            <p class="text-sm text-slate-500 mt-2">{stat.detail}</p>
+  <section class="py-20 bg-white">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl font-bold text-slate-900 mb-12 text-center">
+        {content.how.heading}
+      </h2>
+      <div class="space-y-8">
+        {content.how.steps.map((step) => (
+          <div class="border-l-4 border-primary-600 pl-6">
+            <h3 class="font-semibold text-slate-900 mb-1">{step.title}</h3>
+            <p class="text-slate-600">{step.text}</p>
           </div>
         ))}
       </div>
     </div>
   </section>
 
-  <section class="py-20 bg-slate-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-12">
-        <h2 class="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-          {content.testimonials.heading}
-        </h2>
-        <p class="text-lg text-slate-600">
-          {content.testimonials.subheading}
-        </p>
-      </div>
-      <TestimonialCarousel testimonials={content.testimonials.items} />
-    </div>
-  </section>
-
-  <section class="py-16 bg-gradient-to-r from-indigo-950 to-violet-900 text-white">
+  <section class="py-16 bg-gradient-to-r from-slate-900 to-slate-800 text-white">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <p class="text-sm uppercase tracking-wider text-slate-400 mb-2 text-center md:text-left">
+        {content.wellbeing.eyebrow}
+      </p>
       <div class="flex flex-col md:flex-row items-center gap-8">
-        <img src="/app/wellbeing-icon.png" alt="Wellbeing 108" class="w-20 h-20 rounded-2xl shadow-lg flex-shrink-0" />
+        <img src="/app/wellbeing-icon.png" alt="WellBeing" class="w-20 h-20 rounded-2xl shadow-lg flex-shrink-0" />
         <div class="text-center md:text-left flex-1">
           <h2 class="text-2xl font-bold mb-2">{content.wellbeing.title}</h2>
           <p class="text-slate-300">{content.wellbeing.description}</p>

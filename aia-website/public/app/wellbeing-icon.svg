@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="WellBeing app icon">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#131a52"/>
+      <stop offset="100%" stop-color="#1a2568"/>
+    </linearGradient>
+    <linearGradient id="ring" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#7eb8ff" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#4a7fd4" stop-opacity="0.85"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="108" fill="url(#bg)"/>
+  <!-- Breathing rings -->
+  <circle cx="256" cy="248" r="118" fill="none" stroke="url(#ring)" stroke-width="10" opacity="0.35"/>
+  <circle cx="256" cy="248" r="88" fill="none" stroke="url(#ring)" stroke-width="12" opacity="0.55"/>
+  <circle cx="256" cy="248" r="58" fill="none" stroke="#e8eaf6" stroke-width="14" opacity="0.9"/>
+  <circle cx="256" cy="248" r="22" fill="#e8eaf6"/>
+  <!-- Wordmark -->
+  <text x="256" y="418" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="42" font-weight="600" fill="#e8eaf6" letter-spacing="1">WellBeing</text>
+</svg>

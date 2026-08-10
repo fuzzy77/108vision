@@ -1,363 +1,299 @@
 ---
 title: "108 Vision — Indice Completo"
 brand: "108 Vision"
-claim: "Costruiamo la direzione, non solo il codice."
+claim: "Il partner tecnico che prende in mano la situazione."
 author: "Elios Scoglio"
-version: "8.0"
-date: "2026-06-18"
+version: "9.0"
+date: "2026-08-10"
 ---
 
 # 108 Vision — Indice Completo
 
-> **Ultimo aggiornamento:** 2026-06-18
+> **Ultimo aggiornamento:** 2026-08-10  
+> **Posizionamento:** Partner Tecnico — 2 canali, competenze unificate  
+> **Fonte strategia:** [brand/riposizionamento-partner-tecnico.md](brand/riposizionamento-partner-tecnico.md)  
 > **Owner:** Elios Scoglio | **Web:** www.108vision.it | **Email:** info@108vision.it
 
 ---
 
-## Struttura Repository
+## Struttura Repository (v9 — allineata al riposizionamento)
 
 ```
 Vision/
-├── CLAUDE.md                        ← Istruzioni per AI copilot
-├── aia-platform/                    ← Codice sorgente piattaforma AI (monorepo TS)
-│   └── CLAUDE.md
-├── aia-website/                     ← Sito web (Astro + Tailwind) — solo codice
+├── CLAUDE.md
+├── aia-platform/                 ← Codice piattaforma AI
+├── aia-website/                  ← Sito (Astro) — solo codice
 │
-└── tracks/                          ← TUTTI i documenti .md vivono qui
-    ├── INDEX.md                     ← Sei qui. Mappa completa.
+└── tracks/
+    ├── INDEX.md                  ← Sei qui
+    ├── brand/                    ← Identità, voice, design, riposizionamento
     │
-    ├── brand/                       ← Identità visiva, copy, design, template, loghi
-    │   ├── 108-VISION-Brand-Copy-Sito.md
-    │   ├── brand-voice-strategy.md
-    │   ├── design-system.md
-    │   ├── logo/                   ← SVG loghi track + brand
-    │   └── templates/
-    │       ├── manuale-template.md
-    │       ├── playbook-template.md
-    │       └── sito-template.md
+    ├── direzione-tecnica/        ← CANALE 1 — guida team / governance
+    │   ├── cto/                  ← (ex 108-cto)
+    │   ├── leadership/           ← (ex 108-lead)
+    │   ├── agile-devops/         ← (ex 108-agile)
+    │   └── wellbeing-team/       ← (ex 108-wellbeing) consulenza team
     │
-    ├── 108-ai/                     ← Piattaforma AI aziendale (SaaS)
-    │   ├── platform-docs/          ← Docs tecnici piattaforma (phase, ADR, deploy)
-    │   ├── local-agent-docs/       ← Docs Desktop Agent (README, guide, ADR)
-    │   └── website-docs/           ← Docs sito web (setup, blog)
-    ├── 108-ai-adoption/            ← Adozione AI nelle PMI
-    ├── 108-cto/                    ← Fractional CTO / governance tecnica
-    ├── 108-arch/                   ← Architettura software & scaling
-    ├── 108-digital/                ← Trasformazione digitale
-    ├── 108-lead/                   ← Tech leadership & management
-    ├── 108-agile/                  ← Agile, CI/CD, DevOps culture
-    ├── 108-wellbeing/              ← Benessere tech team
-    ├── 108-pa/                     ← Consulenza tecnica PA / MEPA
-    ├── 108-starter/                ← Primo progetto digitale
-    ├── 108-dev/                    ← Sviluppo (progetto + factory)
-    ├── 108-compliance/             ← EU AI Act
-    ├── 108-nocode/                 ← Automazione No-Code
-    ├── 108-data/                   ← Analytics & BI
-    ├── 108-sales/                  ← Sales kit e content calendar
-    ├── study/                      ← Manuali di studio per il consulente
-    ├── infra/                      ← Manuali infrastruttura & deploy
-    ├── Curriculum/                 ← CV professionali (PDF/DOCX)
-    └── ARCHITETTURA-TRACKS.md      ← Schema architetturale track
+    ├── software-in-mano/         ← CANALE 2 — costruisci / adotta / evolvi
+    │   ├── sviluppo/             ← (ex 108-dev) progetto + factory
+    │   ├── digitale/             ← (ex 108-digital)
+    │   ├── nocode/               ← (ex 108-nocode)
+    │   ├── data/                 ← (ex 108-data)
+    │   ├── starter/              ← (ex 108-starter)
+    │   └── prodotti/             ← prodotti-prova (non canali vendita)
+    │       └── aia-platform/     ← (ex 108-ai) docs + agent + website-docs
+    │
+    ├── competenze/               ← trasversali ai 2 canali
+    │   ├── architettura/         ← (ex 108-arch)
+    │   └── ai-adozione/          ← (ex 108-ai-adoption) metodo, non prodotto
+    │
+    ├── retention/                ← fuori nav M2, su richiesta / kit interno
+    │   ├── compliance/           ← (ex 108-compliance)
+    │   ├── pa/                   ← (ex 108-pa)
+    │   └── sales/                ← (ex 108-sales)
+    │
+    ├── study/                    ← Manuali studio consulente
+    ├── infra/                    ← Deploy / VPS
+    ├── Curriculum/
+    ├── gpt-export/
+    └── ARCHITETTURA-TRACKS.md    ← Legacy portfolio analysis (pre-riposizionamento)
 ```
 
+**Mappa rapida ex-track → nuovo path**
+
+| Era | Nuovo path | Ruolo |
+|---|---|---|
+| `108-cto/` | `direzione-tecnica/cto/` | Canale DT |
+| `108-lead/` | `direzione-tecnica/leadership/` | Canale DT |
+| `108-agile/` | `direzione-tecnica/agile-devops/` | Canale DT |
+| `108-wellbeing/` | `direzione-tecnica/wellbeing-team/` | Canale DT |
+| `108-dev/` | `software-in-mano/sviluppo/` | Canale SiM |
+| `108-digital/` | `software-in-mano/digitale/` | Canale SiM |
+| `108-nocode/` | `software-in-mano/nocode/` | Canale SiM |
+| `108-data/` | `software-in-mano/data/` | Canale SiM |
+| `108-starter/` | `software-in-mano/starter/` | Canale SiM |
+| `108-ai/` | `software-in-mano/prodotti/aia-platform/` | Prodotto-prova |
+| `108-arch/` | `competenze/architettura/` | Competenza condivisa |
+| `108-ai-adoption/` | `competenze/ai-adozione/` | Metodo AI |
+| `108-compliance/` | `retention/compliance/` | Retention |
+| `108-pa/` | `retention/pa/` | Retention |
+| `108-sales/` | `retention/sales/` | Kit interno |
+
 ---
 
-## Documenti per Categoria
+## Brand & Identità (`brand/`)
 
-### Configurazione
-
-- [INDEX.md](INDEX.md) — Indice completo (sei qui)
-- [../CLAUDE.md](../CLAUDE.md) — Istruzioni per AI copilot 108 Vision
-
----
-
-### Brand & Identità (`brand/`)
-
-- [108-VISION-Brand-Copy-Sito.md](brand/108-VISION-Brand-Copy-Sito.md) — Brand completo, copy sito, struttura pagine
-- [brand-voice-strategy.md](brand/brand-voice-strategy.md) — Tone of voice, guida copy, stile comunicazione
-- [design-system.md](brand/design-system.md) — Sistema visivo: colori, tipografia, componenti UI
+- [riposizionamento-partner-tecnico.md](brand/riposizionamento-partner-tecnico.md) — **Fonte di verità** Partner Tecnico v2
+- [scheda-call-partner-tecnico.md](brand/scheda-call-partner-tecnico.md) — Scheda call M1 (PMI)
+- [scheda-call-partner-consulenza.md](brand/scheda-call-partner-consulenza.md) — Scheda call partner consulenza (B/C)
+- [partner-onepager-BC.md](brand/partner-onepager-BC.md) — One-pager per società di consulenza
+- [partner-accordo-quadro-BC.md](brand/partner-accordo-quadro-BC.md) — Bozza accordo quadro B/C
+- [linkedin-draft-partner-tecnico.md](brand/linkedin-draft-partner-tecnico.md) — Draft LinkedIn (post-rehearsal)
+- [108-VISION-Brand-Copy-Sito.md](brand/108-VISION-Brand-Copy-Sito.md) — Legacy copy sito (fino a M2)
+- [brand-voice-strategy.md](brand/brand-voice-strategy.md) — Tone of voice
+- [design-system.md](brand/design-system.md) — Sistema visivo
 
 **Template (`brand/templates/`)**
 
-- [manuale-template.md](brand/templates/manuale-template.md) — Template base per ogni manuale cliente
-- [playbook-template.md](brand/templates/playbook-template.md) — Template base per ogni playbook consulente
-- [sito-template.md](brand/templates/sito-template.md) — Template base per ogni pagina servizio web
+- [manuale-template.md](brand/templates/manuale-template.md)
+- [playbook-template.md](brand/templates/playbook-template.md)
+- [sito-template.md](brand/templates/sito-template.md)
 
 ---
 
-### Track: 108 AI Adoption (`108-ai-adoption/`)
+## Canale 1 — Direzione Tecnica (`direzione-tecnica/`)
 
-> "Adottare l'AI è una decisione di business, non tecnologica."
+> Hai già un team. Ti manca chi lo guida.
 
-- [108AIA-README.md](108-ai-adoption/108AIA-README.md) — Indice e overview del programma
-- [108AIA-Manuale.md](108-ai-adoption/108AIA-Manuale.md) — Guida completa adozione AI per PMI
-- [108AIA-Sito.md](108-ai-adoption/108AIA-Sito.md) — Copy pagina sito
-- [108AIA-Piccole-Imprese.md](108-ai-adoption/108AIA-Piccole-Imprese.md) — Materiali segmento piccole imprese (5-30 pers.)
-- [108AIA-Medie-Imprese.md](108-ai-adoption/108AIA-Medie-Imprese.md) — Materiali segmento medie imprese (30-200 pers.)
+- [README.md](direzione-tecnica/README.md) — Overview canale
+- [**PLAYBOOK.md**](direzione-tecnica/PLAYBOOK.md) — **Fronte commerciale operativo**
 
----
+### CTO / governance (`direzione-tecnica/cto/`) — *superseded commercialmente da Playbook DT (M2)*
 
-### Track: 108 AI (`108-ai/`)
+- [108CTO-Playbook.md](direzione-tecnica/cto/108CTO-Playbook.md) — Framework operativo (legacy name Fractional CTO)
+- [108CTO-Manuale.md](direzione-tecnica/cto/108CTO-Manuale.md)
+- [108CTO-Principi-Tecnici.md](direzione-tecnica/cto/108CTO-Principi-Tecnici.md)
+- [108CTO-Sito.md](direzione-tecnica/cto/108CTO-Sito.md)
+- Prep clienti: `PREP_*`, `PRES_*`, analisi Veralab — restano in `cto/`
 
-> "L'AI che conosce la tua azienda."
+### Leadership (`direzione-tecnica/leadership/`)
 
-- [108AI-Playbook.md](108-ai/108AI-Playbook.md) — Processo delivery piattaforma
-- [108AI-Manuale.md](108-ai/108AI-Manuale.md) — Architettura tecnica e funzionalità
-- [108AI-Manuale-Installazione.md](108-ai/108AI-Manuale-Installazione.md) — Guida install locale + cloud + cost control
-- [108AI-Sito.md](108-ai/108AI-Sito.md) — Copy pagina sito
-- [108AI-Assistente-Aziendale.md](108-ai/108AI-Assistente-Aziendale.md) — Studio di fattibilità e architettura assistente
-- [108AI-Desktop-Bridge.md](108-ai/108AI-Desktop-Bridge.md) — Manuale Desktop Bridge (OS-level agent)
-- [108AI-PLATFORM-AI-Piano-Esecutivo.md](108-ai/108AI-PLATFORM-AI-Piano-Esecutivo.md) — Piano go-to-market ed esecutivo piattaforma
-- [desktop-agent-roadmap-complete.md](108-ai/desktop-agent-roadmap-complete.md) — Roadmap completa Desktop Agent (11 sprint, 353h)
+- [108LEAD-Playbook.md](direzione-tecnica/leadership/108LEAD-Playbook.md)
+- [108LEAD-Manuale.md](direzione-tecnica/leadership/108LEAD-Manuale.md)
+- [108LEAD-Sito.md](direzione-tecnica/leadership/108LEAD-Sito.md)
 
-**Documentazione tecnica piattaforma (`108-ai/platform-docs/`)**
+### Agile & DevOps (`direzione-tecnica/agile-devops/`)
 
-- [phase-0-infrastructure.md](108-ai/platform-docs/phase-0-infrastructure.md) — Setup infrastruttura base (DB, cache, vettori)
-- [phase-4-graph-kb.md](108-ai/platform-docs/phase-4-graph-kb.md) — Graph Knowledge Base con Neo4j
-- [phase-5-desktop-agent-v2.md](108-ai/platform-docs/phase-5-desktop-agent-v2.md) — Desktop Agent v2: coding assistant completo
-- [ADR-001-neo4j-graph-vector.md](108-ai/platform-docs/ADR-001-neo4j-graph-vector.md) — ADR: scelta Neo4j come Graph Knowledge Engine
-- [coding-agent-capabilities.md](108-ai/platform-docs/coding-agent-capabilities.md) — Capabilities coding agent
-- [desktop-agent-installer-plan.md](108-ai/platform-docs/desktop-agent-installer-plan.md) — Piano installer desktop agent
-- [desktop-client-master-plan.md](108-ai/platform-docs/desktop-client-master-plan.md) — Master plan desktop client
-- [manuale-deploy-hetzner.md](108-ai/platform-docs/manuale-deploy-hetzner.md) — Manuale deploy Hetzner
-- [security-hardening-backlog.md](108-ai/platform-docs/security-hardening-backlog.md) — Backlog security hardening
-- [base-principles.md](108-ai/platform-docs/base-principles.md) — Principi base template
-- [PLAN-integration-opencode-goose-mcp.md](108-ai/platform-docs/PLAN-integration-opencode-goose-mcp.md) — Piano integrazione OpenCode/MCP (Opzione B: Embed)
-- [coding-engine-setup-guide.md](108-ai/platform-docs/coding-engine-setup-guide.md) — Guida setup completa Coding Engine (locale + cloud)
+- [108AGILE-Playbook.md](direzione-tecnica/agile-devops/108AGILE-Playbook.md)
+- [108AGILE-Manuale.md](direzione-tecnica/agile-devops/108AGILE-Manuale.md)
+- [108AGILE-Sito.md](direzione-tecnica/agile-devops/108AGILE-Sito.md)
 
-**Desktop Agent docs (`108-ai/local-agent-docs/`)**
+### Wellbeing team (`direzione-tecnica/wellbeing-team/`)
 
-- [README.md](108-ai/local-agent-docs/README.md) — Desktop Agent: capabilities OS-level
-- [CHANGELOG.md](108-ai/local-agent-docs/CHANGELOG.md) — Changelog release
-- [ADR-001-extensions-architecture.md](108-ai/local-agent-docs/ADR-001-extensions-architecture.md) — ADR: architettura estensioni
-- [INTEGRATIONS-API.md](108-ai/local-agent-docs/INTEGRATIONS-API.md) — API integrazioni
-- [MULTI-AGENT-PLAYBOOK.md](108-ai/local-agent-docs/MULTI-AGENT-PLAYBOOK.md) — Playbook multi-agent orchestration
-- [SECURITY-RUNBOOK.md](108-ai/local-agent-docs/SECURITY-RUNBOOK.md) — Runbook sicurezza
-- [USER-GUIDE.md](108-ai/local-agent-docs/USER-GUIDE.md) — Guida utente
+- [108WELL-Playbook.md](direzione-tecnica/wellbeing-team/108WELL-Playbook.md)
+- [108WELL-Manuale.md](direzione-tecnica/wellbeing-team/108WELL-Manuale.md)
+- [108WELL-Sito.md](direzione-tecnica/wellbeing-team/108WELL-Sito.md)
 
-**Sito web docs (`108-ai/website-docs/`)**
-
-- [README.md](108-ai/website-docs/README.md) — Overview stack sito (Astro + Tailwind)
-- [SETUP-GUIDE.md](108-ai/website-docs/SETUP-GUIDE.md) — Setup completo: dominio Aruba, email Zoho, deploy
-- [blog-benvenuto.md](108-ai/website-docs/blog-benvenuto.md) — Primo post blog: AI strategy per PMI
+> Distinto da **Wellbeing App** (prodotto sul sito `/wellbeing`) — prova di Software in Mano.
 
 ---
 
-### Track: 108 CTO (`108-cto/`)
+## Canale 2 — Software in Mano (`software-in-mano/`)
 
-> "La governance tecnica che ti manca."
+> Costruiamo, gestiamo, facciamo evolvere il software.
 
-- [108CTO-Playbook.md](108-cto/108CTO-Playbook.md) — Framework operativo Fractional CTO
-- [108CTO-Manuale.md](108-cto/108CTO-Manuale.md) — Guida ruolo e deliverable
-- [108CTO-Principi-Tecnici.md](108-cto/108CTO-Principi-Tecnici.md) — Studio tecnico: 15 aree fondamentali (architettura, testing, security, AI, team, costi)
-- [108CTO-Sito.md](108-cto/108CTO-Sito.md) — Copy pagina sito
-- [PREP_Call_EticaSoluzioni_20260616.md](108-cto/PREP_Call_EticaSoluzioni_20260616.md) — Prep call Etica Soluzioni
-- [PREP_Call_EticaSoluzioni_KNOWHOW.md](108-cto/PREP_Call_EticaSoluzioni_KNOWHOW.md) — Know-how Etica Soluzioni
+- [README.md](software-in-mano/README.md)
+- [**PLAYBOOK.md**](software-in-mano/PLAYBOOK.md) — **Fronte commerciale operativo**
+- [prodotti/README.md](software-in-mano/prodotti/README.md)
 
----
+### Sviluppo (`software-in-mano/sviluppo/`) — *superseded commercialmente da Playbook SiM (M2)*
 
-### Track: 108 Arch (`108-arch/`)
+**Progetto**
 
-> "Il debito tecnico ha un costo invisibile."
+- [108DEV-Playbook-Progetto.md](software-in-mano/sviluppo/108DEV-Playbook-Progetto.md)
+- [108DEV-Manuale-Progetto.md](software-in-mano/sviluppo/108DEV-Manuale-Progetto.md)
+- [108DEV-Sito-Progetto.md](software-in-mano/sviluppo/108DEV-Sito-Progetto.md)
 
-- [108ARCH-Playbook.md](108-arch/108ARCH-Playbook.md) — Processo audit e redesign architetturale
-- [108ARCH-Manuale.md](108-arch/108ARCH-Manuale.md) — Principi architetturali e pattern
-- [108ARCH-Sito.md](108-arch/108ARCH-Sito.md) — Copy pagina sito
+**Factory / retainer** (nome interno; al cliente = Software in Mano retainer)
 
----
+- [108DEV-Playbook-Factory.md](software-in-mano/sviluppo/108DEV-Playbook-Factory.md)
+- [108DEV-Manuale-Factory.md](software-in-mano/sviluppo/108DEV-Manuale-Factory.md)
+- [108DEV-Sito-Factory.md](software-in-mano/sviluppo/108DEV-Sito-Factory.md)
 
-### Track: 108 Digital (`108-digital/`)
+### Digitale / NoCode / Data / Starter
 
-> "Digitalizzare è ripensare come lavori."
+- [108DIGI-Playbook.md](software-in-mano/digitale/108DIGI-Playbook.md) · [Manuale](software-in-mano/digitale/108DIGI-Manuale.md) · [Sito](software-in-mano/digitale/108DIGI-Sito.md)
+- [108NOCODE-Playbook.md](software-in-mano/nocode/108NOCODE-Playbook.md) · [Manuale](software-in-mano/nocode/108NOCODE-Manuale.md) · [Sito](software-in-mano/nocode/108NOCODE-Sito.md)
+- [108DATA-Playbook.md](software-in-mano/data/108DATA-Playbook.md) · [Manuale](software-in-mano/data/108DATA-Manuale.md) · [Sito](software-in-mano/data/108DATA-Sito.md)
+- [108START-Playbook.md](software-in-mano/starter/108START-Playbook.md) · [Manuale](software-in-mano/starter/108START-Manuale.md) · [Sito](software-in-mano/starter/108START-Sito.md)
 
-- [108DIGI-Playbook.md](108-digital/108DIGI-Playbook.md) — Framework trasformazione digitale
-- [108DIGI-Manuale.md](108-digital/108DIGI-Manuale.md) — Guida metodologica
-- [108DIGI-Sito.md](108-digital/108DIGI-Sito.md) — Copy pagina sito
+### Prodotto-prova: AIA Platform (`software-in-mano/prodotti/aia-platform/`)
 
----
+> Non canale di vendita. Capacità + prova sotto Software in Mano. Codice: `aia-platform/`.
 
-### Track: 108 Lead (`108-lead/`)
+- [108AI-Playbook.md](software-in-mano/prodotti/aia-platform/108AI-Playbook.md)
+- [108AI-Manuale.md](software-in-mano/prodotti/aia-platform/108AI-Manuale.md)
+- [108AI-Manuale-Installazione.md](software-in-mano/prodotti/aia-platform/108AI-Manuale-Installazione.md)
+- [108AI-Sito.md](software-in-mano/prodotti/aia-platform/108AI-Sito.md)
+- [108AI-Assistente-Aziendale.md](software-in-mano/prodotti/aia-platform/108AI-Assistente-Aziendale.md)
+- [108AI-Desktop-Bridge.md](software-in-mano/prodotti/aia-platform/108AI-Desktop-Bridge.md)
+- [108AI-PLATFORM-AI-Piano-Esecutivo.md](software-in-mano/prodotti/aia-platform/108AI-PLATFORM-AI-Piano-Esecutivo.md)
+- [desktop-agent-roadmap-complete.md](software-in-mano/prodotti/aia-platform/desktop-agent-roadmap-complete.md)
 
-> "Da tech lead a leader tecnico."
+**platform-docs/**
 
-- [108LEAD-Playbook.md](108-lead/108LEAD-Playbook.md) — Framework coaching leadership
-- [108LEAD-Manuale.md](108-lead/108LEAD-Manuale.md) — Guida leadership tecnica
-- [108LEAD-Sito.md](108-lead/108LEAD-Sito.md) — Copy pagina sito
+- [phase-0-infrastructure.md](software-in-mano/prodotti/aia-platform/platform-docs/phase-0-infrastructure.md)
+- [phase-4-graph-kb.md](software-in-mano/prodotti/aia-platform/platform-docs/phase-4-graph-kb.md)
+- [phase-5-desktop-agent-v2.md](software-in-mano/prodotti/aia-platform/platform-docs/phase-5-desktop-agent-v2.md)
+- [ADR-001-neo4j-graph-vector.md](software-in-mano/prodotti/aia-platform/platform-docs/ADR-001-neo4j-graph-vector.md)
+- [coding-agent-capabilities.md](software-in-mano/prodotti/aia-platform/platform-docs/coding-agent-capabilities.md)
+- [desktop-agent-installer-plan.md](software-in-mano/prodotti/aia-platform/platform-docs/desktop-agent-installer-plan.md)
+- [desktop-client-master-plan.md](software-in-mano/prodotti/aia-platform/platform-docs/desktop-client-master-plan.md)
+- [manuale-deploy-hetzner.md](software-in-mano/prodotti/aia-platform/platform-docs/manuale-deploy-hetzner.md)
+- [security-hardening-backlog.md](software-in-mano/prodotti/aia-platform/platform-docs/security-hardening-backlog.md)
+- [base-principles.md](software-in-mano/prodotti/aia-platform/platform-docs/base-principles.md)
+- [PLAN-integration-opencode-goose-mcp.md](software-in-mano/prodotti/aia-platform/platform-docs/PLAN-integration-opencode-goose-mcp.md)
+- [coding-engine-setup-guide.md](software-in-mano/prodotti/aia-platform/platform-docs/coding-engine-setup-guide.md)
 
----
+**local-agent-docs/**
 
-### Track: 108 Agile (`108-agile/`)
+- [README.md](software-in-mano/prodotti/aia-platform/local-agent-docs/README.md)
+- [CHANGELOG.md](software-in-mano/prodotti/aia-platform/local-agent-docs/CHANGELOG.md)
+- [ADR-001-extensions-architecture.md](software-in-mano/prodotti/aia-platform/local-agent-docs/ADR-001-extensions-architecture.md)
+- [INTEGRATIONS-API.md](software-in-mano/prodotti/aia-platform/local-agent-docs/INTEGRATIONS-API.md)
+- [MULTI-AGENT-PLAYBOOK.md](software-in-mano/prodotti/aia-platform/local-agent-docs/MULTI-AGENT-PLAYBOOK.md)
+- [SECURITY-RUNBOOK.md](software-in-mano/prodotti/aia-platform/local-agent-docs/SECURITY-RUNBOOK.md)
+- [USER-GUIDE.md](software-in-mano/prodotti/aia-platform/local-agent-docs/USER-GUIDE.md)
 
-> "Rilasciare senza paura."
+**website-docs/** (setup dominio / Astro — legato al sito, non al canale AI)
 
-- [108AGILE-Playbook.md](108-agile/108AGILE-Playbook.md) — Framework implementazione Agile/DevOps
-- [108AGILE-Manuale.md](108-agile/108AGILE-Manuale.md) — Guida pratiche e strumenti
-- [108AGILE-Sito.md](108-agile/108AGILE-Sito.md) — Copy pagina sito
-
----
-
-### Track: 108 Wellbeing (`108-wellbeing/`)
-
-> "Il burnout costa il doppio."
-
-- [108WELL-Playbook.md](108-wellbeing/108WELL-Playbook.md) — Framework wellbeing team tech
-- [108WELL-Manuale.md](108-wellbeing/108WELL-Manuale.md) — Guida completa anti-burnout
-- [108WELL-Sito.md](108-wellbeing/108WELL-Sito.md) — Copy pagina sito
-
----
-
-### Track: 108 PA (`108-pa/`)
-
-> "La PA ha bisogno di sistemi che funzionano."
-
-- [108PA-Playbook.md](108-pa/108PA-Playbook.md) — Framework consulenza PA
-- [108PA-Manuale.md](108-pa/108PA-Manuale.md) — Guida MEPA, bandi, interoperabilità
-- [108PA-Sito.md](108-pa/108PA-Sito.md) — Copy pagina sito
-
----
-
-### Track: 108 Starter (`108-starter/`)
-
-> "Il tuo primo passo. Senza fuffa."
-
-- [108START-Playbook.md](108-starter/108START-Playbook.md) — Processo onboarding primo progetto
-- [108START-Manuale.md](108-starter/108START-Manuale.md) — Guida primi passi digitali
-- [108START-Sito.md](108-starter/108START-Sito.md) — Copy pagina sito
+- [README.md](software-in-mano/prodotti/aia-platform/website-docs/README.md)
+- [SETUP-GUIDE.md](software-in-mano/prodotti/aia-platform/website-docs/SETUP-GUIDE.md)
+- [MANUALE-ASTRO-TINACMS.md](software-in-mano/prodotti/aia-platform/website-docs/MANUALE-ASTRO-TINACMS.md)
+- [blog-benvenuto.md](software-in-mano/prodotti/aia-platform/website-docs/blog-benvenuto.md)
 
 ---
 
-### Track: 108 Dev (`108-dev/`)
+## Competenze condivise (`competenze/`)
 
-> "Un progetto. Un prezzo. Un risultato." / "Il tuo team esterno. Senza assumerlo."
+- [README.md](competenze/README.md)
 
-**Modalità Progetto (scope fisso)**
+### Architettura (`competenze/architettura/`)
 
-- [108DEV-Playbook-Progetto.md](108-dev/108DEV-Playbook-Progetto.md) — Delivery progetto chiavi in mano
-- [108DEV-Manuale-Progetto.md](108-dev/108DEV-Manuale-Progetto.md) — Framework progettuale
-- [108DEV-Sito-Progetto.md](108-dev/108DEV-Sito-Progetto.md) — Copy sezione sito (progetto)
+- [108ARCH-Playbook.md](competenze/architettura/108ARCH-Playbook.md)
+- [108ARCH-Manuale.md](competenze/architettura/108ARCH-Manuale.md)
+- [108ARCH-Sito.md](competenze/architettura/108ARCH-Sito.md)
 
-**Modalità Factory (retainer mensile)**
+### AI adozione — metodo (`competenze/ai-adozione/`)
 
-- [108DEV-Playbook-Factory.md](108-dev/108DEV-Playbook-Factory.md) — Framework factory / retainer
-- [108DEV-Manuale-Factory.md](108-dev/108DEV-Manuale-Factory.md) — Guida operativa factory
-- [108DEV-Sito-Factory.md](108-dev/108DEV-Sito-Factory.md) — Copy sezione sito (factory)
-
----
-
-### Track: 108 Compliance (`108-compliance/`)
-
-> "L'AI Act non è un problema legale. È un problema di sistema."
-
-- [108COMP-Playbook.md](108-compliance/108COMP-Playbook.md) — Framework compliance EU AI Act (6 fasi)
-- [108COMP-Manuale.md](108-compliance/108COMP-Manuale.md) — Guida AI Act per PMI (lead magnet)
-- [108COMP-Sito.md](108-compliance/108COMP-Sito.md) — Copy pagina sito
+- [108AIA-README.md](competenze/ai-adozione/108AIA-README.md)
+- [108AIA-Manuale.md](competenze/ai-adozione/108AIA-Manuale.md)
+- [108AIA-Sito.md](competenze/ai-adozione/108AIA-Sito.md)
+- [108AIA-Piccole-Imprese.md](competenze/ai-adozione/108AIA-Piccole-Imprese.md)
+- [108AIA-Medie-Imprese.md](competenze/ai-adozione/108AIA-Medie-Imprese.md)
 
 ---
 
-### Track: 108 NoCode (`108-nocode/`)
+## Retention (`retention/`)
 
-> "Automatizza prima di assumere."
+- [README.md](retention/README.md)
 
-- [108NOCODE-Playbook.md](108-nocode/108NOCODE-Playbook.md) — Framework consulenza automazione
-- [108NOCODE-Manuale.md](108-nocode/108NOCODE-Manuale.md) — Guida step-by-step (lead magnet)
-- [108NOCODE-Sito.md](108-nocode/108NOCODE-Sito.md) — Copy pagina sito
+### Compliance / PA / Sales
 
----
-
-### Track: 108 Data (`108-data/`)
-
-> "I dati che hai già ti dicono cosa fare."
-
-- [108DATA-Playbook.md](108-data/108DATA-Playbook.md) — Framework analytics 5 fasi
-- [108DATA-Manuale.md](108-data/108DATA-Manuale.md) — Guida BI per PMI (lead magnet)
-- [108DATA-Sito.md](108-data/108DATA-Sito.md) — Copy pagina sito
+- [108COMP-Playbook.md](retention/compliance/108COMP-Playbook.md) · [Manuale](retention/compliance/108COMP-Manuale.md) · [Sito](retention/compliance/108COMP-Sito.md)
+- [108PA-Playbook.md](retention/pa/108PA-Playbook.md) · [Manuale](retention/pa/108PA-Manuale.md) · [Sito](retention/pa/108PA-Sito.md)
+- [108SALES-Sales-Kit.md](retention/sales/108SALES-Sales-Kit.md)
+- [108SALES-Content-Calendar.md](retention/sales/108SALES-Content-Calendar.md)
 
 ---
 
-### Track Trasversale: 108 Sales (`108-sales/`)
+## Studio (`study/`)
 
-- [108SALES-Sales-Kit.md](108-sales/108SALES-Sales-Kit.md) — Script vendita, gestione obiezioni, pricing
-- [108SALES-Content-Calendar.md](108-sales/108SALES-Content-Calendar.md) — Piano editoriale e lancio 90 giorni
+Materiali interni per il consulente. Non per il cliente.
 
----
-
-### Studio — Manuali del Consulente (`study/`)
-
-Materiali di studio interni per il consulente. Non per il cliente.
-
-- [108-STUDY-AI-Adoption.md](study/108-STUDY-AI-Adoption.md) — Teoria e framework adozione AI
-- [108-STUDY-AI-Platform.md](study/108-STUDY-AI-Platform.md) — Architettura piattaforme AI
-- [108-STUDY-AI-Principi-Operativi.md](study/108-STUDY-AI-Principi-Operativi.md) — Principi operativi AI: context, ownership, risparmio, controllo, condivisione team
-- [108-STUDY-Agile.md](study/108-STUDY-Agile.md) — Fondamenti Agile, DevOps, metriche DORA
-- [108-STUDY-Arch.md](study/108-STUDY-Arch.md) — Pattern architetturali e trade-off
-- [108-STUDY-Digital.md](study/108-STUDY-Digital.md) — Digital transformation theory
-- [STUDY-FCTO-FractionalCTO.md](study/STUDY-FCTO-FractionalCTO.md) — Campo di addestramento Fractional CTO
-- [STUDY-LEAD-Leadership.md](study/STUDY-LEAD-Leadership.md) — Manuale completo tech leadership
-- [STUDY-WELL-Wellbeing.md](study/STUDY-WELL-Wellbeing.md) — Manuale completo wellbeing team tech
-- [STUDY-ZERO-DigitalStarter.md](study/STUDY-ZERO-DigitalStarter.md) — Guida accompagnamento Digital Starter
+- [108-STUDY-AI-Adoption.md](study/108-STUDY-AI-Adoption.md)
+- [108-STUDY-AI-Platform.md](study/108-STUDY-AI-Platform.md)
+- [108-STUDY-AI-Principi-Operativi.md](study/108-STUDY-AI-Principi-Operativi.md)
+- [108-STUDY-Agile.md](study/108-STUDY-Agile.md)
+- [108-STUDY-Arch.md](study/108-STUDY-Arch.md)
+- [108-STUDY-Digital.md](study/108-STUDY-Digital.md)
+- [STUDY-FCTO-FractionalCTO.md](study/STUDY-FCTO-FractionalCTO.md)
+- [STUDY-LEAD-Leadership.md](study/STUDY-LEAD-Leadership.md)
+- [STUDY-WELL-Wellbeing.md](study/STUDY-WELL-Wellbeing.md)
+- [STUDY-ZERO-DigitalStarter.md](study/STUDY-ZERO-DigitalStarter.md)
 
 ---
 
-### Infrastruttura & Deploy (`infra/`)
+## Infrastruttura (`infra/`)
 
-- [manuale-deploy-completo-hetzner.md](infra/manuale-deploy-completo-hetzner.md) — **Deploy completo** tutti i servizi su Hetzner (AIA Platform + Sito 108vision.it + WellBeing API)
-- [VPS-Coolify-Setup-Manual.md](infra/VPS-Coolify-Setup-Manual.md) — Setup VPS economica + Coolify self-hosted (alternativa)
-- [Railway-WellBeingApi-Setup-Manual.md](infra/Railway-WellBeingApi-Setup-Manual.md) — Deploy .NET API su Railway + PostgreSQL
-
----
-
-### Architettura Track
-
-- [ARCHITETTURA-TRACKS.md](ARCHITETTURA-TRACKS.md) — Schema architetturale delle track
+- [manuale-deploy-completo-hetzner.md](infra/manuale-deploy-completo-hetzner.md)
+- [VPS-Coolify-Setup-Manual.md](infra/VPS-Coolify-Setup-Manual.md)
+- [Railway-WellBeingApi-Setup-Manual.md](infra/Railway-WellBeingApi-Setup-Manual.md)
 
 ---
 
-### Agenti AI (`.claude/agents/`)
+## Altri
 
-- [agent-marketing-copy-108.md](../.claude/agents/agent-marketing-copy-108.md) — Agente copywriter 108 Vision (Claude Code)
-
----
-
-## Stato Completamento Track
-
-| Track | Playbook | Manuale | Sito | Studio | Note |
-|-------|----------|---------|------|--------|------|
-| 108 AI Adoption | — | DONE | DONE | DONE | README + varianti segmento |
-| 108 AI | DONE | DONE | DONE | DONE | + Assistente, Bridge, Piano, Platform docs |
-| 108 CTO | DONE | DONE | DONE | DONE | — |
-| 108 Arch | DONE | DONE | DONE | DONE | — |
-| 108 Digital | DONE | DONE | DONE | DONE | — |
-| 108 Lead | DONE | DONE | DONE | DONE | — |
-| 108 Agile | DONE | DONE | DONE | DONE | — |
-| 108 Wellbeing | DONE | DONE | DONE | DONE | — |
-| 108 PA | DONE | DONE | DONE | — | — |
-| 108 Starter | DONE | DONE | DONE | DONE | — |
-| 108 Dev | DONE | DONE | DONE | — | 2 modalità (progetto + factory) |
-| 108 Compliance | DONE | DONE | DONE | — | — |
-| 108 NoCode | DONE | DONE | DONE | — | — |
-| 108 Data | DONE | DONE | DONE | — | — |
+- [ARCHITETTURA-TRACKS.md](ARCHITETTURA-TRACKS.md) — Analisi portfolio pre-riposizionamento (legacy; path interni da aggiornare progressivamente)
+- [../CLAUDE.md](../CLAUDE.md) — Istruzioni AI copilot
+- [../.claude/agents/agent-marketing-copy-108.md](../.claude/agents/agent-marketing-copy-108.md) — Agente copywriter
 
 ---
 
-## Conteggio Documenti
+## Stato playbook unificati
 
-| Categoria | Documenti |
-|-----------|-----------|
-| Brand & Template | 6 |
-| Track (Playbook/Manuale/Sito) | 44 |
-| Track 108 AI (extra consulenziali) | 4 |
-| Track 108 AI (platform-docs) | 10 |
-| Track 108 AI (local-agent-docs) | 7 |
-| Track 108 AI (website-docs) | 3 |
-| Track 108 AI Adoption (extra) | 3 |
-| Track 108 CTO (extra) | 2 |
-| Track 108 Sales | 2 |
-| Studio consulente | 10 |
-| Infrastruttura | 2 |
-| Architettura track | 1 |
-| Agenti AI | 1 |
-| **Totale** | **95** |
+| Deliverable | Stato | Sostituisce (uso commerciale) |
+|---|---|---|
+| [direzione-tecnica/PLAYBOOK.md](direzione-tecnica/PLAYBOOK.md) | **DONE v1.0** | `cto/108CTO-Playbook.md` |
+| [software-in-mano/PLAYBOOK.md](software-in-mano/PLAYBOOK.md) | **DONE v1.0** | `sviluppo/108DEV-Playbook-*.md` |
+
+### Kit M1 (validazione messaggio)
+
+- [scheda-call-partner-tecnico.md](brand/scheda-call-partner-tecnico.md) — pitch, domande, log, chiusura
+- [linkedin-draft-partner-tecnico.md](brand/linkedin-draft-partner-tecnico.md) — headline/About/outreach (pubblicare dopo 2 rehearsal)
+
+Le competenze restano nei sotto-folder; i playbook unificati sono il fronte commerciale.
 
 ---
 
-*108 Vision — Costruiamo la direzione, non solo il codice.*
+*108 Vision — Il partner tecnico che prende in mano la situazione.*

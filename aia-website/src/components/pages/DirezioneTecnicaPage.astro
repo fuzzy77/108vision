@@ -1,0 +1,99 @@
+---
+import ServiceLayout from '@/layouts/ServiceLayout.astro';
+import FeatureGrid from '@/components/FeatureGrid.astro';
+import PricingTable from '@/components/PricingTable.astro';
+import {
+  type Locale,
+  useTranslations,
+  localizedPath,
+  getDirezioneTecnicaContent,
+} from '@/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const c = getDirezioneTecnicaContent(locale);
+const homePath = localizedPath('/', locale);
+const contactPath = localizedPath('/contatti', locale);
+---
+
+<ServiceLayout
+  locale={locale}
+  title={c.meta.title}
+  description={c.meta.description}
+  heroTitle={c.hero.title}
+  heroSubtitle={c.hero.subtitle}
+  breadcrumbs={[
+    { label: t.common.home, href: homePath },
+    { label: c.breadcrumb },
+  ]}
+>
+  <section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl mx-auto text-center mb-16">
+        <h2 class="text-3xl font-bold text-slate-900 mb-6">{c.audience.heading}</h2>
+        <p class="text-lg text-slate-600 leading-relaxed">{c.audience.intro}</p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {c.audience.cards.map((card) => (
+          <div class="p-6 bg-primary-50 rounded-xl">
+            <h3 class="font-semibold text-slate-900 mb-2">{card.title}</h3>
+            <p class="text-sm text-slate-600">{card.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="py-20 bg-slate-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl font-bold text-slate-900 mb-4">{c.modes.heading}</h2>
+      </div>
+      <FeatureGrid features={c.modes.items} columns={3} />
+    </div>
+  </section>
+
+  <section class="py-16 bg-white">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-2xl font-bold text-slate-900 mb-4">{c.capacity.heading}</h2>
+      <p class="text-lg text-slate-600 leading-relaxed">{c.capacity.text}</p>
+    </div>
+  </section>
+
+  <section class="py-20 bg-slate-50">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl font-bold text-slate-900 mb-12 text-center">{c.process.heading}</h2>
+      <div class="space-y-8">
+        {c.process.steps.map((step, index) => (
+          <div class="flex gap-4">
+            <div class="w-8 h-8 bg-primary-600 text-white rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold">
+              {index + 1}
+            </div>
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-1">{step.title}</h3>
+              <p class="text-sm text-slate-600">{step.text}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl font-bold text-slate-900 mb-4">{t.service.packagesHeading}</h2>
+        <p class="text-lg text-slate-600">{t.service.packagesSubheading}</p>
+      </div>
+      <PricingTable
+        plans={c.plans}
+        recommendedLabel={t.service.recommended}
+        defaultCtaLink={contactPath}
+      />
+    </div>
+  </section>
+</ServiceLayout>

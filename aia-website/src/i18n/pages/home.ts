@@ -7,30 +7,20 @@ export interface HomeService {
   link: string;
 }
 
-export interface HomeTestimonial {
-  quote: string;
-  author: string;
-  role: string;
-  company: string;
-}
-
 export interface HomeContent {
   meta: { title: string; description: string };
   hero: { title: string; subtitle: string };
-  services: {
+  channels: {
     heading: string;
     subheading: string;
     items: HomeService[];
   };
-  stats: {
-    items: { value: string; label: string; detail: string }[];
-  };
-  testimonials: {
+  how: {
     heading: string;
-    subheading: string;
-    items: HomeTestimonial[];
+    steps: { title: string; text: string }[];
   };
   wellbeing: {
+    eyebrow: string;
     title: string;
     description: string;
   };
@@ -43,292 +33,124 @@ export interface HomeContent {
 const homeContent: Record<Locale, HomeContent> = {
   it: {
     meta: {
-      title: 'AI & Technology Consulting',
+      title: 'Partner Tecnico per PMI',
       description:
-        'Consulenza AI, Fractional CTO, Architettura Software e Trasformazione Digitale. Aiuto PMI e enterprise a crescere con la tecnologia giusta.',
+        '108 Vision — il partner tecnico che prende in mano la situazione. Direzione Tecnica per team esistenti, Software in Mano per costruire ed evolvere il software.',
     },
     hero: {
-      title: "Trasforma la tua azienda con l'AI e la tecnologia giusta",
+      title: 'Il partner tecnico che prende in mano la situazione.',
       subtitle:
-        'Consulenza strategica e operativa per PMI e enterprise che vogliono innovare senza rischi. 15+ anni di esperienza in architettura software, AI e trasformazione digitale.',
+        'Due canali, una competenza: guidiamo il tuo team tecnico, oppure costruiamo e teniamo in mano il software — con ore chiare e responsabilità sul risultato.',
     },
-    services: {
-      heading: 'Come posso aiutarti',
+    channels: {
+      heading: 'Due canali. Una competenza.',
       subheading:
-        'Servizi di consulenza technology-driven per ogni fase della tua crescita aziendale.',
+        'La scelta dipende dal problema, non dall’offerta. Stessa profondità tecnica: architettura, sistemi, AI dove serve, team e processo.',
       items: [
         {
-          title: 'AI Platform',
+          title: 'Direzione Tecnica',
           description:
-            "L'AI che ti conosce davvero: memoria persistente, Desktop Agent, governance integrata. 5-10x meno di ChatGPT Teams.",
-          icon: '🤖',
-          link: '/ai-platform',
+            'Hai già un team. Ti manca chi lo guida, lo fa crescere, o alza il livello — con slot settimanali e deliverable chiari.',
+          icon: '🧭',
+          link: '/direzione-tecnica',
         },
         {
-          title: 'AI Adoption',
+          title: 'Software in Mano',
           description:
-            "Percorso strutturato per adottare l'AI in azienda. Assessment, strategia, implementazione.",
-          icon: '🧠',
-          link: '/ai-adoption',
-        },
-        {
-          title: 'Fractional CTO',
-          description:
-            'CTO part-time per startup e PMI. Governance tecnica, team building, architettura.',
-          icon: '👔',
-          link: '/fractional-cto',
-        },
-        {
-          title: 'Trasformazione Digitale',
-          description:
-            'Digitalizzazione processi, automazione, cloud migration. Focus PMI con ROI misurabile.',
-          icon: '🔄',
-          link: '/trasformazione-digitale',
-        },
-        {
-          title: 'Architettura Software',
-          description:
-            'Design review, modernizzazione legacy, microservizi, cloud-native. Per team che vogliono scalare.',
-          icon: '🏗️',
-          link: '/architettura',
-        },
-        {
-          title: 'Tech Leadership',
-          description:
-            'Coaching per tech lead e engineering manager. Da individual contributor a leader.',
-          icon: '🎯',
-          link: '/leadership',
-        },
-        {
-          title: 'Sviluppo Software',
-          description:
-            'Progetto a scope fisso o team dedicato continuativo. Milestone visibili, qualità garantita, zero sorprese.',
-          icon: '💻',
-          link: '/sviluppo',
-        },
-        {
-          title: 'Agile & DevOps',
-          description:
-            'CI/CD, team topology, metodologia agile pragmatica. Assessment e implementazione.',
-          icon: '⚡',
-          link: '/agile-devops',
-        },
-        {
-          title: 'Tech Wellbeing',
-          description:
-            'Prevenzione burnout tech, sustainable pace, team health. Workshop e consulenza.',
-          icon: '🌱',
-          link: '/wellbeing',
-        },
-        {
-          title: 'Pubblica Amministrazione',
-          description:
-            'Consulenza digitalizzazione per enti pubblici. PNRR, interoperabilità, sicurezza.',
-          icon: '🏛️',
-          link: '/pubblica-amministrazione',
+            'Non hai (ancora) il software, o quello che hai non regge. Lo progettiamo, costruiamo e facciamo evolvere — e restiamo.',
+          icon: '🛠️',
+          link: '/software-in-mano',
         },
       ],
     },
-    stats: {
-      items: [
+    how: {
+      heading: 'Come iniziamo',
+      steps: [
         {
-          value: '15+',
-          label: 'Anni di esperienza',
-          detail: 'Enterprise systems, startup, PMI',
+          title: '1. Una domanda',
+          text: 'Hai già un team di sviluppo, o il problema è il software che manca / non regge?',
         },
         {
-          value: '50+',
-          label: 'Progetti completati',
-          detail: 'Architettura, AI, trasformazione',
+          title: '2. Entry chiaro',
+          text: 'Tech Assessment (Direzione Tecnica) o Discovery (Software in Mano) — deliverable scritto, senza improvvisare.',
         },
         {
-          value: '3',
-          label: 'Settori di focus',
-          detail: 'Ticketing, fintech, manufacturing',
-        },
-      ],
-    },
-    testimonials: {
-      heading: 'Cosa dicono i clienti',
-      subheading: 'Risultati concreti, non promesse.',
-      items: [
-        {
-          quote:
-            'Elios ci ha aiutato a costruire una piattaforma AI interna che ha ridotto del 40% i tempi di risposta al cliente. Competenza tecnica e visione strategica rare da trovare insieme.',
-          author: 'Marco Bianchi',
-          role: 'CEO',
-          company: 'TechStartup Srl',
-        },
-        {
-          quote:
-            "Il percorso di AI Adoption ha trasformato il modo in cui lavoriamo. Niente hype, solo risultati concreti e misurabili. Un approccio pragmatico e orientato al business.",
-          author: 'Laura Verdi',
-          role: 'COO',
-          company: 'Manifattura Italiana SpA',
-        },
-        {
-          quote:
-            'Come Fractional CTO ci ha portato una governance tecnica che non avevamo. Il team è cresciuto in autonomia e la qualità del codice è migliorata enormemente.',
-          author: 'Andrea Russo',
-          role: 'Founder',
-          company: 'InnovaDigital',
+          title: '3. Ore in contratto',
+          text: 'Ownership su decisioni e risultati. Slot settimanali dichiarati — non promesse di presenza full-time.',
         },
       ],
     },
     wellbeing: {
-      title: 'Wellbeing 108',
+      eyebrow: 'Prova di Software in Mano',
+      title: 'WellBeing',
       description:
-        'App di benessere guidato con visualizzazioni immersive, respirazione sincronizzata e AI counselor. Un prodotto 108 Vision.',
+        'Un’app che abbiamo costruito e teniamo in mano — esempio concreto del metodo, non un terzo canale di vendita.',
     },
     cta: {
-      title: 'Pronto a iniziare?',
+      title: 'Parliamone',
       description:
-        'Prenota una call gratuita di 30 minuti. Analizzeremo insieme la tua situazione e capiremo se posso aiutarti.',
+        'Prenota una call di 20–30 minuti. Capiremo insieme se il problema è il team o il software — e il next step sensato.',
     },
   },
   en: {
     meta: {
-      title: 'AI & Technology Consulting',
+      title: 'Technical Partner for SMEs',
       description:
-        'AI consulting, Fractional CTO, software architecture and digital transformation. I help SMEs and enterprises grow with the right technology.',
+        '108 Vision — the technical partner that takes ownership. Technical Direction for existing teams, Software in Hand to build and evolve software.',
     },
     hero: {
-      title: 'Transform your business with the right AI and technology',
+      title: 'The technical partner that takes ownership of the situation.',
       subtitle:
-        'Strategic and hands-on consulting for SMEs and enterprises that want to innovate without unnecessary risk. 15+ years in software architecture, AI and digital transformation.',
+        'Two channels, one depth: we lead your engineering team, or we build and keep your software in hand — with clear hours and accountability for outcomes.',
     },
-    services: {
-      heading: 'How I can help',
+    channels: {
+      heading: 'Two channels. One craft.',
       subheading:
-        'Technology-driven consulting services for every stage of your business growth.',
+        'The choice depends on the problem, not the catalogue. Same technical depth: architecture, systems, AI where it pays, team and process.',
       items: [
         {
-          title: 'AI Platform',
+          title: 'Technical Direction',
           description:
-            'AI that truly knows you: persistent memory, Desktop Agent, built-in governance. 5–10x less than ChatGPT Teams.',
-          icon: '🤖',
-          link: '/ai-platform',
+            'You already have a team. You need someone to lead it, grow it, or raise the bar — with weekly slots and clear deliverables.',
+          icon: '🧭',
+          link: '/direzione-tecnica',
         },
         {
-          title: 'AI Adoption',
+          title: 'Software in Hand',
           description:
-            'Structured path to adopt AI in your company. Assessment, strategy, implementation.',
-          icon: '🧠',
-          link: '/ai-adoption',
-        },
-        {
-          title: 'Fractional CTO',
-          description:
-            'Part-time CTO for startups and SMEs. Technical governance, team building, architecture.',
-          icon: '👔',
-          link: '/fractional-cto',
-        },
-        {
-          title: 'Digital Transformation',
-          description:
-            'Process digitisation, automation, cloud migration. SME-focused with measurable ROI.',
-          icon: '🔄',
-          link: '/trasformazione-digitale',
-        },
-        {
-          title: 'Software Architecture',
-          description:
-            'Design review, legacy modernisation, microservices, cloud-native. For teams ready to scale.',
-          icon: '🏗️',
-          link: '/architettura',
-        },
-        {
-          title: 'Tech Leadership',
-          description:
-            'Coaching for tech leads and engineering managers. From individual contributor to leader.',
-          icon: '🎯',
-          link: '/leadership',
-        },
-        {
-          title: 'Software Development',
-          description:
-            'Fixed-scope projects or dedicated ongoing teams. Visible milestones, guaranteed quality, no surprises.',
-          icon: '💻',
-          link: '/sviluppo',
-        },
-        {
-          title: 'Agile & DevOps',
-          description:
-            'CI/CD, team topologies, pragmatic agile methodology. Assessment and implementation.',
-          icon: '⚡',
-          link: '/agile-devops',
-        },
-        {
-          title: 'Tech Wellbeing',
-          description:
-            'Tech burnout prevention, sustainable pace, team health. Workshops and consulting.',
-          icon: '🌱',
-          link: '/wellbeing',
-        },
-        {
-          title: 'Public Sector',
-          description:
-            'Digitalisation consulting for public bodies. PNRR, interoperability, security.',
-          icon: '🏛️',
-          link: '/pubblica-amministrazione',
+            'You do not have the software yet, or what you have does not hold. We design, build and evolve it — and we stay.',
+          icon: '🛠️',
+          link: '/software-in-mano',
         },
       ],
     },
-    stats: {
-      items: [
+    how: {
+      heading: 'How we start',
+      steps: [
         {
-          value: '15+',
-          label: 'Years of experience',
-          detail: 'Enterprise systems, startups, SMEs',
+          title: '1. One question',
+          text: 'Do you already have a development team, or is the problem missing / failing software?',
         },
         {
-          value: '50+',
-          label: 'Projects delivered',
-          detail: 'Architecture, AI, transformation',
+          title: '2. Clear entry',
+          text: 'Tech Assessment (Technical Direction) or Discovery (Software in Hand) — written deliverable, no improvisation.',
         },
         {
-          value: '3',
-          label: 'Focus industries',
-          detail: 'Ticketing, fintech, manufacturing',
-        },
-      ],
-    },
-    testimonials: {
-      heading: 'What clients say',
-      subheading: 'Concrete results, not promises.',
-      items: [
-        {
-          quote:
-            'Elios helped us build an internal AI platform that cut customer response times by 40%. Technical expertise and strategic vision rarely found together.',
-          author: 'Marco Bianchi',
-          role: 'CEO',
-          company: 'TechStartup Srl',
-        },
-        {
-          quote:
-            'The AI Adoption programme changed how we work. No hype — just concrete, measurable results. A pragmatic, business-oriented approach.',
-          author: 'Laura Verdi',
-          role: 'COO',
-          company: 'Manifattura Italiana SpA',
-        },
-        {
-          quote:
-            'As Fractional CTO he brought the technical governance we were missing. The team grew in autonomy and code quality improved dramatically.',
-          author: 'Andrea Russo',
-          role: 'Founder',
-          company: 'InnovaDigital',
+          title: '3. Hours in contract',
+          text: 'Ownership of decisions and outcomes. Declared weekly slots — not promises of full-time presence.',
         },
       ],
     },
     wellbeing: {
-      title: 'Wellbeing 108',
+      eyebrow: 'Proof of Software in Hand',
+      title: 'WellBeing',
       description:
-        'Guided wellbeing app with immersive visualisations, synchronised breathing and AI counsellor. A 108 Vision product.',
+        'An app we built and keep in hand — a concrete example of the method, not a third sales channel.',
     },
     cta: {
-      title: 'Ready to get started?',
+      title: "Let's talk",
       description:
-        'Book a free 30-minute call. We will review your situation together and see if I can help.',
+        'Book a 20–30 minute call. We will see whether the problem is the team or the software — and the sensible next step.',
     },
   },
 };
@@ -337,14 +159,14 @@ export function getHomeContent(locale: Locale): HomeContent {
   return homeContent[locale];
 }
 
-/** Prefix service links for the active locale. */
+/** Prefix channel links for the active locale. */
 export function localizeHomeLinks(content: HomeContent, locale: Locale): HomeContent {
   const prefix = locale === 'en' ? '/en' : '';
   return {
     ...content,
-    services: {
-      ...content.services,
-      items: content.services.items.map((item) => ({
+    channels: {
+      ...content.channels,
+      items: content.channels.items.map((item) => ({
         ...item,
         link: `${prefix}${item.link}`,
       })),

@@ -3,9 +3,10 @@
 ## Identità
 
 **Brand:** 108 Vision
-**Claim:** "Costruiamo la direzione, non solo il codice."
+**Claim primario:** "Il partner tecnico che prende in mano la situazione."
+**Claim di supporto (interno/legacy):** "Costruiamo la direzione, non solo il codice."
 **Owner:** Elios Scoglio — Software & Architecture Manager (TicketOne/Eventim) + Consulente indipendente
-**Dominio:** Consulenza tecnologica per PMI italiane (architettura, AI, leadership, trasformazione digitale)
+**Dominio:** Partner tecnico per PMI italiane — Direzione Tecnica + Software in Mano (AI-native, non AI-first)
 
 ---
 
@@ -42,31 +43,18 @@ Se il rischio è alto (perdita cliente, compliance violata, danno reputazionale,
 
 ```
 Vision/
-├── CLAUDE.md                    ← Sei qui
-├── tracks/                      ← TUTTI i documenti .md vivono qui (indice + 15 track + brand + docs)
-│   ├── INDEX.md               ← Mappa completa (95 documenti)
-│   ├── brand/                 ← Identità visiva, naming, tone of voice, loghi, template
-│   ├── 108-ai/                ← 108 AI — Piattaforma AI aziendale (SaaS)
-│   │   ├── platform-docs/    ← Docs tecnici piattaforma (phase, ADR, deploy)
-│   │   ├── local-agent-docs/ ← Docs Desktop Agent (README, guide, ADR)
-│   │   └── website-docs/     ← Docs sito web (setup, blog)
-│   ├── 108-ai-adoption/       ← 108 AI Adoption — Adozione AI nelle PMI
-│   ├── 108-cto/               ← 108 CTO — Fractional CTO / governance
-│   ├── 108-arch/              ← 108 Arch — Architettura software & scaling
-│   ├── 108-digital/           ← 108 Digital — Trasformazione digitale
-│   ├── 108-lead/              ← 108 Lead — Tech leadership & management
-│   ├── 108-agile/             ← 108 Agile — Agile, CI/CD, DevOps
-│   ├── 108-wellbeing/         ← 108 Wellbeing — Benessere tech team
-│   ├── 108-pa/                ← 108 PA — Consulenza tecnica PA
-│   ├── 108-starter/           ← 108 Starter — Primo progetto digitale
-│   ├── 108-dev/               ← 108 Dev — Sviluppo (progetto + factory)
-│   ├── 108-compliance/        ← 108 Compliance — EU AI Act
-│   ├── 108-nocode/            ← 108 NoCode — Automazione No-Code
-│   ├── 108-data/              ← 108 Data — Analytics & BI
-│   ├── 108-sales/             ← 108 Sales — Sales kit e content calendar
-│   ├── study/                 ← Manuali studio per il consulente
-│   ├── infra/                 ← Manuali infrastruttura & deploy
-│   └── Curriculum/            ← CV professionali
+├── CLAUDE.md                   ← Sei qui
+├── tracks/                     ← Documenti .md (2 canali + competenze + retention + brand)
+│   ├── INDEX.md                ← Mappa completa (v9 — Partner Tecnico)
+│   ├── brand/                  ← Identità, voice, riposizionamento-partner-tecnico.md
+│   ├── direzione-tecnica/      ← CANALE 1: cto, leadership, agile-devops, wellbeing-team
+│   ├── software-in-mano/       ← CANALE 2: sviluppo, digitale, nocode, data, starter
+│   │   └── prodotti/aia-platform/  ← Prodotto-prova (ex 108-ai)
+│   ├── competenze/             ← Trasversali: architettura, ai-adozione
+│   ├── retention/              ← Fuori nav M2: compliance, pa, sales
+│   ├── study/                  ← Manuali studio per il consulente
+│   ├── infra/                  ← Manuali infrastruttura & deploy
+│   └── Curriculum/             ← CV professionali
 ├── aia-platform/               ← Codice sorgente piattaforma AI (monorepo TS)
 │   ├── CLAUDE.md
 │   └── apps/local-agent/src/
@@ -78,6 +66,8 @@ Vision/
 │       └── resources/          ← Resource Management (monitor RAM/disk/token, auto-healing, CLI)
 └── aia-website/                ← Sito web (Astro + TinaCMS) — solo codice
 ```
+
+Posizionamento: `tracks/brand/riposizionamento-partner-tecnico.md`. Path ex-`108-*`: vedi `tracks/INDEX.md`.
 
 ---
 
@@ -94,7 +84,12 @@ Il valore non è nel codice scritto — è nella capacità di vedere dove andare
 - Cultura tech bassa — devi tradurre, non semplificare
 - Il ROI deve essere visibile in 90 giorni, non in 18 mesi
 
-### 3. Ogni track ha 3 documenti standard
+### 3. Due canali commerciali; competenze sotto i canali
+
+Commerciale al cliente: **Direzione Tecnica** | **Software in Mano**.
+Le competenze (architettura, AI metodo, leadership, …) restano nei sotto-folder
+e confluiscono nei playbook di canale (M2: `direzione-tecnica/PLAYBOOK.md`,
+`software-in-mano/PLAYBOOK.md`). Ogni competenza storica ha ancora Playbook/Manuale/Sito.
 
 | Documento | Audience | Scopo |
 |-----------|----------|-------|
@@ -287,7 +282,7 @@ Fornisci solo la risposta del punto 3.
 - **Non siamo un'agenzia**: non vendiamo ore, vendiamo risultati e direzione
 - **Non siamo solo tecnici**: parliamo il linguaggio del business
 - **Non siamo solo consulenti**: costruiamo e manteniamo (factory + piattaforma SaaS)
-- **Non siamo generalisti**: 15 track specializzati, ognuno con playbook operativo testato
+- **Non siamo generalisti**: 2 canali chiari + competenze profonde (ex-15 track) con playbook operativi
 - **Background enterprise reale**: 10+ anni su sistemi mission-critical (ticketing, fiscal compliance, real-time)
 
 ### Target cliente

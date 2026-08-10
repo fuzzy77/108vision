@@ -11,6 +11,12 @@ brand: "108 Vision"
 # 108 Vision — Architettura delle Track
 ## Manuale tecnico interno
 
+> **Nota 2026-08-10 (riposizionamento Partner Tecnico):** la struttura fisica delle cartelle
+> è cambiata. I path `108-*` sotto `tracks/` non esistono più.
+> Mappa attuale: [INDEX.md](INDEX.md) v9 · strategia: [brand/riposizionamento-partner-tecnico.md](brand/riposizionamento-partner-tecnico.md).
+> Questo documento resta utile come analisi del *perché* di ogni competenza, ma i riferimenti
+> a path/nav «15 track pubbliche» sono **legacy** fino a una riscrittura dedicata.
+
 > Questo documento non è materiale commerciale. È la guida operativa che spiega come è costruito il portfolio, perché ogni track esiste, come si interconnette con le altre, e come si misura il suo successo. Va aggiornato ogni trimestre o dopo ogni modifica strutturale al portfolio.
 
 ---

@@ -3,28 +3,30 @@ import type { Locale } from './config';
 const ui = {
   it: {
     site: {
-      titleSuffix: 'Consulenza Tecnologica',
-      tagline: 'Costruiamo la direzione, non solo il codice.',
+      titleSuffix: 'Partner Tecnico',
+      tagline: 'Il partner tecnico che prende in mano la situazione.',
       description:
-        'Consulenza tecnologica per PMI: AI, architettura software, fractional CTO, trasformazione digitale.',
+        'Partner tecnico per PMI: Direzione Tecnica e Software in Mano. Ownership su decisioni e deliverable, ore chiare.',
       founderTitle: 'Fondatore & Software Architecture Manager',
     },
     nav: {
-      services: 'Servizi',
+      services: 'Canali',
       aiPlatform: 'AI Platform',
       fractionalCto: 'Fractional CTO',
+      direzioneTecnica: 'Direzione Tecnica',
+      softwareInMano: 'Software in Mano',
       digitalStarter: 'Digital Starter',
       development: 'Sviluppo',
       about: 'Chi Siamo',
       blog: 'Blog',
-      wellbeingApp: 'Wellbeing App',
+      wellbeingApp: 'WellBeing',
       cta: 'Parliamone',
       openMenu: 'Apri menu',
     },
     footer: {
       tagline:
-        'Costruiamo la direzione, non solo il codice. Consulenza tecnologica per PMI che vogliono crescere con la tecnologia giusta.',
-      services: 'Servizi',
+        'Il partner tecnico che prende in mano la situazione. Direzione Tecnica e Software in Mano per PMI italiane.',
+      services: 'Canali',
       resources: 'Risorse',
       legal: 'Legale',
       privacy: 'Privacy Policy',
@@ -56,15 +58,10 @@ const ui = {
       selectService: 'Seleziona un servizio',
       other: 'Altro',
       services: [
-        'AI Platform',
-        'AI Adoption',
-        'Fractional CTO',
-        'Trasformazione Digitale',
-        'Architettura Software',
-        'Tech Leadership',
-        'Agile & DevOps',
-        'Tech Wellbeing',
-        'Pubblica Amministrazione',
+        'Direzione Tecnica',
+        'Software in Mano',
+        'Partnership / co-delivery',
+        'WellBeing App',
         'Altro',
       ],
     },
@@ -144,28 +141,30 @@ const ui = {
   },
   en: {
     site: {
-      titleSuffix: 'Technology Consulting',
-      tagline: 'We build direction, not just code.',
+      titleSuffix: 'Technical Partner',
+      tagline: 'The technical partner that takes ownership of the situation.',
       description:
-        'Technology consulting for SMEs: AI, software architecture, fractional CTO, digital transformation.',
+        'Technical partner for SMEs: Technical Direction and Software in Hand. Ownership of decisions and deliverables, clear hours.',
       founderTitle: 'Founder & Software Architecture Manager',
     },
     nav: {
-      services: 'Services',
+      services: 'Channels',
       aiPlatform: 'AI Platform',
       fractionalCto: 'Fractional CTO',
+      direzioneTecnica: 'Technical Direction',
+      softwareInMano: 'Software in Hand',
       digitalStarter: 'Digital Starter',
       development: 'Development',
       about: 'About Us',
       blog: 'Blog',
-      wellbeingApp: 'Wellbeing App',
+      wellbeingApp: 'WellBeing',
       cta: "Let's talk",
       openMenu: 'Open menu',
     },
     footer: {
       tagline:
-        'We build direction, not just code. Technology consulting for SMEs that want to grow with the right technology.',
-      services: 'Services',
+        'The technical partner that takes ownership. Technical Direction and Software in Hand for growing SMEs.',
+      services: 'Channels',
       resources: 'Resources',
       legal: 'Legal',
       privacy: 'Privacy Policy',
@@ -196,15 +195,10 @@ const ui = {
       selectService: 'Select a service',
       other: 'Other',
       services: [
-        'AI Platform',
-        'AI Adoption',
-        'Fractional CTO',
-        'Digital Transformation',
-        'Software Architecture',
-        'Tech Leadership',
-        'Agile & DevOps',
-        'Tech Wellbeing',
-        'Public Sector',
+        'Technical Direction',
+        'Software in Hand',
+        'Partnership / co-delivery',
+        'WellBeing App',
         'Other',
       ],
     },
@@ -294,14 +288,10 @@ export function getNavItems(locale: Locale, t: UiStrings) {
   const path = (p: string) => (locale === 'it' ? p : `/en${p === '/' ? '' : p}`);
 
   return [
-    { label: t.nav.services, href: `${path('/')}#servizi` },
-    { label: t.nav.aiPlatform, href: path('/ai-platform') },
-    { label: t.nav.fractionalCto, href: path('/fractional-cto') },
-    { label: t.nav.digitalStarter, href: path('/digital-starter') },
-    { label: t.nav.development, href: path('/sviluppo') },
+    { label: t.nav.softwareInMano, href: path('/software-in-mano') },
+    { label: t.nav.direzioneTecnica, href: path('/direzione-tecnica') },
     { label: t.nav.about, href: path('/chi-siamo') },
     { label: t.nav.blog, href: path('/blog') },
-    { label: t.nav.wellbeingApp, href: path('/wellbeing-app') },
   ];
 }
 
@@ -309,16 +299,9 @@ export function getFooterServices(locale: Locale, t: UiStrings) {
   const path = (p: string) => (locale === 'it' ? p : `/en${p}`);
 
   return [
-    { label: t.nav.aiPlatform, href: path('/ai-platform') },
-    { label: 'AI Adoption', href: path('/ai-adoption') },
-    { label: t.nav.fractionalCto, href: path('/fractional-cto') },
-    { label: locale === 'it' ? 'Trasformazione Digitale' : 'Digital Transformation', href: path('/trasformazione-digitale') },
-    { label: locale === 'it' ? 'Architettura Software' : 'Software Architecture', href: path('/architettura') },
-    { label: 'Tech Leadership', href: path('/leadership') },
-    { label: 'Agile & DevOps', href: path('/agile-devops') },
-    { label: locale === 'it' ? 'Sviluppo Software' : 'Software Development', href: path('/sviluppo') },
-    { label: 'Tech Wellbeing', href: path('/wellbeing') },
-    { label: locale === 'it' ? 'Pubblica Amministrazione' : 'Public Sector', href: path('/pubblica-amministrazione') },
+    { label: t.nav.softwareInMano, href: path('/software-in-mano') },
+    { label: t.nav.direzioneTecnica, href: path('/direzione-tecnica') },
+    { label: t.nav.wellbeingApp, href: path('/wellbeing') },
   ];
 }
 

@@ -25,3 +25,8 @@ aia-website/.tina/__generated__/
 
 # Claude Code session files
 .claude/
+
+# Binari distribuzione (troppo grandi per GitHub — usa GitHub Releases)
+aia-platform/public/downloads/*.exe
+aia-platform/public/downloads/*-linux*
+aia-platform/public/downloads/*-macos*

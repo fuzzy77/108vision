@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import { type Locale, getWellbeingAppContent } from '@/i18n';
+import { type Locale, getWellbeingAppContent, localizedPath } from '@/i18n';
 
 interface Props {
   locale: Locale;
@@ -8,206 +8,663 @@ interface Props {
 
 const { locale } = Astro.props;
 const c = getWellbeingAppContent(locale);
+const privacyPath = localizedPath('/wellbeing/privacy', locale);
+const termsPath = localizedPath('/wellbeing/termini', locale);
+const supportPath = localizedPath('/wellbeing/supporto', locale);
+const playHref = c.urls.googlePlay ?? c.urls.storeLanding;
+const appStoreHref = c.urls.appStore ?? c.urls.storeLanding;
+const storesReady = Boolean(c.urls.googlePlay && c.urls.appStore);
 ---
 
-<BaseLayout locale={locale} title={c.meta.title} description={c.meta.description}>
-  <section class="py-20 bg-gradient-to-br from-slate-900 via-indigo-950 to-violet-950 text-white overflow-hidden">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+<BaseLayout locale={locale} title={c.meta.title} description={c.meta.description} ogImage="https://www.108vision.it/app/wellbeing-feature.png">
+  <link
+    slot="head"
+    href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650;9..144,700&family=Outfit:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <div class="wb-root">
+    <!-- Hero: brand-first, full-bleed, one CTA group -->
+    <section class="wb-hero">
+      <div class="wb-hero__glow" aria-hidden="true"></div>
+      <div class="wb-hero__breath" aria-hidden="true">
+        <span class="wb-ring wb-ring--outer"></span>
+        <span class="wb-ring wb-ring--mid"></span>
+        <span class="wb-ring wb-ring--core"></span>
+      </div>
+      <div class="wb-hero__content">
+        <p class="wb-signature">{c.brand.signature}</p>
+        <h1 class="wb-brand">{c.brand.name}</h1>
+        <p class="wb-claim">{c.brand.claim}</p>
+        <p class="wb-intro">{c.hero.intro}</p>
+        <div class="wb-cta-row">
+          <a href="#download" class="wb-btn wb-btn--primary">{c.hero.primaryCta}</a>
+          <a href="#features" class="wb-btn wb-btn--ghost">{c.hero.secondaryCta}</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="features" class="wb-section">
+      <div class="wb-wrap">
+        <h2 class="wb-h2">{c.features.heading}</h2>
+        <p class="wb-lead">{c.features.subtitle}</p>
+        <div class="wb-feature-grid">
+          {c.features.items.map((feature, i) => (
+            <article class="wb-feature">
+              <span class="wb-feature__index">{String(i + 1).padStart(2, '0')}</span>
+              <h3>{feature.title}</h3>
+              <p>{feature.description}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="wb-section wb-section--mist">
+      <div class="wb-wrap wb-ai">
         <div>
-          <div class="flex items-center gap-3 mb-6">
-            <img src="/app/wellbeing-icon.png" alt="Wellbeing 108" class="w-16 h-16 rounded-2xl shadow-lg" />
-            <div>
-              <h1 class="text-3xl lg:text-4xl font-bold">{c.hero.title}</h1>
-              <p class="text-violet-300 text-sm font-medium">{c.hero.subtitle}</p>
-            </div>
-          </div>
-          <p class="text-xl text-slate-200 mb-8 leading-relaxed">{c.hero.intro}</p>
-          <div class="flex flex-wrap gap-4">
-            <a href="#download" class="inline-flex items-center px-6 py-3 bg-white text-slate-900 font-semibold rounded-lg hover:bg-slate-100 transition-colors">
-              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-              {c.hero.downloadCta}
+          <h2 class="wb-h2">{c.ai.heading}</h2>
+          <p class="wb-lead wb-lead--left">{c.ai.intro}</p>
+          <p class="wb-note">{c.ai.note}</p>
+        </div>
+        <div class="wb-flow" aria-label={c.ai.flowLabel}>
+          {c.ai.steps.map((step, i) => (
+            <>
+              <div class="wb-flow__step">{step}</div>
+              {i < c.ai.steps.length - 1 && <span class="wb-flow__arrow" aria-hidden="true">→</span>}
+            </>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="wb-section">
+      <div class="wb-wrap">
+        <h2 class="wb-h2">{c.howItWorks.heading}</h2>
+        <ol class="wb-steps">
+          {c.howItWorks.steps.map((step, index) => (
+            <li>
+              <span class="wb-steps__n">{index + 1}</span>
+              <h3>{step.title}</h3>
+              <p>{step.text}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+
+    <section class="wb-section wb-section--sand">
+      <div class="wb-wrap">
+        <h2 class="wb-h2">{c.packages.heading}</h2>
+        <p class="wb-lead">{c.packages.subtitle}</p>
+        <div class="wb-packages">
+          {c.packages.items.map((pkg) => (
+            <article class="wb-package">
+              <h3>{pkg.title}</h3>
+              <p>{pkg.description}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="wb-section">
+      <div class="wb-wrap">
+        <h2 class="wb-h2">{c.pricing.heading}</h2>
+        <p class="wb-lead">{c.pricing.intro}</p>
+        <div class="wb-pricing">
+          {c.pricing.plans.map((plan) => (
+            <article class:list={['wb-plan', plan.highlighted && 'wb-plan--hot']}>
+              <h3>{plan.name}</h3>
+              <p class="wb-plan__price">{plan.price}</p>
+              <p>{plan.description}</p>
+            </article>
+          ))}
+        </div>
+        <p class="wb-footnote">{c.pricing.footnote}</p>
+      </div>
+    </section>
+
+    <section id="download" class="wb-download">
+      <div class="wb-wrap wb-download__inner">
+        <img src="/app/wellbeing-icon.png" alt={c.brand.name} class="wb-download__icon" width="88" height="88" />
+        <h2 class="wb-h2 wb-h2--light">{c.download.heading}</h2>
+        <p class="wb-lead wb-lead--light">{c.download.intro}</p>
+        <div class="wb-cta-row wb-cta-row--center">
+          <a href={playHref} class="wb-btn wb-btn--primary" target="_blank" rel="noopener noreferrer">
+            {storesReady ? c.download.googlePlay : c.download.storeCta}
+          </a>
+          {storesReady ? (
+            <a href={appStoreHref} class="wb-btn wb-btn--ghost-light" target="_blank" rel="noopener noreferrer">
+              {c.download.appStore}
             </a>
-            <a href="#features" class="inline-flex items-center px-6 py-3 border border-white/30 text-white font-semibold rounded-lg hover:bg-white/10 transition-colors">
-              {c.hero.featuresCta}
+          ) : (
+            <a href={c.urls.storeLanding} class="wb-btn wb-btn--ghost-light" target="_blank" rel="noopener noreferrer">
+              {c.download.googlePlay} / {c.download.appStore}
             </a>
-          </div>
+          )}
         </div>
-        <div class="hidden lg:block">
-          <img src="/app/wellbeing-feature.png" alt="Wellbeing 108 App" class="w-full rounded-2xl shadow-2xl" />
-        </div>
+        {!storesReady && <p class="wb-footnote wb-footnote--light">{c.download.comingSoon}</p>}
+        <p class="wb-download__sig">{c.download.footnote}</p>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section class="py-20 bg-white">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <h2 class="text-3xl font-bold text-slate-900 mb-6">{c.problem.heading}</h2>
-      <p class="text-lg text-slate-600 mb-12 max-w-2xl mx-auto">{c.problem.intro}</p>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div class="p-6 bg-red-50 rounded-xl border border-red-100 text-left">
-          <h3 class="font-semibold text-slate-900 mb-3">{c.problem.traditional.title}</h3>
-          <ul class="text-sm text-slate-600 space-y-2">
-            {c.problem.traditional.items.map((item) => (
-              <li class="flex items-start gap-2">
-                <span class="text-red-400 mt-0.5 flex-shrink-0">&#10005;</span>
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div class="p-6 bg-green-50 rounded-xl border border-green-100 text-left">
-          <h3 class="font-semibold text-slate-900 mb-3">{c.problem.wellbeing108.title}</h3>
-          <ul class="text-sm text-slate-600 space-y-2">
-            {c.problem.wellbeing108.items.map((item) => (
-              <li class="flex items-start gap-2">
-                <span class="text-green-500 mt-0.5 flex-shrink-0">&#10003;</span>
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="features" class="py-20 bg-slate-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-16">
-        <h2 class="text-3xl font-bold text-slate-900 mb-4">{c.features.heading}</h2>
-        <p class="text-lg text-slate-600">{c.features.subtitle}</p>
-      </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {c.features.items.map((feature) => (
-          <div class="p-6 bg-white rounded-xl border border-slate-200 shadow-sm">
-            <div class="w-12 h-12 bg-violet-100 rounded-xl flex items-center justify-center mb-4">
-              <svg class="w-6 h-6 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" /></svg>
-            </div>
-            <h3 class="font-semibold text-slate-900 mb-2">{feature.title}</h3>
-            <p class="text-sm text-slate-600">{feature.description}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <section class="py-20 bg-white">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="text-3xl font-bold text-slate-900 mb-12 text-center">{c.howItWorks.heading}</h2>
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-        {c.howItWorks.steps.map((step, index) => (
-          <div class="text-center">
-            <div class="w-14 h-14 bg-violet-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">{index + 1}</div>
-            <h3 class="font-semibold text-slate-900 mb-2">{step.title}</h3>
-            <p class="text-sm text-slate-600">{step.text}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <section class="py-20 bg-gradient-to-br from-violet-50 to-indigo-50">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-        <div>
-          <p class="text-sm font-semibold text-violet-600 uppercase tracking-wider mb-3">{c.ai.tag}</p>
-          <h2 class="text-3xl font-bold text-slate-900 mb-6">{c.ai.heading}</h2>
-          <p class="text-slate-600 mb-6">{c.ai.intro}</p>
-          <ul class="space-y-3">
-            {c.ai.items.map((item) => (
-              <li class="flex items-start gap-3">
-                <svg class="w-5 h-5 text-violet-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
-                <span class="text-slate-700">{item}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div class="bg-white p-8 rounded-2xl shadow-lg border border-slate-100">
-          <div class="flex items-center gap-3 mb-4">
-            <div class="w-10 h-10 bg-violet-100 rounded-full flex items-center justify-center">
-              <svg class="w-5 h-5 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
-            </div>
-            <div>
-              <p class="font-semibold text-slate-900 text-sm">{c.ai.counselorLabel}</p>
-              <p class="text-xs text-slate-500">{c.ai.counselorSubtitle}</p>
-            </div>
-          </div>
-          <div class="space-y-3 text-sm text-slate-600">
-            {c.ai.examples.map((example) => (
-              <div class:list={['p-3 rounded-lg', example.highlighted ? 'bg-violet-50 border border-violet-100' : 'bg-slate-50']}>
-                <p class:list={['font-medium mb-1', example.highlighted ? 'text-violet-800' : 'text-slate-800']}>{example.title}</p>
-                <p class:list={['text-xs', example.highlighted ? 'text-violet-600' : '']}>{example.description}</p>
-              </div>
-            ))}
+    <section class="wb-legal-bar">
+      <div class="wb-wrap wb-legal-bar__inner">
+        <p class="wb-disclaimer">{c.disclaimer}</p>
+        <nav class="wb-legal-links" aria-label="WellBeing legal">
+          <a href={privacyPath}>{c.legal.privacy}</a>
+          <a href={termsPath}>{c.legal.terms}</a>
+          <a href={supportPath}>{c.legal.support}</a>
+        </nav>
+        <div class="wb-built">
+          <img src="/logo-108-mark.svg" alt="108 Vision" width="28" height="28" />
+          <div>
+            <p class="wb-built__title">{c.builtBy.title}</p>
+            <p class="wb-built__text">{c.builtBy.text}</p>
           </div>
         </div>
       </div>
-    </div>
-  </section>
-
-  <section class="py-20 bg-white">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <h2 class="text-3xl font-bold text-slate-900 mb-4">{c.pricing.heading}</h2>
-      <p class="text-lg text-slate-600 mb-12">{c.pricing.intro}</p>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {c.pricing.items.map((item, index) => (
-          <div class:list={['p-6 rounded-xl border', index === 1 ? 'bg-violet-50 border-violet-200' : 'bg-slate-50 border-slate-200']}>
-            <h3 class="font-semibold text-slate-900 mb-2">{item.title}</h3>
-            <p class="text-sm text-slate-600">{item.text}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <section class="py-20 bg-slate-50">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-        <div>
-          <p class="text-sm font-semibold text-violet-600 uppercase tracking-wider mb-3">{c.corporate.tag}</p>
-          <h2 class="text-3xl font-bold text-slate-900 mb-6">{c.corporate.heading}</h2>
-          <p class="text-slate-600 mb-6">{c.corporate.intro}</p>
-          <ul class="space-y-3 text-slate-700">
-            {c.corporate.items.map((item) => (
-              <li class="flex items-start gap-3">
-                <svg class="w-5 h-5 text-violet-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div class="bg-white p-8 rounded-2xl shadow-lg border border-slate-100 text-center">
-          <img src="/app/wellbeing-banner.png" alt="Wellbeing 108 Corporate" class="w-full rounded-lg mb-4" />
-          <p class="text-sm text-slate-500">{c.corporate.imageCaption}</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="download" class="py-20 bg-gradient-to-br from-slate-900 to-violet-950 text-white">
-    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <img src="/app/wellbeing-icon.png" alt="Wellbeing 108" class="w-20 h-20 rounded-2xl shadow-lg mx-auto mb-6" />
-      <h2 class="text-3xl font-bold mb-4">{c.download.heading}</h2>
-      <p class="text-lg text-slate-300 mb-8">{c.download.intro}</p>
-      <div class="flex flex-wrap justify-center gap-4">
-        <a href="#" class="inline-flex items-center px-6 py-3 bg-white text-slate-900 font-semibold rounded-lg hover:bg-slate-100 transition-colors">
-          {c.download.googlePlay}
-        </a>
-        <a href="#" class="inline-flex items-center px-6 py-3 bg-white text-slate-900 font-semibold rounded-lg hover:bg-slate-100 transition-colors">
-          {c.download.appStore}
-        </a>
-      </div>
-      <p class="text-sm text-slate-400 mt-6">{c.download.footnote}</p>
-    </div>
-  </section>
-
-  <section class="py-12 bg-white border-t border-slate-100">
-    <div class="max-w-3xl mx-auto px-4 text-center">
-      <div class="flex items-center justify-center gap-3 mb-3">
-        <img src="/logo-108-mark.svg" alt="108 Vision" class="w-8 h-8" />
-        <span class="font-semibold text-slate-900">{c.builtBy.title}</span>
-      </div>
-      <p class="text-sm text-slate-500">{c.builtBy.text}</p>
-    </div>
-  </section>
+    </section>
+  </div>
 </BaseLayout>
+
+<style is:global>
+  .wb-root {
+    --wb-ink: #0e1a1c;
+    --wb-mist: #163036;
+    --wb-foam: #eef3f1;
+    --wb-sand: #c9b08a;
+    --wb-breath: #7ba3a8;
+    --wb-glow: rgba(123, 163, 168, 0.35);
+    --wb-display: 'Fraunces', Georgia, serif;
+    --wb-sans: 'Outfit', system-ui, sans-serif;
+    font-family: var(--wb-sans);
+    color: var(--wb-ink);
+    background: var(--wb-foam);
+  }
+
+  .wb-hero {
+    position: relative;
+    min-height: calc(100vh - 4rem);
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+    background:
+      radial-gradient(ellipse 80% 60% at 70% 20%, rgba(123, 163, 168, 0.22), transparent 55%),
+      radial-gradient(ellipse 50% 40% at 20% 80%, rgba(201, 176, 138, 0.12), transparent 50%),
+      linear-gradient(165deg, #0a1416 0%, #123038 48%, #0e1a1c 100%);
+    color: var(--wb-foam);
+    padding: 6rem 1.25rem 4.5rem;
+  }
+
+  .wb-hero__glow {
+    position: absolute;
+    inset: -20% 10% auto auto;
+    width: min(55vw, 520px);
+    height: min(55vw, 520px);
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--wb-glow), transparent 70%);
+    filter: blur(8px);
+    animation: wb-pulse 7s ease-in-out infinite;
+  }
+
+  .wb-hero__breath {
+    position: absolute;
+    right: max(4%, 1rem);
+    top: 50%;
+    transform: translateY(-50%);
+    width: min(42vw, 420px);
+    height: min(42vw, 420px);
+    display: grid;
+    place-items: center;
+    opacity: 0.55;
+    pointer-events: none;
+  }
+
+  .wb-ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid rgba(238, 243, 241, 0.28);
+  }
+  .wb-ring--outer {
+    inset: 0;
+    animation: wb-breathe 6s ease-in-out infinite;
+  }
+  .wb-ring--mid {
+    inset: 18%;
+    border-color: rgba(123, 163, 168, 0.55);
+    animation: wb-breathe 6s ease-in-out infinite 0.4s;
+  }
+  .wb-ring--core {
+    inset: 38%;
+    background: radial-gradient(circle, rgba(201, 176, 138, 0.35), transparent 70%);
+    border-color: rgba(201, 176, 138, 0.5);
+    animation: wb-breathe 6s ease-in-out infinite 0.8s;
+  }
+
+  .wb-hero__content {
+    position: relative;
+    z-index: 1;
+    max-width: 40rem;
+  }
+
+  .wb-signature {
+    font-size: 0.85rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--wb-sand);
+    margin-bottom: 0.75rem;
+    font-weight: 500;
+  }
+
+  .wb-brand {
+    font-family: var(--wb-display);
+    font-weight: 700;
+    font-size: clamp(3.4rem, 10vw, 5.75rem);
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    margin: 0 0 1rem;
+  }
+
+  .wb-claim {
+    font-family: var(--wb-display);
+    font-weight: 500;
+    font-size: clamp(1.35rem, 3.2vw, 1.85rem);
+    color: rgba(238, 243, 241, 0.9);
+    margin: 0 0 1.25rem;
+  }
+
+  .wb-intro {
+    font-size: 1.05rem;
+    line-height: 1.65;
+    color: rgba(238, 243, 241, 0.72);
+    max-width: 34rem;
+    margin: 0 0 2rem;
+    font-weight: 300;
+  }
+
+  .wb-cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.85rem;
+  }
+  .wb-cta-row--center {
+    justify-content: center;
+  }
+
+  .wb-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.85rem 1.4rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  }
+  .wb-btn:hover {
+    transform: translateY(-1px);
+  }
+  .wb-btn--primary {
+    background: var(--wb-sand);
+    color: var(--wb-ink);
+  }
+  .wb-btn--primary:hover {
+    background: #d8c19a;
+  }
+  .wb-btn--ghost {
+    border: 1px solid rgba(238, 243, 241, 0.35);
+    color: var(--wb-foam);
+  }
+  .wb-btn--ghost:hover {
+    border-color: var(--wb-foam);
+    background: rgba(238, 243, 241, 0.06);
+  }
+  .wb-btn--ghost-light {
+    border: 1px solid rgba(238, 243, 241, 0.35);
+    color: var(--wb-foam);
+  }
+
+  .wb-section {
+    padding: 5rem 1.25rem;
+  }
+  .wb-section--mist {
+    background: linear-gradient(180deg, #dfe8e5 0%, var(--wb-foam) 100%);
+  }
+  .wb-section--sand {
+    background: linear-gradient(180deg, #f6f0e6 0%, var(--wb-foam) 100%);
+  }
+
+  .wb-wrap {
+    max-width: 68rem;
+    margin: 0 auto;
+  }
+
+  .wb-h2 {
+    font-family: var(--wb-display);
+    font-size: clamp(1.85rem, 4vw, 2.6rem);
+    font-weight: 650;
+    letter-spacing: -0.02em;
+    text-align: center;
+    margin: 0 0 0.85rem;
+  }
+  .wb-h2--light {
+    color: var(--wb-foam);
+  }
+
+  .wb-lead {
+    text-align: center;
+    max-width: 40rem;
+    margin: 0 auto 2.75rem;
+    color: #4a5c60;
+    line-height: 1.65;
+    font-weight: 300;
+  }
+  .wb-lead--left {
+    text-align: left;
+    margin-left: 0;
+  }
+  .wb-lead--light {
+    color: rgba(238, 243, 241, 0.7);
+  }
+
+  .wb-feature-grid {
+    display: grid;
+    gap: 1.75rem 2rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 768px) {
+    .wb-feature-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .wb-feature {
+    padding: 0.25rem 0 1rem;
+    border-bottom: 1px solid rgba(14, 26, 28, 0.08);
+  }
+  .wb-feature__index {
+    display: block;
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    color: var(--wb-breath);
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+  .wb-feature h3 {
+    font-family: var(--wb-display);
+    font-size: 1.35rem;
+    font-weight: 650;
+    margin: 0 0 0.5rem;
+  }
+  .wb-feature p {
+    margin: 0;
+    color: #4a5c60;
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  .wb-ai {
+    display: grid;
+    gap: 2.5rem;
+    align-items: center;
+  }
+  @media (min-width: 900px) {
+    .wb-ai {
+      grid-template-columns: 1.1fr 0.9fr;
+    }
+  }
+
+  .wb-note {
+    margin-top: 1.25rem;
+    font-size: 0.9rem;
+    color: #5a6e72;
+  }
+
+  .wb-flow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.35rem;
+    justify-content: flex-start;
+  }
+  .wb-flow__step {
+    padding: 0.7rem 1rem;
+    background: var(--wb-ink);
+    color: var(--wb-foam);
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+  .wb-flow__arrow {
+    color: var(--wb-breath);
+    font-size: 1.1rem;
+    padding: 0 0.15rem;
+  }
+
+  .wb-steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 768px) {
+    .wb-steps {
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.25rem;
+    }
+  }
+  .wb-steps li {
+    text-align: center;
+  }
+  .wb-steps__n {
+    display: inline-grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 999px;
+    background: var(--wb-mist);
+    color: var(--wb-foam);
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 0.85rem;
+  }
+  .wb-steps h3 {
+    font-family: var(--wb-display);
+    font-size: 1.15rem;
+    margin: 0 0 0.4rem;
+  }
+  .wb-steps p {
+    margin: 0;
+    font-size: 0.92rem;
+    color: #4a5c60;
+    line-height: 1.55;
+    font-weight: 300;
+  }
+
+  .wb-packages {
+    display: grid;
+    gap: 1.25rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 768px) {
+    .wb-packages {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  .wb-package {
+    padding: 1.5rem 0;
+    border-top: 2px solid var(--wb-ink);
+  }
+  .wb-package h3 {
+    font-family: var(--wb-display);
+    font-size: 1.25rem;
+    margin: 0 0 0.5rem;
+  }
+  .wb-package p {
+    margin: 0;
+    color: #4a5c60;
+    font-weight: 300;
+    line-height: 1.55;
+  }
+
+  .wb-pricing {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 700px) {
+    .wb-pricing {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 1000px) {
+    .wb-pricing {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+  .wb-plan {
+    padding: 1.35rem 1.15rem;
+    border: 1px solid rgba(14, 26, 28, 0.12);
+    background: #fff;
+  }
+  .wb-plan--hot {
+    border-color: var(--wb-mist);
+    background: #f3f7f6;
+  }
+  .wb-plan h3 {
+    font-family: var(--wb-display);
+    font-size: 1.1rem;
+    margin: 0 0 0.35rem;
+  }
+  .wb-plan__price {
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: var(--wb-mist);
+    margin: 0 0 0.65rem;
+  }
+  .wb-plan p:last-child {
+    margin: 0;
+    font-size: 0.88rem;
+    color: #4a5c60;
+    line-height: 1.5;
+    font-weight: 300;
+  }
+
+  .wb-footnote {
+    text-align: center;
+    margin: 1.5rem 0 0;
+    font-size: 0.8rem;
+    color: #6b7c80;
+  }
+  .wb-footnote--light {
+    color: rgba(238, 243, 241, 0.55);
+  }
+
+  .wb-download {
+    background:
+      radial-gradient(ellipse 60% 50% at 50% 0%, rgba(123, 163, 168, 0.2), transparent 60%),
+      linear-gradient(180deg, #123038 0%, #0a1416 100%);
+    padding: 5rem 1.25rem;
+    color: var(--wb-foam);
+  }
+  .wb-download__inner {
+    text-align: center;
+  }
+  .wb-download__icon {
+    width: 88px;
+    height: 88px;
+    border-radius: 1.25rem;
+    margin: 0 auto 1.5rem;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+  }
+  .wb-download__sig {
+    margin-top: 1.75rem;
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--wb-sand);
+  }
+
+  .wb-legal-bar {
+    padding: 3rem 1.25rem 4rem;
+    background: #fff;
+    border-top: 1px solid rgba(14, 26, 28, 0.08);
+  }
+  .wb-legal-bar__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .wb-disclaimer {
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.55;
+    color: #5a6e72;
+    max-width: 48rem;
+  }
+  .wb-legal-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+  }
+  .wb-legal-links a {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--wb-mist);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .wb-built {
+    display: flex;
+    gap: 0.85rem;
+    align-items: flex-start;
+    padding-top: 0.5rem;
+  }
+  .wb-built__title {
+    margin: 0 0 0.25rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+  .wb-built__text {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #5a6e72;
+    line-height: 1.5;
+    max-width: 36rem;
+    font-weight: 300;
+  }
+
+  @keyframes wb-breathe {
+    0%,
+    100% {
+      transform: scale(0.92);
+      opacity: 0.55;
+    }
+    50% {
+      transform: scale(1.05);
+      opacity: 1;
+    }
+  }
+  @keyframes wb-pulse {
+    0%,
+    100% {
+      opacity: 0.45;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.85;
+      transform: scale(1.08);
+    }
+  }
+
+  @media (max-width: 900px) {
+    .wb-hero__breath {
+      opacity: 0.28;
+      right: -8%;
+    }
+  }
+</style>

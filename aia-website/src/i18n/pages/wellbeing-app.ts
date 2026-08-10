@@ -1,286 +1,355 @@
 import type { Locale } from '../config';
-import type { HowItWorksStep, LocaleContent, TextCard } from './types';
+import type { HowItWorksStep, LocaleContent } from './types';
 
 export interface WellbeingAppFeature {
   title: string;
   description: string;
 }
 
-export interface CounselorExample {
-  title: string;
+export interface PricingPlan {
+  name: string;
+  price: string;
   description: string;
   highlighted?: boolean;
 }
 
 export interface WellbeingAppContent {
   meta: { title: string; description: string };
+  brand: {
+    name: string;
+    signature: string;
+    claim: string;
+  };
   hero: {
-    title: string;
+    intro: string;
+    primaryCta: string;
+    secondaryCta: string;
+  };
+  features: {
+    heading: string;
     subtitle: string;
-    intro: string;
-    downloadCta: string;
-    featuresCta: string;
+    items: WellbeingAppFeature[];
   };
-  problem: {
-    heading: string;
-    intro: string;
-    traditional: { title: string; items: string[] };
-    wellbeing108: { title: string; items: string[] };
-  };
-  features: { heading: string; subtitle: string; items: WellbeingAppFeature[] };
-  howItWorks: { heading: string; steps: HowItWorksStep[] };
   ai: {
-    tag: string;
     heading: string;
     intro: string;
-    items: string[];
-    counselorLabel: string;
-    counselorSubtitle: string;
-    examples: CounselorExample[];
+    flowLabel: string;
+    steps: string[];
+    note: string;
+  };
+  howItWorks: {
+    heading: string;
+    steps: HowItWorksStep[];
+  };
+  packages: {
+    heading: string;
+    subtitle: string;
+    items: WellbeingAppFeature[];
   };
   pricing: {
     heading: string;
     intro: string;
-    items: TextCard[];
-  };
-  corporate: {
-    tag: string;
-    heading: string;
-    intro: string;
-    items: string[];
-    imageCaption: string;
+    footnote: string;
+    plans: PricingPlan[];
   };
   download: {
     heading: string;
     intro: string;
+    storeCta: string;
     googlePlay: string;
     appStore: string;
+    comingSoon: string;
     footnote: string;
   };
+  disclaimer: string;
+  legal: {
+    privacy: string;
+    terms: string;
+    support: string;
+  };
   builtBy: { title: string; text: string };
+  urls: {
+    storeLanding: string;
+    privacy: string;
+    terms: string;
+    supportEmail: string;
+    googlePlay: string | null;
+    appStore: string | null;
+  };
 }
+
+const STORE_LANDING = 'https://wellbeing-api-108.azurewebsites.net/store/';
+const SUPPORT_EMAIL = '108@postecert.it';
 
 const content: LocaleContent<WellbeingAppContent> = {
   it: {
     meta: {
-      title: 'Wellbeing 108 — App di benessere guidato',
+      title: 'WellBeing — Visualizza. Respira. Ascolta.',
       description:
-        'App di benessere guidato con visualizzazioni immersive, respirazione sincronizzata, AI counselor e sessioni audio personalizzate. Disponibile su Android e iOS.',
+        'App di visualizzazioni guidate, cerchio del respiro e Consigliere AI: da te all’audio. WellBeing by 108 Vision.',
+    },
+    brand: {
+      name: 'WellBeing',
+      signature: 'by 108 Vision',
+      claim: 'Visualizza. Respira. Ascolta.',
     },
     hero: {
-      title: 'Wellbeing 108',
-      subtitle: 'by 108 Vision',
       intro:
-        "Trasforma il benessere quotidiano in un'esperienza guidata. Visualizzazioni immersive, respirazione sincronizzata e AI counselor — tutto in un'unica app.",
-      downloadCta: "Scarica l'app",
-      featuresCta: 'Scopri le funzionalità',
-    },
-    problem: {
-      heading: 'Il problema con le app di benessere',
-      intro:
-        "La maggior parte delle app offre solo timer per la respirazione o podcast generici. Nessuna sincronizza davvero contenuti audio, esercizi di respiro e percorsi guidati in un'esperienza unica e personalizzata.",
-      traditional: {
-        title: 'App tradizionali',
-        items: [
-          'Contenuti generici uguali per tutti',
-          "Timer respirazione scollegati dall'audio",
-          'Abbonamento mensile anche se usi poco',
-          'Nessuna personalizzazione AI reale',
-        ],
-      },
-      wellbeing108: {
-        title: 'Wellbeing 108',
-        items: [
-          'Sessioni costruite su misura dalla tua libreria',
-          'Respiro sincronizzato con audio e visualizzazioni',
-          'Pacchetti acquistabili — paghi solo quello che usi',
-          'AI Counselor che pianifica sessioni reali con i tuoi contenuti',
-        ],
-      },
+        'Sessioni guidate per obiettivi, meditazione, sonno e trasformazione. Quando serve, ciò che scrivi diventa una visualizzazione audio personale.',
+      primaryCta: 'Inizia una sessione',
+      secondaryCta: 'Scopri le funzioni',
     },
     features: {
-      heading: 'Cosa rende Wellbeing 108 diversa',
-      subtitle: "Un'esperienza integrata, non un insieme di funzioni slegate.",
+      heading: 'Quattro pratiche, un’esperienza',
+      subtitle: 'Feature a parità: nessuna scalza le altre. Il Consigliere AI è il differenziatore, non l’unico motivo per scaricare.',
       items: [
-        { title: 'Sessioni Audio Immersive', description: 'Pacchetti audio premium con stream, musiche e percorsi guidati. Scaricabili per uso offline completo.' },
-        { title: 'Respirazione Integrata', description: 'Anello del respiro sincronizzato con la sessione. Non un timer separato — parte del flusso audio.' },
-        { title: 'AI Counselor', description: "Testo e piano di sessione generati dall'AI usando solo contenuti della tua libreria. Con voce sintetizzata." },
-        { title: 'AI Visualization', description: "L'AI seleziona e combina i tuoi contenuti in un percorso personalizzato basato sul tuo stato d'animo." },
-        { title: 'Offline-First', description: 'Scarica i contenuti e usali ovunque. Lo stato personale resta sincronizzato quando torni online.' },
-        { title: 'Pause Personalizzabili', description: 'Contenuti davvero tuoi: ritmo, durata e combinazioni controllabili dentro percorsi narrativi acquistati.' },
+        {
+          title: 'Visualizzazioni guidate',
+          description:
+            'Percorsi audio per obiettivi, meditazione, sonno e trasformazione. Catalogo chiaro, pronto all’ascolto.',
+        },
+        {
+          title: 'Cerchio del respiro',
+          description:
+            'Tempi impostabili per inspiro, trattenimento ed espiro. Il respiro diventa parte della sessione, non un timer isolato.',
+        },
+        {
+          title: 'Pezzi nelle pause',
+          description:
+            'Musica di sottofondo e pezzi audio nelle pause per ripetere lo stimolo che desideri, al tuo ritmo.',
+        },
+        {
+          title: 'Consigliere AI',
+          description:
+            'Scrivi come ti senti, leggi l’anteprima, genera l’audio con voce femminile o maschile. Da te all’audio.',
+        },
       ],
+    },
+    ai: {
+      heading: 'Da te all’audio',
+      intro:
+        'Il Consigliere AI non è un chatbot. È il modo in cui ciò che scrivi diventa una visualizzazione audio personale, a fianco del catalogo guidato.',
+      flowLabel: 'Flusso',
+      steps: ['Prompt', 'Anteprima testo', 'Audio personale', 'Riascolto'],
+      note: 'Accesso e crediti si acquistano sullo store. I crediti non scadono.',
     },
     howItWorks: {
       heading: 'Come funziona',
       steps: [
-        { title: 'Scegli', text: 'Esplora i pacchetti e acquista quelli che risuonano con te.' },
-        { title: 'Scarica', text: 'Download dei contenuti per uso offline, sempre disponibili.' },
-        { title: 'Vivi', text: 'Sessione guidata: audio + respiro + visual, tutto sincronizzato.' },
-        { title: 'Evolvi', text: "L'AI Counselor suggerisce sessioni sempre nuove dalla tua libreria." },
+        { title: 'Scegli', text: 'Apri una visualizzazione guidata o parti dal Consigliere AI.' },
+        { title: 'Respira', text: 'Sincronizza il cerchio del respiro con la sessione.' },
+        { title: 'Ascolta', text: 'Segui l’audio, anche con pezzi nelle pause e musica di sottofondo.' },
+        { title: 'Crea', text: 'Quando vuoi: prompt → anteprima → audio personale.' },
       ],
     },
-    ai: {
-      tag: 'Intelligenza Artificiale Responsabile',
-      heading: 'AI che lavora con i tuoi contenuti',
-      intro:
-        'Il nostro AI Counselor non genera contenuti dal nulla. Usa esclusivamente la libreria di pacchetti che hai acquistato per creare piani di sessione personalizzati.',
+    packages: {
+      heading: 'Pacchetti di visualizzazione',
+      subtitle: 'Un catalogo chiaro. Acquisti ciò che usi.',
       items: [
-        'Pianificazione sessioni basata sul tuo catalogo',
-        'Voce sintetizzata per guidance personalizzata',
-        'Crediti senza scadenza — nessun abbonamento obbligatorio',
-        'Santuario cloud: salva e rivivi le sessioni migliori',
-      ],
-      counselorLabel: 'AI Counselor',
-      counselorSubtitle: 'Sessione suggerita per oggi',
-      examples: [
-        { title: 'Focus e concentrazione', description: '30 min — 3 stream + respirazione 4-7-8' },
-        { title: 'Rilassamento serale', description: '20 min — 2 stream + respirazione lenta' },
-        { title: 'Visualizzazione creativa', description: '45 min — percorso completo con pausa personalizzata', highlighted: true },
+        {
+          title: 'Pacchetto base',
+          description: 'Punto di partenza: obiettivi, meditazione, respiro.',
+        },
+        {
+          title: 'Sogno e sonno',
+          description: 'Per lasciarti andare la sera.',
+        },
+        {
+          title: 'Evoluzione',
+          description: 'Dal dolore alla luce — percorsi di trasformazione interiore.',
+        },
       ],
     },
     pricing: {
-      heading: 'Paghi solo quello che usi',
-      intro: 'Nessun abbonamento obbligatorio. Acquista pacchetti e crediti AI quando vuoi.',
-      items: [
-        { title: 'Pacchetti Audio', text: 'Stream, musiche e percorsi guidati. Acquista una volta, tieni per sempre.' },
-        { title: 'Crediti AI', text: 'Crediti per sessioni AI Counselor e Visualization. Non scadono mai.' },
-        { title: 'Abbonamento Annuale', text: 'Tutto incluso: tutti i pacchetti + AI illimitata + crediti mensili bonus.' },
+      heading: 'Accesso e crediti',
+      intro: 'Alcune funzioni richiedono acquisto in-app o abbonamento. Prezzi indicativi per l’Italia.',
+      footnote: 'I prezzi effettivi sono quelli mostrati sullo store al momento dell’acquisto.',
+      plans: [
+        {
+          name: 'AI Starter',
+          price: '~3,69 €',
+          description: 'Accesso al Consigliere AI con crediti iniziali.',
+        },
+        {
+          name: 'Smart',
+          price: '~5,99 €',
+          description: 'Più crediti per creare e riascoltare sessioni personali.',
+          highlighted: true,
+        },
+        {
+          name: 'Premium+AI',
+          price: '~8,99 €/anno',
+          description: 'Abbonamento annuale con accesso e crediti periodici.',
+        },
+        {
+          name: 'Ricarica 20',
+          price: '~4,89 €',
+          description: 'Pacchetto crediti. I crediti non scadono.',
+        },
       ],
-    },
-    corporate: {
-      tag: 'Per le aziende',
-      heading: 'Corporate Wellness',
-      intro:
-        "Wellbeing 108 supporta login enterprise-ready e gestione gruppi. Offri ai tuoi dipendenti uno strumento concreto per gestire stress e focus — non l'ennesimo benefit dimenticato.",
-      items: [
-        'Onboarding team con sessioni guidate pre-configurate',
-        'Dashboard utilizzo aggregato (anonimo)',
-        'Pacchetti contenuti personalizzabili per settore',
-        'SSO / SAML integrazione enterprise',
-      ],
-      imageCaption: 'Disponibile per team da 10+ persone',
     },
     download: {
-      heading: 'Scarica Wellbeing 108',
-      intro: 'Disponibile su Android e iOS. Inizia con una sessione gratuita.',
+      heading: 'Inizia una sessione',
+      intro: 'Disponibile su Android e iOS. Italiano, inglese e spagnolo.',
+      storeCta: 'Apri la pagina store',
       googlePlay: 'Google Play',
       appStore: 'App Store',
-      footnote: 'Prima sessione gratuita. Nessuna carta di credito richiesta.',
+      comingSoon: 'Link store in arrivo — usa la landing ufficiale nel frattempo.',
+      footnote: 'WellBeing by 108 Vision',
+    },
+    disclaimer:
+      'I contenuti supportano il benessere quotidiano e non sostituiscono il parere di un medico o di uno specialista. In emergenza contatta i servizi competenti.',
+    legal: {
+      privacy: 'Privacy',
+      terms: 'Termini',
+      support: 'Supporto',
     },
     builtBy: {
-      title: 'Un prodotto 108 Vision',
-      text: 'Progettata e sviluppata da Elios Scoglio con la stessa attenzione ai dettagli che portiamo nei progetti enterprise.',
+      title: 'WellBeing by 108 Vision',
+      text: 'Prodotto consumer di 108 Vision. Stessa cura operativa che portiamo nei progetti enterprise — tradotta in un’app di pratica quotidiana.',
+    },
+    urls: {
+      storeLanding: STORE_LANDING,
+      privacy: 'https://wellbeing-api-108.azurewebsites.net/legal/privacy.it.html',
+      terms: 'https://wellbeing-api-108.azurewebsites.net/legal/terms.it.html',
+      supportEmail: SUPPORT_EMAIL,
+      googlePlay: null,
+      appStore: null,
     },
   },
   en: {
     meta: {
-      title: 'Wellbeing 108 — Guided Wellness App',
+      title: 'WellBeing — Visualize. Breathe. Listen.',
       description:
-        'Guided wellness app with immersive visualizations, synchronized breathing, AI counselor, and personalized audio sessions. Available on Android and iOS.',
+        'Guided visualizations, breath circle and AI Counselor: from your words to personal audio. WellBeing by 108 Vision.',
+    },
+    brand: {
+      name: 'WellBeing',
+      signature: 'by 108 Vision',
+      claim: 'Visualize. Breathe. Listen.',
     },
     hero: {
-      title: 'Wellbeing 108',
-      subtitle: 'by 108 Vision',
       intro:
-        'Transform daily wellbeing into a guided experience. Immersive visualizations, synchronized breathing, and AI counselor — all in one app.',
-      downloadCta: 'Download the app',
-      featuresCta: 'Discover features',
-    },
-    problem: {
-      heading: 'The problem with wellness apps',
-      intro:
-        'Most apps only offer breathing timers or generic podcasts. None truly synchronizes audio content, breathing exercises, and guided paths into a unique, personalized experience.',
-      traditional: {
-        title: 'Traditional apps',
-        items: [
-          'Generic content, same for everyone',
-          'Breathing timers disconnected from audio',
-          'Monthly subscription even with little use',
-          'No real AI personalization',
-        ],
-      },
-      wellbeing108: {
-        title: 'Wellbeing 108',
-        items: [
-          'Sessions custom-built from your library',
-          'Breathing synchronized with audio and visualizations',
-          'Purchasable packages — pay only for what you use',
-          'AI Counselor that plans real sessions with your content',
-        ],
-      },
+        'Guided sessions for goals, meditation, sleep and transformation. When you need it, what you write becomes a personal audio visualization.',
+      primaryCta: 'Start a session',
+      secondaryCta: 'Explore features',
     },
     features: {
-      heading: 'What makes Wellbeing 108 different',
-      subtitle: 'An integrated experience, not a collection of disconnected functions.',
+      heading: 'Four practices, one experience',
+      subtitle: 'Equal features: none outranks the others. The AI Counselor is the differentiator — not the only reason to download.',
       items: [
-        { title: 'Immersive Audio Sessions', description: 'Premium audio packages with streams, music, and guided paths. Downloadable for full offline use.' },
-        { title: 'Integrated Breathing', description: 'Breathing loop synchronized with the session. Not a separate timer — part of the audio flow.' },
-        { title: 'AI Counselor', description: 'Session text and plan generated by AI using only content from your library. With synthesized voice.' },
-        { title: 'AI Visualization', description: 'AI selects and combines your content into a personalized path based on your mood.' },
-        { title: 'Offline-First', description: 'Download content and use it anywhere. Personal state stays synced when you come back online.' },
-        { title: 'Customizable Pauses', description: 'Truly your content: rhythm, duration, and combinations controllable within purchased narrative paths.' },
+        {
+          title: 'Guided visualizations',
+          description:
+            'Audio paths for goals, meditation, sleep and transformation. A clear catalog, ready to play.',
+        },
+        {
+          title: 'Breath circle',
+          description:
+            'Set inhale, hold and exhale timings. Breath is part of the session — not a separate timer.',
+        },
+        {
+          title: 'Pause pieces',
+          description:
+            'Background music and audio pieces in the pauses so you can repeat the stimulus you want, at your pace.',
+        },
+        {
+          title: 'AI Counselor',
+          description:
+            'Write how you feel, read the preview, generate audio with a female or male voice. From you to audio.',
+        },
       ],
+    },
+    ai: {
+      heading: 'From you to audio',
+      intro:
+        'The AI Counselor is not a chatbot. It is how what you write becomes a personal audio visualization — alongside the guided catalog.',
+      flowLabel: 'Flow',
+      steps: ['Prompt', 'Text preview', 'Personal audio', 'Replay'],
+      note: 'Access and credits are purchased on the store. Credits do not expire.',
     },
     howItWorks: {
       heading: 'How it works',
       steps: [
-        { title: 'Choose', text: 'Explore packages and purchase those that resonate with you.' },
-        { title: 'Download', text: 'Download content for offline use, always available.' },
-        { title: 'Experience', text: 'Guided session: audio + breath + visual, all synchronized.' },
-        { title: 'Evolve', text: 'The AI Counselor suggests new sessions from your library.' },
+        { title: 'Choose', text: 'Open a guided visualization or start from the AI Counselor.' },
+        { title: 'Breathe', text: 'Sync the breath circle with your session.' },
+        { title: 'Listen', text: 'Follow the audio, including pause pieces and background music.' },
+        { title: 'Create', text: 'When you want: prompt → preview → personal audio.' },
       ],
     },
-    ai: {
-      tag: 'Responsible Artificial Intelligence',
-      heading: 'AI that works with your content',
-      intro:
-        "Our AI Counselor does not generate content from scratch. It exclusively uses the library of packages you have purchased to create personalized session plans.",
+    packages: {
+      heading: 'Visualization packages',
+      subtitle: 'A clear catalog. Buy what you use.',
       items: [
-        'Session planning based on your catalog',
-        'Synthesized voice for personalized guidance',
-        'Credits without expiration — no mandatory subscription',
-        'Cloud sanctuary: save and relive the best sessions',
-      ],
-      counselorLabel: 'AI Counselor',
-      counselorSubtitle: 'Suggested session for today',
-      examples: [
-        { title: 'Focus and concentration', description: '30 min — 3 streams + 4-7-8 breathing' },
-        { title: 'Evening relaxation', description: '20 min — 2 streams + slow breathing' },
-        { title: 'Creative visualization', description: '45 min — complete path with personalized pause', highlighted: true },
+        {
+          title: 'Starter pack',
+          description: 'Starting point: goals, meditation, breath.',
+        },
+        {
+          title: 'Dream & sleep',
+          description: 'Let go in the evening.',
+        },
+        {
+          title: 'Evolution',
+          description: 'From pain to light — paths of inner transformation.',
+        },
       ],
     },
     pricing: {
-      heading: 'Pay only for what you use',
-      intro: 'No mandatory subscription. Purchase packages and AI credits whenever you want.',
-      items: [
-        { title: 'Audio Packages', text: 'Streams, music, and guided paths. Buy once, keep forever.' },
-        { title: 'AI Credits', text: 'Credits for AI Counselor and Visualization sessions. Never expire.' },
-        { title: 'Annual Subscription', text: 'All-inclusive: all packages + unlimited AI + monthly bonus credits.' },
+      heading: 'Access and credits',
+      intro: 'Some features require an in-app purchase or subscription. Indicative Italy pricing.',
+      footnote: 'Actual prices are those shown on the store at purchase time.',
+      plans: [
+        {
+          name: 'AI Starter',
+          price: '~€3.69',
+          description: 'AI Counselor access with starter credits.',
+        },
+        {
+          name: 'Smart',
+          price: '~€5.99',
+          description: 'More credits to create and replay personal sessions.',
+          highlighted: true,
+        },
+        {
+          name: 'Premium+AI',
+          price: '~€8.99/year',
+          description: 'Annual subscription with access and periodic credits.',
+        },
+        {
+          name: 'Top-up 20',
+          price: '~€4.89',
+          description: 'Credit pack. Credits do not expire.',
+        },
       ],
-    },
-    corporate: {
-      tag: 'For businesses',
-      heading: 'Corporate Wellness',
-      intro:
-        'Wellbeing 108 supports enterprise-ready login and group management. Offer your employees a concrete tool to manage stress and focus — not just another forgotten benefit.',
-      items: [
-        'Team onboarding with pre-configured guided sessions',
-        'Aggregated usage dashboard (anonymous)',
-        'Customizable content packages by sector',
-        'SSO / SAML enterprise integration',
-      ],
-      imageCaption: 'Available for teams of 10+ people',
     },
     download: {
-      heading: 'Download Wellbeing 108',
-      intro: 'Available on Android and iOS. Start with a free session.',
+      heading: 'Start a session',
+      intro: 'Available on Android and iOS. Italian, English and Spanish.',
+      storeCta: 'Open store landing',
       googlePlay: 'Google Play',
       appStore: 'App Store',
-      footnote: 'First session free. No credit card required.',
+      comingSoon: 'Store links coming soon — use the official landing in the meantime.',
+      footnote: 'WellBeing by 108 Vision',
+    },
+    disclaimer:
+      'Content supports everyday wellbeing and does not replace advice from a doctor or specialist. In an emergency, contact the appropriate services.',
+    legal: {
+      privacy: 'Privacy',
+      terms: 'Terms',
+      support: 'Support',
     },
     builtBy: {
-      title: 'A 108 Vision product',
-      text: 'Designed and developed by Elios Scoglio with the same attention to detail we bring to enterprise projects.',
+      title: 'WellBeing by 108 Vision',
+      text: 'A consumer product from 108 Vision. The same operational care we bring to enterprise work — translated into a daily practice app.',
+    },
+    urls: {
+      storeLanding: STORE_LANDING,
+      privacy: 'https://wellbeing-api-108.azurewebsites.net/legal/privacy.en.html',
+      terms: 'https://wellbeing-api-108.azurewebsites.net/legal/terms.en.html',
+      supportEmail: SUPPORT_EMAIL,
+      googlePlay: null,
+      appStore: null,
     },
   },
 };

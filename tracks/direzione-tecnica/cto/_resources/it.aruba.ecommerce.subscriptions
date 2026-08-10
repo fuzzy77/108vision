@@ -1,0 +1,212 @@
+Topic: it.aruba.ecommerce.subscriptions.service.provisionalaction.exec
+Tenant: 3f2504e0-4f89-11d3-9a0c-0305e82c3302
+
+##### messaggio 1
+
+Key:  
+6a57d0c2-27e4-4a3f-a95f-8c9d8d9b4f4e  
+
+Body:  
+
+{
+
+	"ServiceGroupId": "d9f2f12b-56ad-43a2-98db-fd12fc45ac05",
+	"ServiceId": "6a57d0c2-27e4-4a3f-a95f-8c9d8d9b4f4e",
+	"Action": "Resume",
+	"ForwardToProvisioningSubsystem": false
+}
+ 
+Headers:
+{
+	"ce_aru_msgbus_originating_ce_source": "it.aruba.cmpservice.updatesaga.consumer",
+	"ce_aru_msgbus_specversion": "1.0",
+	"ce_aru_conversationid": "436de018929a4c638c71a9684c4c55dd",
+	"ce_aru_msgbus_originating_ce_type": "it.aruba.cmpservice.deployments.UpdateDeploymentRequestConfirmed.v1",
+	"ce_type": "it.aruba.subscriptions.service.provisionalaction.v1",
+	"ce_aru_msgbus_originating_endpoint_id": "ea9c699b97a74dfba1649655f5590927",
+	"ce_specversion": "1.0",
+	"ce_aru_specversion": "1.0",
+	"ce_aru_msgbus_transport_sent_at": "2025-02-27T15:25:49.3728153Z",
+	"ce_aru_msgbus_originating_message_id": "it.aruba.cmpservice.updatesaga.consumer 7d6d6405e29449f0a67ebd1f65d7b857",
+	"ce_aru_msgbus_originating_ce_aru_conversationid": "436de018929a4c638c71a9684c4c55dd",
+	"ce_aru_msgbus_originating_ce_subject": "aru-207771",
+	"ce_subject": "8ec4e446-8fd6-43f7-87e7-ef7becad8532;project=3F2504E0-4F89-11D3-9A0C-0305E82C3302",
+	"ce_aru_msgbus_originating_ce_id": "7d6d6405e29449f0a67ebd1f65d7b857",
+	"ce_aru_msgbus_version": "1.0.0-rc1.1165",
+	"ce_aru_msgbus_originating_endpoint_namespace": "Aruba.CmpService.Computing",
+	"ce_aru_msgbus_logical_seq": "4",
+	"ce_source": "it.aruba.cmpservice.computing.consumer",
+	"ce_time": "2025-02-27T15:25:48.8547786Z",
+	"content-type": "application/json",
+	"ce_id": "c4dc18b8-0c2a-4330-813b-ea4a8fb605b3",
+	"ce_aru_msgbus_originating_endpoint_name": "Aruba.CmpService.Computing.Api",
+	"ce_aru_msgbus_originating_endpoint_version": "0.11.0"
+}
+
+##### messaggio 2
+
+Key:  
+ee2a0e44-42d5-4b9d-8e7b-c633950bb1f6  
+
+Body:  
+
+{
+
+	"ServiceGroupId": "8c4a8146-0eeb-4524-86ea-332cfce683a5",
+	"ServiceId": "ee2a0e44-42d5-4b9d-8e7b-c633950bb1f6",
+	"Action": "Resume",
+	"ForwardToProvisioningSubsystem": false
+}
+ 
+Headers:
+{
+	"ce_aru_msgbus_originating_ce_source": "it.aruba.cmpservice.updatesaga.consumer",
+	"ce_aru_msgbus_specversion": "1.0",
+	"ce_aru_conversationid": "436de018929a4c638c71a9684c4c55dd",
+	"ce_aru_msgbus_originating_ce_type": "it.aruba.cmpservice.deployments.UpdateDeploymentRequestConfirmed.v1",
+	"ce_type": "it.aruba.subscriptions.service.provisionalaction.v1",
+	"ce_aru_msgbus_originating_endpoint_id": "ea9c699b97a74dfba1649655f5590927",
+	"ce_specversion": "1.0",
+	"ce_aru_specversion": "1.0",
+	"ce_aru_msgbus_transport_sent_at": "2025-02-27T15:25:49.3728153Z",
+	"ce_aru_msgbus_originating_message_id": "it.aruba.cmpservice.updatesaga.consumer 7d6d6405e29449f0a67ebd1f65d7b857",
+	"ce_aru_msgbus_originating_ce_aru_conversationid": "436de018929a4c638c71a9684c4c55dd",
+	"ce_aru_msgbus_originating_ce_subject": "aru-207771",
+	"ce_subject": "8ec4e446-8fd6-43f7-87e7-ef7becad8532;project=3F2504E0-4F89-11D3-9A0C-0305E82C3302",
+	"ce_aru_msgbus_originating_ce_id": "7d6d6405e29449f0a67ebd1f65d7b857",
+	"ce_aru_msgbus_version": "1.0.0-rc1.1165",
+	"ce_aru_msgbus_originating_endpoint_namespace": "Aruba.CmpService.Computing",
+	"ce_aru_msgbus_logical_seq": "4",
+	"ce_source": "it.aruba.cmpservice.computing.consumer",
+	"ce_time": "2025-02-27T15:25:48.8547786Z",
+	"content-type": "application/json",
+	"ce_id": "25dd2f5c-c37f-4e84-af72-fbc8e38b1b12",
+	"ce_aru_msgbus_originating_endpoint_name": "Aruba.CmpService.Computing.Api",
+	"ce_aru_msgbus_originating_endpoint_version": "0.11.0"
+}
+
+##### messaggio 3
+
+Key:  
+74e449d5-3a2c-4850-995c-1823a8a044fd  
+
+Body:  
+
+{
+
+	"ServiceGroupId": "02f05ad9-921e-4301-ae80-8f3db50ce654",
+	"ServiceId": "74e449d5-3a2c-4850-995c-1823a8a044fd",
+	"Action": "Resume",
+	"ForwardToProvisioningSubsystem": false
+}
+ 
+Headers:
+{
+	"ce_aru_msgbus_originating_ce_source": "it.aruba.cmpservice.updatesaga.consumer",
+	"ce_aru_msgbus_specversion": "1.0",
+	"ce_aru_conversationid": "436de018929a4c638c71a9684c4c55dd",
+	"ce_aru_msgbus_originating_ce_type": "it.aruba.cmpservice.deployments.UpdateDeploymentRequestConfirmed.v1",
+	"ce_type": "it.aruba.subscriptions.service.provisionalaction.v1",
+	"ce_aru_msgbus_originating_endpoint_id": "ea9c699b97a74dfba1649655f5590927",
+	"ce_specversion": "1.0",
+	"ce_aru_specversion": "1.0",
+	"ce_aru_msgbus_transport_sent_at": "2025-02-27T15:25:49.3728153Z",
+	"ce_aru_msgbus_originating_message_id": "it.aruba.cmpservice.updatesaga.consumer 7d6d6405e29449f0a67ebd1f65d7b857",
+	"ce_aru_msgbus_originating_ce_aru_conversationid": "436de018929a4c638c71a9684c4c55dd",
+	"ce_aru_msgbus_originating_ce_subject": "aru-207771",
+	"ce_subject": "8ec4e446-8fd6-43f7-87e7-ef7becad8532;project=3F2504E0-4F89-11D3-9A0C-0305E82C3302",
+	"ce_aru_msgbus_originating_ce_id": "7d6d6405e29449f0a67ebd1f65d7b857",
+	"ce_aru_msgbus_version": "1.0.0-rc1.1165",
+	"ce_aru_msgbus_originating_endpoint_namespace": "Aruba.CmpService.Computing",
+	"ce_aru_msgbus_logical_seq": "4",
+	"ce_source": "it.aruba.cmpservice.computing.consumer",
+	"ce_time": "2025-02-27T15:25:48.8547786Z",
+	"content-type": "application/json",
+	"ce_id": "5955cbe9-ebad-4459-a46d-66f62151be06",
+	"ce_aru_msgbus_originating_endpoint_name": "Aruba.CmpService.Computing.Api",
+	"ce_aru_msgbus_originating_endpoint_version": "0.11.0"
+}
+
+##### messaggio 4
+
+Key:  
+6fea8e89-84bf-4eb8-b3e8-677985feb41c  
+
+Body:  
+
+{
+
+	"ServiceGroupId": "b8ca2577-707d-4a2e-9039-da0c7030f9e8",
+	"ServiceId": "6fea8e89-84bf-4eb8-b3e8-677985feb41c",
+	"Action": "Resume",
+	"ForwardToProvisioningSubsystem": false
+}
+ 
+Headers:
+{
+	"ce_aru_msgbus_originating_ce_source": "it.aruba.cmpservice.updatesaga.consumer",
+	"ce_aru_msgbus_specversion": "1.0",
+	"ce_aru_conversationid": "436de018929a4c638c71a9684c4c55dd",
+	"ce_aru_msgbus_originating_ce_type": "it.aruba.cmpservice.deployments.UpdateDeploymentRequestConfirmed.v1",
+	"ce_type": "it.aruba.subscriptions.service.provisionalaction.v1",
+	"ce_aru_msgbus_originating_endpoint_id": "ea9c699b97a74dfba1649655f5590927",
+	"ce_specversion": "1.0",
+	"ce_aru_specversion": "1.0",
+	"ce_aru_msgbus_transport_sent_at": "2025-02-27T15:25:49.3728153Z",
+	"ce_aru_msgbus_originating_message_id": "it.aruba.cmpservice.updatesaga.consumer 7d6d6405e29449f0a67ebd1f65d7b857",
+	"ce_aru_msgbus_originating_ce_aru_conversationid": "436de018929a4c638c71a9684c4c55dd",
+	"ce_aru_msgbus_originating_ce_subject": "aru-207771",
+	"ce_subject": "8ec4e446-8fd6-43f7-87e7-ef7becad8532;project=3F2504E0-4F89-11D3-9A0C-0305E82C3302",
+	"ce_aru_msgbus_originating_ce_id": "7d6d6405e29449f0a67ebd1f65d7b857",
+	"ce_aru_msgbus_version": "1.0.0-rc1.1165",
+	"ce_aru_msgbus_originating_endpoint_namespace": "Aruba.CmpService.Computing",
+	"ce_aru_msgbus_logical_seq": "4",
+	"ce_source": "it.aruba.cmpservice.computing.consumer",
+	"ce_time": "2025-02-27T15:25:48.8547786Z",
+	"content-type": "application/json",
+	"ce_id": "13da78cd-9882-4d53-b249-6b7c860dc082",
+	"ce_aru_msgbus_originating_endpoint_name": "Aruba.CmpService.Computing.Api",
+	"ce_aru_msgbus_originating_endpoint_version": "0.11.0"
+}
+
+##### messaggio 5
+
+Key:  
+7caad548-a258-49fc-bcc0-75af8b9ee1e7  
+
+Body:  
+
+{
+
+	"ServiceGroupId": "472ff19a-6141-478d-83cd-7c33d4281a87",
+	"ServiceId": "7caad548-a258-49fc-bcc0-75af8b9ee1e7",
+	"Action": "Resume",
+	"ForwardToProvisioningSubsystem": false
+}
+ 
+Headers:
+{
+	"ce_aru_msgbus_originating_ce_source": "it.aruba.cmpservice.updatesaga.consumer",
+	"ce_aru_msgbus_specversion": "1.0",
+	"ce_aru_conversationid": "436de018929a4c638c71a9684c4c55dd",
+	"ce_aru_msgbus_originating_ce_type": "it.aruba.cmpservice.deployments.UpdateDeploymentRequestConfirmed.v1",
+	"ce_type": "it.aruba.subscriptions.service.provisionalaction.v1",
+	"ce_aru_msgbus_originating_endpoint_id": "ea9c699b97a74dfba1649655f5590927",
+	"ce_specversion": "1.0",
+	"ce_aru_specversion": "1.0",
+	"ce_aru_msgbus_transport_sent_at": "2025-02-27T15:25:49.3728153Z",
+	"ce_aru_msgbus_originating_message_id": "it.aruba.cmpservice.updatesaga.consumer 7d6d6405e29449f0a67ebd1f65d7b857",
+	"ce_aru_msgbus_originating_ce_aru_conversationid": "436de018929a4c638c71a9684c4c55dd",
+	"ce_aru_msgbus_originating_ce_subject": "aru-207771",
+	"ce_subject": "8ec4e446-8fd6-43f7-87e7-ef7becad8532;project=3F2504E0-4F89-11D3-9A0C-0305E82C3302",
+	"ce_aru_msgbus_originating_ce_id": "7d6d6405e29449f0a67ebd1f65d7b857",
+	"ce_aru_msgbus_version": "1.0.0-rc1.1165",
+	"ce_aru_msgbus_originating_endpoint_namespace": "Aruba.CmpService.Computing",
+	"ce_aru_msgbus_logical_seq": "4",
+	"ce_source": "it.aruba.cmpservice.computing.consumer",
+	"ce_time": "2025-02-27T15:25:48.8547786Z",
+	"content-type": "application/json",
+	"ce_id": "6c5b8db0-6f2d-49e0-94f3-fcfab628a3e6",
+	"ce_aru_msgbus_originating_endpoint_name": "Aruba.CmpService.Computing.Api",
+	"ce_aru_msgbus_originating_endpoint_version": "0.11.0"
+}
