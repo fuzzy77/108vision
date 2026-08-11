@@ -95,6 +95,14 @@ make dev-skip     # Start apps only (Docker already running)
 # 1. Start Docker infrastructure only
 make up
 
+# NOTE UNIFICAZIONE DOC:
+# Per la parte “gateway su host” servono *due file* `.env` distinti:
+# - `aia-platform/.env` per docker compose (hostnames container)
+# - `aia-platform/apps/gateway/.env` per il gateway in host (localhost)
+# Inoltre, dopo il primo boot di Postgres, applica le migrazioni gateway:
+#   for f in apps/gateway/src/db/migrations/0*.sql; do ...
+# Vedi `tracks/software-in-mano/prodotti/aia-platform/platform-docs/dev-quickstart.md`.
+
 # 2. Verify services
 make status
 make llm-health

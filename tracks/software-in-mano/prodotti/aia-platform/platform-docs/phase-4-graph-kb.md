@@ -368,17 +368,24 @@ GRAPH_EXTRACTION_MIN_CONFIDENCE=0.3
 
 ## Development
 
-```bash
-# Start infrastructure with Neo4j
-docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+Per avviare correttamente *infra + app*, usa la doc canonica:
 
-# Access Neo4j Browser (dev only)
+`tracks/software-in-mano/prodotti/aia-platform/platform-docs/dev-quickstart.md`
+
+Qui sotto trovi solo la parte “Graph Explorer” (Neo4j) specifica per questa fase.
+
+```bash
+# 1) Start infra (Postgres/Redis/Qdrant/LiteLLM/Neo4j)
+make up
+
+# 2) Access Neo4j Browser (dev only)
 open http://localhost:7474
 
-# Connect with: neo4j / neo4j_dev_password
+# 3) Credenziali
 # Database: neo4j
+# User: neo4j / Password: neo4j_dev_password
 
-# Example Cypher queries:
+# 4) Esempi Cypher:
 # Count all entities for a tenant
 MATCH (e:Entity {tenantId: "your-tenant-id"}) RETURN count(e);
 
