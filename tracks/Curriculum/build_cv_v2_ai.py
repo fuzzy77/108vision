@@ -24,6 +24,7 @@ DARK = RGBColor(0x0F, 0x17, 0x2A)
 CONFIGS = {
     "Elios_Scoglio_CV_FullStackAI.docx": {
         "output": "Elios_Scoglio_CV_FullStackAI_V2.docx",
+        "profile_url": "www.108vision.it/profilo/full-stack-ai",
         "role_line": "Full-Stack Developer · AI / LLM Engineer · Applied AI Systems",
         "summary": (
             "Full-Stack Developer and AI / LLM Engineer with 20+ years of continuous "
@@ -63,6 +64,7 @@ CONFIGS = {
     },
     "Elios_Scoglio_CV_SoftwareManager.docx": {
         "output": "Elios_Scoglio_CV_SoftwareManager_V2.docx",
+        "profile_url": "www.108vision.it/profilo/software-manager",
         "role_line": "Principal Software Architect · Engineering Manager · Applied AI Governance",
         "summary": (
             "Principal Software Architect and Engineering Manager with 20+ years of "
@@ -102,6 +104,7 @@ CONFIGS = {
     },
     "Elios_Scoglio_CV_TeamLeader.docx": {
         "output": "Elios_Scoglio_CV_TeamLeader_V2.docx",
+        "profile_url": "www.108vision.it/profilo/team-leader",
         "role_line": "Principal Software Engineer · Team Leader · AI-Augmented Delivery",
         "summary": (
             "Hands-on Team Leader and Principal Software Engineer who writes code "
@@ -421,10 +424,31 @@ def update_differentiators(doc: Document, lines: list[str]) -> None:
             insert_paragraph_after(diffs[-1] if diffs else title, data)
 
 
-def add_footer_note(doc: Document) -> None:
+def update_contacts(doc: Document, profile_url: str) -> None:
+    for table in doc.tables:
+        for row in table.rows:
+            for cell in row.cells:
+                for paragraph in cell.paragraphs:
+                    if "eliosnur@gmail.com" in paragraph.text:
+                        set_run_text(
+                            paragraph,
+                            paragraph.text.replace("eliosnur@gmail.com", "info@108vision.it"),
+                        )
+                    if "github.com/fuzzy77" in paragraph.text and profile_url not in paragraph.text:
+                        set_run_text(
+                            paragraph,
+                            paragraph.text.replace(
+                                "github.com/fuzzy77",
+                                f"github.com/fuzzy77\n{profile_url}",
+                            ),
+                        )
+
+
+def add_footer_note(doc: Document, profile_url: str) -> None:
     note = doc.add_paragraph()
     run = note.add_run(
-        "V2 — AI-focused edition  |  108 Vision  |  www.108vision.it  |  info@108vision.it"
+        "V2 — AI-focused edition  |  108 Vision  |  www.108vision.it  |  "
+        f"info@108vision.it  |  {profile_url}"
     )
     run.font.size = Pt(8)
     run.font.color.rgb = VIOLET
@@ -471,7 +495,8 @@ def process(source_name: str, cfg: dict) -> None:
     add_extra_bullets(doc, cfg["extra_bullets_after"])
     update_skills_ai_row(doc, cfg["skills_ai"])
     update_differentiators(doc, cfg["differentiators"])
-    add_footer_note(doc)
+    update_contacts(doc, cfg["profile_url"])
+    add_footer_note(doc, cfg["profile_url"])
 
     doc.save(output)
     print(f"OK DOCX: {output.name}")
