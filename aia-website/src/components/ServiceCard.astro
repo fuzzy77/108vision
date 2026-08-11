@@ -4,9 +4,10 @@ interface Props {
   description: string;
   icon: string;
   link: string;
+  learnMoreText: string;
 }
 
-const { title, description, icon, link } = Astro.props;
+const { title, description, icon, link, learnMoreText } = Astro.props;
 ---
 
 <a href={link} class="group block p-6 bg-white rounded-xl border border-slate-200 hover:border-primary-200 hover:shadow-lg transition-all duration-300">
@@ -20,7 +21,7 @@ const { title, description, icon, link } = Astro.props;
     {description}
   </p>
   <span class="inline-flex items-center text-sm font-medium text-primary-600 group-hover:text-primary-700">
-    Scopri di più
+    {learnMoreText}
     <svg class="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
     </svg>
