@@ -1,0 +1,210 @@
+{
+  "metadata": {
+    "type": "client-asset",
+    "audience": "PMI italiane con un team di sviluppo interno",
+    "objective": "Aiutare il decisore a riconoscere un problema di direzione tecnica e valutare un Tech Assessment a pagamento",
+    "version": "1.0",
+    "sources": [
+      "tracks/brand/riposizionamento-partner-tecnico.md v2.0",
+      "tracks/direzione-tecnica/PLAYBOOK.md v1.0",
+      "tracks/brand/design-system.md v1.0"
+    ],
+    "claimStatus": {
+      "primaryClaim": "approved",
+      "commercialStatements": "derived-from-sources",
+      "performanceMetrics": "none",
+      "caseStudies": "none"
+    }
+  },
+  "document": {
+    "output": "108vision-direzione-tecnica.pdf",
+    "brand": "108 Vision",
+    "claim": "Il partner tecnico che prende in mano la situazione.",
+    "channel": "Direzione Tecnica",
+    "label": "Guida decisionale per PMI",
+    "contact": "108vision.it/direzione-tecnica · info@108vision.it",
+    "pages": [
+      {
+        "eyebrow": "01 · Diagnosi",
+        "title": "Hai già un team. Ma chi prende le decisioni difficili?",
+        "lead": "Quando le persone sanno sviluppare ma priorità, architettura e qualità dipendono da una sola testa, il problema non è aggiungere capacità: è dare una direzione verificabile.",
+        "blocks": [
+          {
+            "type": "quote",
+            "text": "Ownership significa responsabilità sulle decisioni tecniche e sui deliverable concordati. Non significa presenza quotidiana illimitata."
+          },
+          {
+            "type": "section",
+            "title": "Segnali da non normalizzare",
+            "items": [
+              "Le scelte importanti vengono rimandate finché diventano urgenze.",
+              "La roadmap tecnica vive nella testa del fondatore o del senior più esperto.",
+              "I rilasci generano ansia perché rischi, dipendenze e rollback non sono chiari.",
+              "Il team discute strumenti e soluzioni, ma manca un criterio condiviso per decidere.",
+              "Assunzioni e crescita dei ruoli tecnici avvengono senza una struttura."
+            ]
+          },
+          {
+            "type": "callout",
+            "title": "Domanda diagnostica",
+            "text": "Qual è la decisione tecnica più importante che state rimandando da tre mesi — e chi ne risponde oggi?"
+          }
+        ]
+      },
+      {
+        "eyebrow": "02 · Costo dell'inazione",
+        "title": "Il costo non è il debito tecnico. È l'incertezza che entra nel business.",
+        "lead": "Senza una regia esplicita, ogni scelta locale può sembrare ragionevole e produrre comunque un sistema più fragile.",
+        "blocks": [
+          {
+            "type": "cards",
+            "items": [
+              {
+                "title": "Decisioni lente",
+                "text": "Le iniziative commerciali aspettano chiarimenti tecnici e cambiano priorità senza una valutazione d'impatto."
+              },
+              {
+                "title": "Rilavorazioni",
+                "text": "Scelte non documentate vengono riaperte, reinterpretate o annullate quando cambia una persona."
+              },
+              {
+                "title": "Rischio concentrato",
+                "text": "Conoscenza e autorità restano su un singolo sviluppatore, creando dipendenza operativa."
+              },
+              {
+                "title": "Hiring impreciso",
+                "text": "Si cerca una seniority generica invece di definire il gap reale di competenze e responsabilità."
+              }
+            ]
+          },
+          {
+            "type": "section",
+            "title": "Cosa osservare nel prossimo mese",
+            "items": [
+              "Quante decisioni tecniche restano senza owner e data?",
+              "Quante priorità cambiano senza una conseguenza esplicita su tempi o rischio?",
+              "Quanti problemi ricorrenti vengono corretti senza rimuovere la causa?",
+              "Quali conoscenze critiche non sono accessibili al resto del team?"
+            ]
+          },
+          {
+            "type": "quote",
+            "text": "Se non potete indicare decisione, owner, trade-off e verifica, non avete ancora governance: avete conversazioni."
+          }
+        ]
+      },
+      {
+        "eyebrow": "03 · Metodo",
+        "title": "Dalla diagnosi a un ritmo di decisione sostenibile.",
+        "lead": "La Direzione Tecnica combina strategia, architettura e crescita del team. Il livello operativo viene concordato in slot chiari, senza sostituire le responsabilità interne.",
+        "blocks": [
+          {
+            "type": "timeline",
+            "items": [
+              {
+                "title": "1. Leggere il sistema",
+                "text": "Stack, prodotto, team, processi, incidenti e obiettivi di business."
+              },
+              {
+                "title": "2. Ordinare i rischi",
+                "text": "Separare urgenze percepite, rischi reali e decisioni reversibili."
+              },
+              {
+                "title": "3. Decidere per iscritto",
+                "text": "Roadmap tecnica, priorità e ADR sulle scelte strutturali."
+              },
+              {
+                "title": "4. Costruire il ritmo",
+                "text": "Review architetturali, mentoring e aggiornamento sintetico per il decisore."
+              },
+              {
+                "title": "5. Verificare",
+                "text": "Controllare ogni mese deliverable, rischi, decisioni attuate e prossime correzioni."
+              }
+            ]
+          },
+          {
+            "type": "section",
+            "title": "Tre modalità, un solo perimetro",
+            "items": [
+              "Strategico: roadmap, architettura, governance e traduzione del rischio per il business.",
+              "Operativo time-boxed: review e sessioni mirate nei momenti ad alto impatto.",
+              "Team building: ruoli, hiring, onboarding e crescita del referente tecnico interno."
+            ]
+          }
+        ]
+      },
+      {
+        "eyebrow": "04 · Output",
+        "title": "Cosa rimane sul tavolo, non solo nella riunione.",
+        "lead": "I deliverable vengono scelti sul contesto. Questi esempi mostrano il tipo di evidenza che rende il lavoro controllabile.",
+        "blocks": [
+          {
+            "type": "cards",
+            "items": [
+              {
+                "title": "State of the Stack",
+                "text": "Fotografia di architettura, delivery, rischi e dipendenze critiche."
+              },
+              {
+                "title": "Piano 90 giorni",
+                "text": "Priorità ordinate, owner, sequenza e criteri per verificare il progresso."
+              },
+              {
+                "title": "Registro decisioni",
+                "text": "ADR e note sui trade-off, per evitare che l'architettura diventi folklore."
+              },
+              {
+                "title": "Tech Update",
+                "text": "Una pagina per il decisore: cosa è cambiato, rischi, decisioni e prossimi passi."
+              },
+              {
+                "title": "Piano di crescita team",
+                "text": "Gap di ruolo, azioni di mentoring e profili da assumere quando necessario."
+              },
+              {
+                "title": "Ritmo concordato",
+                "text": "Sessioni, canali, responsabilità e tempi di risposta definiti prima di iniziare."
+              }
+            ]
+          },
+          {
+            "type": "callout",
+            "title": "Principio",
+            "text": "Un deliverable utile consente al team di agire e al decisore di controllare cosa è stato deciso."
+          }
+        ]
+      },
+      {
+        "eyebrow": "05 · Fit e prossimo passo",
+        "title": "Prima un documento decisionale. Poi, solo se serve, un ingaggio continuativo.",
+        "lead": "Il Tech Assessment è l'ingresso a pagamento: analizza stato reale, rischi e priorità e produce un output utilizzabile anche se il rapporto non prosegue.",
+        "blocks": [
+          {
+            "type": "fit",
+            "fitTitle": "È un buon fit se",
+            "fitItems": [
+              "Avete un prodotto o sistema in uso e un team di sviluppo interno.",
+              "Manca una responsabilità chiara su architettura, qualità o direzione.",
+              "Volete far crescere la capacità interna, non delegare ogni decisione.",
+              "Accettate decisioni, perimetro e deliverable scritti."
+            ],
+            "noFitTitle": "Non è il fit giusto se",
+            "noFitItems": [
+              "Cercate sviluppo a comando o una presenza full-time nel team.",
+              "Non esiste ancora il software né un team che possa costruirlo.",
+              "Volete iniziare senza accesso alle informazioni o senza un decisore coinvolto.",
+              "La priorità è solo ridurre il prezzo/ora."
+            ]
+          },
+          {
+            "type": "cta",
+            "title": "Prenota il Tech Assessment",
+            "text": "Primo passo a pagamento: lettura dello stack e del team, rischi ordinati, piano 90 giorni e raccomandazione onesta sul modello successivo. Il documento resta vostro.",
+            "action": "108vision.it/direzione-tecnica"
+          }
+        ]
+      }
+    ]
+  }
+}

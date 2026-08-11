@@ -1,0 +1,248 @@
+{
+  "metadata": {
+    "type": "partner-asset",
+    "audience": "Società di consulenza, system integrator e advisor che incontrano clienti con team tecnici senza direzione",
+    "objective": "Qualificare una collaborazione B o C e inserire il Tech Assessment in un'opportunità concreta",
+    "version": "1.0",
+    "sources": [
+      "tracks/brand/riposizionamento-partner-tecnico.md v2.0",
+      "tracks/brand/partner-onepager-BC.md v1.0",
+      "tracks/brand/partner-accordo-quadro-BC.md v1.0",
+      "tracks/brand/scheda-call-partner-consulenza.md v1.0",
+      "tracks/direzione-tecnica/PLAYBOOK.md v1.0",
+      "tracks/brand/design-system.md v1.0"
+    ],
+    "claimStatus": {
+      "primaryClaim": "approved",
+      "commercialStatements": "derived-from-sources",
+      "pricingAndLeadTimes": "excluded-until-verified",
+      "legalTerms": "summary-not-legal-advice",
+      "performanceMetrics": "none"
+    }
+  },
+  "document": {
+    "output": "108vision-partner-direzione-tecnica.pdf",
+    "brand": "108 Vision",
+    "claim": "Il partner tecnico che prende in mano la situazione.",
+    "channel": "Partner · Direzione Tecnica",
+    "label": "Kit qualificazione e proposta",
+    "contact": "108vision.it/direzione-tecnica · info@108vision.it",
+    "pages": [
+      {
+        "eyebrow": "01 · Qualification gate",
+        "title": "Prima di inserirci in proposta: c'è davvero un problema di direzione?",
+        "lead": "Direzione Tecnica è adatta quando il cliente ha già un team e un sistema in uso, ma manca una responsabilità senior su decisioni, architettura e crescita del team.",
+        "blocks": [
+          {
+            "type": "checklist",
+            "title": "Gate GO",
+            "items": [
+              "Esiste un team di sviluppo interno, tipicamente piccolo o medio.",
+              "Il cliente sa indicare una decisione tecnica rimandata o un rischio concreto.",
+              "C'è un decisore business disposto a partecipare e un referente tecnico.",
+              "Il bisogno è direzione e capacità interna, non sviluppo a comando.",
+              "Il cliente accetta un Tech Assessment pagato prima di un impegno continuativo.",
+              "Slot, deliverable e canali possono essere scritti nel perimetro."
+            ]
+          },
+          {
+            "type": "checklist",
+            "title": "Gate NO-GO",
+            "items": [
+              "Serve un CTO presente ogni giorno, on-call o un Tech Lead in body rental.",
+              "Non esiste un team che possa implementare le decisioni.",
+              "Il partner non consente accesso ai referenti tecnici nemmeno durante l'Assessment.",
+              "Non c'è alcuna opportunità concreta nell'orizzonte commerciale.",
+              "Il confronto è esclusivamente sul prezzo/ora."
+            ]
+          }
+        ]
+      },
+      {
+        "eyebrow": "02 · Promessa",
+        "title": "Cosa potete promettere. E cosa protegge la relazione non promettere.",
+        "lead": "Il messaggio commerciale deve rendere verificabile l'ownership senza trasformarla in disponibilità illimitata.",
+        "blocks": [
+          {
+            "type": "fit",
+            "fitTitle": "Promettete",
+            "fitItems": [
+              "Decisioni tecniche e deliverable concordati con responsabilità chiara.",
+              "Roadmap tecnica collegata agli obiettivi del business.",
+              "Scelte architetturali documentate e rischi resi leggibili al decisore.",
+              "Review e sessioni operative time-boxed nei momenti ad alto impatto.",
+              "Crescita del referente tecnico, supporto hiring e struttura dei ruoli.",
+              "Tech Assessment iniziale con output utilizzabile."
+            ],
+            "noFitTitle": "Non promettete",
+            "noFitItems": [
+              "Sviluppo a ore mascherato da direzione.",
+              "Gestione quotidiana del backlog o project management delle consegne.",
+              "Presenza full-time, risposta immediata in chat o guardia 24/7.",
+              "Sostituzione permanente di CTO, Engineering Manager o Tech Lead interno.",
+              "Risultati economici o prestazionali non misurati sul cliente."
+            ]
+          },
+          {
+            "type": "quote",
+            "text": "Per la parte tecnica abbiamo 108 Vision: prende ownership delle decisioni e dei deliverable concordati, con un perimetro e un ritmo espliciti."
+          }
+        ]
+      },
+      {
+        "eyebrow": "03 · Modelli B/C e RACI",
+        "title": "Scegliete il modello prima di parlare col cliente.",
+        "lead": "B e C cambiano visibilità, contratto e interlocuzione. In entrambi, la fase tecnica richiede accesso alle persone e alle informazioni necessarie.",
+        "blocks": [
+          {
+            "type": "cards",
+            "items": [
+              {
+                "title": "B · Subcontract",
+                "text": "Il partner mantiene contratto e relazione commerciale primaria; 108 Vision eroga la componente tecnica nel perimetro concordato."
+              },
+              {
+                "title": "C · Co-delivery",
+                "text": "Proposta e delivery sono congiunti; il partner guida business e account, 108 Vision guida la parte tecnica."
+              }
+            ]
+          },
+          {
+            "type": "table",
+            "title": "RACI essenziale",
+            "columns": [
+              "Attività",
+              "Partner",
+              "108 Vision",
+              "Cliente"
+            ],
+            "rows": [
+              [
+                "Qualifica commerciale",
+                "A/R",
+                "C",
+                "C"
+              ],
+              [
+                "Scope Tech Assessment",
+                "A",
+                "R",
+                "C"
+              ],
+              [
+                "Accessi e interviste",
+                "C",
+                "R",
+                "A/R"
+              ],
+              [
+                "Decisioni tecniche",
+                "C",
+                "R",
+                "A"
+              ],
+              [
+                "Comunicazione account",
+                "A/R",
+                "C",
+                "I"
+              ],
+              [
+                "Accettazione deliverable",
+                "C",
+                "R",
+                "A"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "title": "Legenda",
+            "text": "R = esegue · A = approva/risponde · C = consultato · I = informato. La proposta e l'accordo operativo prevalgono su questa sintesi."
+          }
+        ]
+      },
+      {
+        "eyebrow": "04 · Offerta",
+        "title": "Un entry point concreto da inserire in proposta.",
+        "lead": "Il Tech Assessment riduce il rischio di vendere un retainer a cieco e consente di scegliere modalità, deliverable e ritmo sulla base di evidenze.",
+        "blocks": [
+          {
+            "type": "cards",
+            "items": [
+              {
+                "title": "Input",
+                "text": "Obiettivi, stack, roadmap, struttura team, incidenti e accessi read-only concordati."
+              },
+              {
+                "title": "Lavoro",
+                "text": "Lettura tecnica, interviste, mappa dei rischi e confronto con il decisore."
+              },
+              {
+                "title": "Output",
+                "text": "State of the Stack, rischi ordinati, piano 90 giorni e modalità raccomandata."
+              },
+              {
+                "title": "Gate",
+                "text": "Procedere con Direzione Tecnica, ridurre il perimetro, assumere internamente o fermarsi."
+              }
+            ]
+          },
+          {
+            "type": "quote",
+            "title": "Script da usare in proposta",
+            "text": "Per la direzione tecnica coinvolgiamo 108 Vision, partner specializzato in architettura, governance e crescita dei team. Il primo passo è un Tech Assessment a pagamento: produce una lettura dello stack, i rischi prioritari e un piano 90 giorni. Solo dopo definiamo l'eventuale ingaggio continuativo, con deliverable e slot concordati."
+          },
+          {
+            "type": "section",
+            "title": "Allegati minimi alla proposta",
+            "items": [
+              "Obiettivo e domande a cui l'Assessment deve rispondere.",
+              "Perimetro incluso ed escluso.",
+              "Referenti, accessi e responsabilità.",
+              "Deliverable, accettazione e prossimo gate decisionale."
+            ]
+          }
+        ]
+      },
+      {
+        "eyebrow": "05 · Attivazione",
+        "title": "Il prossimo passo è una opportunità qualificata, non un accordo nel cassetto.",
+        "lead": "La partnership si valida su un caso reale. Prima della call congiunta, allineiamo modello, ruoli, accesso tecnico e promessa commerciale.",
+        "blocks": [
+          {
+            "type": "timeline",
+            "items": [
+              {
+                "title": "1. Call partner",
+                "text": "Clienti tipici, pipeline, modello B/C e gestione attuale della componente tech."
+              },
+              {
+                "title": "2. Opportunità nominata",
+                "text": "Problema, decisore, team presente, urgenza e ragione per agire."
+              },
+              {
+                "title": "3. Pre-qualifica",
+                "text": "Gate GO/NO-GO, accesso al referente tecnico e scelta del Tech Assessment."
+              },
+              {
+                "title": "4. Proposta",
+                "text": "Scope, RACI, deliverable, condizioni e confini della promessa."
+              },
+              {
+                "title": "5. Review post-entry",
+                "text": "Esito Assessment e decisione congiunta sul passo successivo."
+              }
+            ]
+          },
+          {
+            "type": "cta",
+            "title": "Porta un caso concreto alla call",
+            "text": "Preparare: cliente o settore, team attuale, decisione bloccata, referente business, referente tecnico e finestra della proposta.",
+            "action": "info@108vision.it"
+          }
+        ]
+      }
+    ]
+  }
+}
