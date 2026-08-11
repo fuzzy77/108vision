@@ -11,9 +11,17 @@ export interface DirezioneTecnicaContent {
   meta: { title: string; description: string };
   breadcrumb: string;
   hero: { title: string; subtitle: string };
-  audience: { heading: string; intro: string; cards: TextCard[] };
-  modes: { heading: string; items: ServiceFeature[] };
+  problem: { heading: string; intro: string; cards: TextCard[] };
+  cost: { heading: string; text: string };
+  modes: { heading: string; intro: string; items: ServiceFeature[] };
+  deliverables: { heading: string; intro: string; items: ServiceFeature[] };
+  evidence: { heading: string; text: string; items: string[] };
   capacity: { heading: string; text: string };
+  fit: {
+    heading: string;
+    ideal: { title: string; items: string[] };
+    notIdeal: { title: string; items: string[] };
+  };
   process: { heading: string; steps: HowItWorksStep[] };
   plans: ServicePlan[];
   pdf: { title: string; description: string; cta: string };
@@ -29,42 +37,48 @@ const content: LocaleContent<DirezioneTecnicaContent> = {
     },
     breadcrumb: 'Direzione Tecnica',
     hero: {
-      title: 'Hai già un team. Ti manca chi lo guida.',
+      title: 'Il team c’è. La direzione tecnica no.',
       subtitle:
-        'Prendiamo in mano la direzione tecnica: strategica, operativa time-boxed, o di team building. Non slide che spariscono — decisioni e deliverable, con slot settimanali chiari.',
+        'Quando roadmap, architettura e qualità dipendono dall’urgenza, prendiamo ownership delle decisioni e dei deliverable. Il team continua a costruire; noi rendiamo chiara la direzione.',
     },
-    audience: {
-      heading: 'Per chi è',
+    problem: {
+      heading: 'Segnali di un vuoto di direzione',
       intro:
-        'Per PMI e scale-up che hanno sviluppatori ma non hanno (ancora) un riferimento tecnico solido — o ne hanno uno troppo debole rispetto alla crescita.',
+        'Non serve un’altra persona che chiuda ticket. Serve qualcuno che colleghi le scelte tecniche agli obiettivi del business.',
       cards: [
         {
-          title: 'Team senza guida',
-          text: '3–10 sviluppatori, priorità confuse, debito tecnico che cresce, nessuno che firma le decisioni.',
+          title: 'Decisioni per inerzia',
+          text: 'Stack, priorità e refactoring vengono decisi dall’ultima urgenza. Nessuno documenta trade-off e conseguenze.',
         },
         {
-          title: 'Assunzioni da strutturare',
-          text: 'Devi assumere e non sai valutare stack, seniority o come organizzare ruoli e onboarding.',
+          title: 'Rilasci che fanno paura',
+          text: 'Pipeline fragili, test poco affidabili e conoscenza concentrata rendono ogni cambiamento più lento del precedente.',
         },
         {
-          title: 'Alzare il livello',
-          text: 'Il team c’è, ma serve code review reali, ritmo di delivery e standard che reggono la crescita.',
+          title: 'Founder o senior come collo di bottiglia',
+          text: 'Ogni scelta torna alla stessa persona; assunzioni, onboarding e crescita del team restano senza struttura.',
         },
       ],
     },
+    cost: {
+      heading: 'Il costo di non decidere',
+      text: 'Il debito tecnico continua a maturare, le priorità business perdono prevedibilità e il rischio resta invisibile fino al prossimo incidente o alla prossima persona che lascia. Aggiungere sviluppatori senza una direzione condivisa aumenta il coordinamento, non necessariamente la capacità.',
+    },
     modes: {
-      heading: 'Tre modalità (si adattano al contesto)',
+      heading: 'Il metodo si adatta al contesto, non il rigore',
+      intro:
+        'Partiamo da evidenze, rendiamo esplicite le decisioni e trasferiamo capacità al referente interno. Il coinvolgimento cambia; ownership e tracciabilità restano.',
       items: [
         {
           title: 'Strategico',
           description:
-            'Roadmap, architettura, decisioni tecnologiche, governance. Quando il team è capace e manca solo direzione.',
+            'Roadmap, architettura, governance e allineamento con il business quando il team sa eseguire ma manca una direzione condivisa.',
           icon: '🗺️',
         },
         {
           title: 'Operativo time-boxed',
           description:
-            'Slot fissi: code review, pair, rituali di ritmo. Non full embed — presenza concentrata dove serve.',
+            'Review architetturali, pairing e rituali in slot fissi. Entriamo nei momenti decisivi senza sostituire il team o diventare un embed full-time.',
           icon: '⚙️',
         },
         {
@@ -75,24 +89,84 @@ const content: LocaleContent<DirezioneTecnicaContent> = {
         },
       ],
     },
+    deliverables: {
+      heading: 'Cosa resta in mano al team e al management',
+      intro:
+        'Non principi astratti: artefatti aggiornabili che rendono visibili stato, decisioni e progresso.',
+      items: [
+        {
+          title: 'State of the Stack',
+          description:
+            'Fotografia leggibile di architettura, delivery, rischi, team e dipendenze, collegata all’impatto sul business.',
+          icon: '📍',
+        },
+        {
+          title: 'ADR',
+          description:
+            'Architecture Decision Record per le scelte strutturali: contesto, alternative, trade-off, decisione e conseguenze.',
+          icon: '📝',
+        },
+        {
+          title: 'Fitness function',
+          description:
+            'Controlli misurabili sulle proprietà importanti del sistema, così i principi architetturali restano verificabili nel tempo.',
+          icon: '📐',
+        },
+        {
+          title: 'Roadmap tecnica a 90 giorni',
+          description:
+            'Priorità ordinate per rischio e valore, con owner, dipendenze e criteri di successo. Il team sa cosa affrontare prima e perché.',
+          icon: '🗓️',
+        },
+      ],
+    },
+    evidence: {
+      heading: 'Evidenza prima delle opinioni',
+      text: 'Il metodo nasce da esperienza diretta su sistemi enterprise mission-critical, dove rilascio, compliance e continuità operativa non possono dipendere da intuizioni. Nel tuo contesto, però, ogni conclusione deve essere dimostrata sui tuoi artefatti.',
+      items: [
+        'Repository e aree di codice campione',
+        'Pipeline, test e processo di rilascio',
+        'Log, incidenti e segnali operativi disponibili',
+        'Interviste a management e team tecnico',
+      ],
+    },
     capacity: {
-      heading: 'Ownership onesta',
+      heading: 'Ownership con un confine esplicito',
       text: 'Ownership = responsabilità su decisioni e deliverable concordati, non presenza quotidiana 8 ore. Lavoriamo con ore/mese scritte in contratto — così restiamo affidabili. Se ti serve un embed full-time, ti aiutiamo a strutturare l’assunzione.',
     },
+    fit: {
+      heading: 'Fit e no-fit',
+      ideal: {
+        title: 'Ha senso se',
+        items: [
+          'Hai un prodotto in uso e un team interno che può implementare.',
+          'Mancano priorità, governance o un riferimento tecnico autorevole.',
+          'Accetti decisioni basate su evidenze, anche quando sfidano lo status quo.',
+        ],
+      },
+      notIdeal: {
+        title: 'Non è Direzione Tecnica se',
+        items: [
+          'Non hai un team che possa eseguire: serve Software in Mano.',
+          'Cerchi uno sviluppatore aggiuntivo o un project manager operativo.',
+          'Ti serve un CTO full-time, on-call o presente ogni giorno.',
+        ],
+      },
+    },
     process: {
-      heading: 'Come funziona',
+      heading: 'Si entra con un Tech Assessment pagato',
       steps: [
         {
           title: 'Call esplorativa',
-          text: '20–30 minuti: capiamo se il problema è direzione del team (o altro). Nessun impegno.',
+          text: 'Verifichiamo che esistano un team, un problema di direzione e accesso sufficiente alle evidenze. Se non c’è fit, lo diciamo.',
         },
         {
           title: 'Tech Assessment',
-          text: 'Deliverable scritto: stato attuale, rischi, priorità 90 giorni, modalità e ore realistiche.',
+          text: 'Analizziamo stack, delivery, rischi e team. Consegniamo State of the Stack, decisioni aperte, fitness function proposte e roadmap a 90 giorni.',
         },
         {
-          title: 'Ingaggio mensile',
-          text: 'Retainer con modalità scelta e ore in contratto. Review periodiche, scope che si adatta.',
+          title: 'Decisione sul seguito',
+          text: 'Il documento resta tuo. Se proseguiamo, definiamo modalità, deliverable mensili e ore in contratto; altrimenti hai comunque una base utilizzabile.',
         },
       ],
     },
@@ -102,10 +176,11 @@ const content: LocaleContent<DirezioneTecnicaContent> = {
         price: 'Entry',
         description: 'Diagnosi e piano 90 giorni — base per decidere.',
         features: [
-          'Stato dello stack e del team',
-          'Rischi e priorità',
-          'Proposta modalità + ore',
-          'Creditabile se si prosegue',
+          'State of the Stack',
+          'ADR e decisioni aperte',
+          'Fitness function prioritarie',
+          'Roadmap tecnica a 90 giorni',
+          'Raccomandazione go / no-go',
         ],
         cta: 'Prenota un Tech Assessment',
         highlighted: false,
@@ -127,13 +202,13 @@ const content: LocaleContent<DirezioneTecnicaContent> = {
     pdf: {
       title: 'Presentazione per PMI (PDF)',
       description:
-        'Tre pagine: il costo dello status quo, tre modalità, Tech Assessment, ownership onesta. Da allegare a una mail o a una call.',
+        'Cinque pagine: diagnosi, costo dello status quo, metodo, deliverable e Tech Assessment. Da allegare a una mail o usare in call.',
       cta: 'Scarica presentazione Direzione Tecnica',
     },
     partnerPdf: {
       title: 'Kit per agenzie di consulenza (PDF)',
       description:
-        'Cosa posso fare io per le vostre proposte: quando proporre Direzione Tecnica, script commerciale, modelli B/C, cap ore.',
+        'Cinque pagine per qualificare l’opportunità: promessa e confini, modelli B/C, RACI, script commerciale e Tech Assessment.',
       cta: 'Scarica kit partner Direzione Tecnica',
     },
   },
@@ -145,42 +220,48 @@ const content: LocaleContent<DirezioneTecnicaContent> = {
     },
     breadcrumb: 'Technical Direction',
     hero: {
-      title: 'You already have a team. You need someone to lead it.',
+      title: 'The team exists. Technical direction does not.',
       subtitle:
-        'We take ownership of technical direction — strategic, time-boxed operational, or team building. Not slides that disappear: decisions and deliverables, with clear weekly slots.',
+        'When roadmap, architecture and quality are driven by urgency, we take ownership of decisions and deliverables. Your team keeps building; we make the direction clear.',
     },
-    audience: {
-      heading: 'Who it is for',
+    problem: {
+      heading: 'Signs of a direction gap',
       intro:
-        'For SMEs and scale-ups that have developers but lack a solid technical lead — or have one that cannot keep up with growth.',
+        'You do not need another person closing tickets. You need someone connecting technical choices to business goals.',
       cards: [
         {
-          title: 'Team without direction',
-          text: '3–10 developers, unclear priorities, growing tech debt, nobody signing off on decisions.',
+          title: 'Decisions by inertia',
+          text: 'Stack, priorities and refactoring follow the latest urgency. Nobody documents trade-offs and consequences.',
         },
         {
-          title: 'Hiring to structure',
-          text: 'You need to hire and cannot assess stack, seniority, or how to organise roles and onboarding.',
+          title: 'Releases create fear',
+          text: 'Fragile pipelines, low-confidence tests and concentrated knowledge make each change slower than the last.',
         },
         {
-          title: 'Raise the bar',
-          text: 'The team exists, but you need real code review, delivery rhythm, and standards that scale.',
+          title: 'Founder or senior as bottleneck',
+          text: 'Every choice returns to the same person; hiring, onboarding and team growth remain unstructured.',
         },
       ],
     },
+    cost: {
+      heading: 'The cost of not deciding',
+      text: 'Technical debt keeps compounding, business priorities lose predictability and risk remains hidden until the next incident or departure. Adding developers without shared direction increases coordination, not necessarily capacity.',
+    },
     modes: {
-      heading: 'Three modes (adapted to context)',
+      heading: 'The method adapts to context; the rigour does not',
+      intro:
+        'We start from evidence, make decisions explicit and transfer capability to your internal lead. The level of involvement changes; ownership and traceability remain.',
       items: [
         {
           title: 'Strategic',
           description:
-            'Roadmap, architecture, tech decisions, governance. When the team is capable and only direction is missing.',
+            'Roadmap, architecture, governance and business alignment when the team can execute but lacks shared direction.',
           icon: '🗺️',
         },
         {
           title: 'Time-boxed operational',
           description:
-            'Fixed slots: code review, pairing, delivery rituals. Not a full embed — focused presence where it matters.',
+            'Architecture reviews, pairing and delivery rituals in fixed slots. We enter decisive moments without replacing the team or becoming a full-time embed.',
           icon: '⚙️',
         },
         {
@@ -191,24 +272,84 @@ const content: LocaleContent<DirezioneTecnicaContent> = {
         },
       ],
     },
+    deliverables: {
+      heading: 'What stays with the team and management',
+      intro:
+        'Not abstract principles: maintainable artefacts that make state, decisions and progress visible.',
+      items: [
+        {
+          title: 'State of the Stack',
+          description:
+            'A readable view of architecture, delivery, risks, team and dependencies, connected to business impact.',
+          icon: '📍',
+        },
+        {
+          title: 'ADRs',
+          description:
+            'Architecture Decision Records for structural choices: context, options, trade-offs, decision and consequences.',
+          icon: '📝',
+        },
+        {
+          title: 'Fitness functions',
+          description:
+            'Measurable checks on important system properties, keeping architectural principles verifiable over time.',
+          icon: '📐',
+        },
+        {
+          title: '90-day technical roadmap',
+          description:
+            'Priorities ordered by risk and value, with owners, dependencies and success criteria. The team knows what comes first and why.',
+          icon: '🗓️',
+        },
+      ],
+    },
+    evidence: {
+      heading: 'Evidence before opinions',
+      text: 'The method comes from direct work on mission-critical enterprise systems, where releases, compliance and operational continuity cannot depend on intuition. In your context, however, every conclusion must be demonstrated against your artefacts.',
+      items: [
+        'Repository and representative code areas',
+        'Pipelines, tests and release process',
+        'Available logs, incidents and operational signals',
+        'Interviews with management and the technical team',
+      ],
+    },
     capacity: {
-      heading: 'Honest ownership',
+      heading: 'Ownership with an explicit boundary',
       text: 'Ownership means accountability for agreed decisions and deliverables — not 8 hours a day on-site. We work with contracted hours per month so we stay reliable. If you need a full-time embed, we help you hire the right person.',
     },
+    fit: {
+      heading: 'Fit and no-fit',
+      ideal: {
+        title: 'A good fit if',
+        items: [
+          'You have a live product and an internal team able to implement.',
+          'You lack priorities, governance or an authoritative technical lead.',
+          'You accept evidence-based decisions, even when they challenge the status quo.',
+        ],
+      },
+      notIdeal: {
+        title: 'Not Technical Direction if',
+        items: [
+          'You have no team able to execute: you need Software in Hand.',
+          'You want an extra developer or operational project manager.',
+          'You need a full-time, on-call or daily CTO presence.',
+        ],
+      },
+    },
     process: {
-      heading: 'How it works',
+      heading: 'Start with a paid Tech Assessment',
       steps: [
         {
           title: 'Exploratory call',
-          text: '20–30 minutes: we check whether the problem is team direction (or something else). No commitment.',
+          text: 'We confirm there is a team, a direction problem and enough access to evidence. If there is no fit, we say so.',
         },
         {
           title: 'Tech Assessment',
-          text: 'Written deliverable: current state, risks, 90-day priorities, recommended mode and realistic hours.',
+          text: 'We analyse stack, delivery, risks and team. You receive a State of the Stack, open decisions, proposed fitness functions and a 90-day roadmap.',
         },
         {
-          title: 'Monthly engagement',
-          text: 'Retainer with chosen mode and contracted hours. Periodic review; scope adapts.',
+          title: 'Decision on what follows',
+          text: 'The document is yours. If we continue, we define the mode, monthly deliverables and contracted hours; otherwise, you still have a usable basis.',
         },
       ],
     },
@@ -218,10 +359,11 @@ const content: LocaleContent<DirezioneTecnicaContent> = {
         price: 'Entry',
         description: 'Diagnosis and 90-day plan — a basis to decide.',
         features: [
-          'Stack and team state',
-          'Risks and priorities',
-          'Mode + hours proposal',
-          'Creditable if we continue',
+          'State of the Stack',
+          'ADRs and open decisions',
+          'Priority fitness functions',
+          '90-day technical roadmap',
+          'Go / no-go recommendation',
         ],
         cta: 'Book a Tech Assessment',
         highlighted: false,
@@ -243,13 +385,13 @@ const content: LocaleContent<DirezioneTecnicaContent> = {
     pdf: {
       title: 'SME presentation (PDF)',
       description:
-        'Three pages: cost of status quo, three modes, Tech Assessment, honest ownership. Attach to an email or a call.',
+        'Five pages: diagnosis, cost of the status quo, method, deliverables and Tech Assessment. Attach it to an email or use it in a call.',
       cta: 'Download Technical Direction presentation',
     },
     partnerPdf: {
       title: 'Consulting firm partner kit (PDF)',
       description:
-        'What I can do for your proposals: when to offer Technical Direction, sales script, B/C models, capacity cap.',
+        'Five pages to qualify the opportunity: promise and boundaries, B/C models, essential RACI, sales script and Tech Assessment.',
       cta: 'Download Technical Direction partner kit',
     },
   },

@@ -36,16 +36,20 @@ const proofPath = localizedPath(c.proof.href, locale);
   <section class="py-20 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="max-w-3xl mx-auto text-center mb-16">
-        <h2 class="text-3xl font-bold text-slate-900 mb-6">{c.audience.heading}</h2>
-        <p class="text-lg text-slate-600 leading-relaxed">{c.audience.intro}</p>
+        <h2 class="text-3xl font-bold text-slate-900 mb-6">{c.problem.heading}</h2>
+        <p class="text-lg text-slate-600 leading-relaxed">{c.problem.intro}</p>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {c.audience.cards.map((card) => (
+        {c.problem.cards.map((card) => (
           <div class="p-6 bg-primary-50 rounded-xl">
             <h3 class="font-semibold text-slate-900 mb-2">{card.title}</h3>
             <p class="text-sm text-slate-600">{card.text}</p>
           </div>
         ))}
+      </div>
+      <div class="max-w-4xl mx-auto mt-12 p-8 bg-amber-50 border border-amber-100 rounded-xl text-center">
+        <h3 class="text-xl font-bold text-slate-900 mb-3">{c.cost.heading}</h3>
+        <p class="text-slate-700 leading-relaxed">{c.cost.text}</p>
       </div>
     </div>
   </section>
@@ -53,9 +57,20 @@ const proofPath = localizedPath(c.proof.href, locale);
   <section class="py-20 bg-slate-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-16">
-        <h2 class="text-3xl font-bold text-slate-900 mb-4">{c.features.heading}</h2>
+        <h2 class="text-3xl font-bold text-slate-900 mb-4">{c.method.heading}</h2>
+        <p class="text-lg text-slate-600 max-w-3xl mx-auto">{c.method.intro}</p>
       </div>
-      <FeatureGrid features={c.features.items} columns={2} />
+      <FeatureGrid features={c.method.items} columns={3} />
+    </div>
+  </section>
+
+  <section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl font-bold text-slate-900 mb-4">{c.deliverables.heading}</h2>
+        <p class="text-lg text-slate-600 max-w-3xl mx-auto">{c.deliverables.intro}</p>
+      </div>
+      <FeatureGrid features={c.deliverables.items} columns={3} />
     </div>
   </section>
 
@@ -73,6 +88,27 @@ const proofPath = localizedPath(c.proof.href, locale);
   </section>
 
   <section class="py-20 bg-white">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl font-bold text-slate-900 mb-12 text-center">{c.fit.heading}</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {[c.fit.ideal, c.fit.notIdeal].map((group, index) => (
+          <div class={`p-8 rounded-xl border ${index === 0 ? 'bg-primary-50 border-primary-100' : 'bg-slate-50 border-slate-200'}`}>
+            <h3 class="text-xl font-semibold text-slate-900 mb-5">{group.title}</h3>
+            <ul class="space-y-3">
+              {group.items.map((item) => (
+                <li class="flex gap-3 text-sm text-slate-700">
+                  <span aria-hidden="true">{index === 0 ? '✓' : '—'}</span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="py-20 bg-slate-50">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       <h2 class="text-3xl font-bold text-slate-900 mb-12 text-center">{c.process.heading}</h2>
       <div class="space-y-8">

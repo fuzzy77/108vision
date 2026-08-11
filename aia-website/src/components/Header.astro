@@ -30,8 +30,18 @@ const contactPath = localizedPath('/contatti', locale);
         {navItems.map((item) => (
           <a
             href={item.href}
-            class="px-3 py-2 text-sm font-medium text-slate-600 hover:text-primary-600 rounded-md hover:bg-primary-50 transition-all"
+            class:list={[
+              'px-3 py-2 text-sm font-medium rounded-md transition-all',
+              item.href.endsWith('/wellbeing')
+                ? 'ml-2 border-l border-slate-200 pl-5 text-primary-700 hover:bg-primary-50'
+                : 'text-slate-600 hover:text-primary-600 hover:bg-primary-50',
+            ]}
           >
+            {item.href.endsWith('/wellbeing') && (
+              <span class="mr-1 text-[10px] font-bold uppercase tracking-wider text-primary-500">
+                {locale === 'it' ? 'Prodotto' : 'Product'}
+              </span>
+            )}
             {item.label}
           </a>
         ))}
@@ -69,8 +79,18 @@ const contactPath = localizedPath('/contatti', locale);
         {navItems.map((item) => (
           <a
             href={item.href}
-            class="px-3 py-2 text-sm font-medium text-slate-600 hover:text-primary-600 rounded-md hover:bg-primary-50 transition-all"
+            class:list={[
+              'px-3 py-2 text-sm font-medium rounded-md transition-all',
+              item.href.endsWith('/wellbeing')
+                ? 'mt-2 border-t border-slate-200 pt-4 text-primary-700 hover:bg-primary-50'
+                : 'text-slate-600 hover:text-primary-600 hover:bg-primary-50',
+            ]}
           >
+            {item.href.endsWith('/wellbeing') && (
+              <span class="mr-1 text-[10px] font-bold uppercase tracking-wider text-primary-500">
+                {locale === 'it' ? 'Prodotto' : 'Product'}
+              </span>
+            )}
             {item.label}
           </a>
         ))}
