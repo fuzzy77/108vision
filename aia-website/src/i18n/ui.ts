@@ -15,6 +15,7 @@ const ui = {
       fractionalCto: 'Fractional CTO',
       direzioneTecnica: 'Direzione Tecnica',
       softwareInMano: 'Software in Mano',
+      app: 'App',
       digitalStarter: 'Digital Starter',
       development: 'Sviluppo',
       about: 'Chi Siamo',
@@ -153,6 +154,7 @@ const ui = {
       fractionalCto: 'Fractional CTO',
       direzioneTecnica: 'Technical Direction',
       softwareInMano: 'Software in Hand',
+      app: 'App',
       digitalStarter: 'Digital Starter',
       development: 'Development',
       about: 'About Us',
@@ -290,6 +292,7 @@ export function getNavItems(locale: Locale, t: UiStrings) {
   return [
     { label: t.nav.softwareInMano, href: path('/software-in-mano') },
     { label: t.nav.direzioneTecnica, href: path('/direzione-tecnica') },
+    { label: t.nav.app, href: path('/wellbeing') },
     { label: t.nav.about, href: path('/chi-siamo') },
     { label: t.nav.blog, href: path('/blog') },
   ];
@@ -301,7 +304,7 @@ export function getFooterServices(locale: Locale, t: UiStrings) {
   return [
     { label: t.nav.softwareInMano, href: path('/software-in-mano') },
     { label: t.nav.direzioneTecnica, href: path('/direzione-tecnica') },
-    { label: t.nav.wellbeingApp, href: path('/wellbeing') },
+    { label: t.nav.app, href: path('/wellbeing') },
   ];
 }
 

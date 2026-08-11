@@ -2,6 +2,7 @@
 import ServiceLayout from '@/layouts/ServiceLayout.astro';
 import FeatureGrid from '@/components/FeatureGrid.astro';
 import PricingTable from '@/components/PricingTable.astro';
+import ServicePdfSection from '@/components/ServicePdfSection.astro';
 import {
   type Locale,
   useTranslations,
@@ -96,4 +97,19 @@ const contactPath = localizedPath('/contatti', locale);
       />
     </div>
   </section>
+
+  <ServicePdfSection
+    locale={locale}
+    guidePath="/downloads/108vision-direzione-tecnica.pdf"
+    title={c.pdf.title}
+    description={c.pdf.description}
+    cta={c.pdf.cta}
+  />
+  <ServicePdfSection
+    locale={locale}
+    guidePath="/downloads/108vision-partner-direzione-tecnica.pdf"
+    title={c.partnerPdf.title}
+    description={c.partnerPdf.description}
+    cta={c.partnerPdf.cta}
+  />
 </ServiceLayout>

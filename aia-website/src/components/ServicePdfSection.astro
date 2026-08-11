@@ -11,7 +11,8 @@ interface Props {
 
 const { locale, guidePath, title, description, cta } = Astro.props;
 const t = useTranslations(locale);
-const href = localizedPath(guidePath, locale);
+const isStaticAsset = guidePath.startsWith('/downloads/') || guidePath.endsWith('.pdf');
+const href = isStaticAsset ? guidePath : localizedPath(guidePath, locale);
 const resolvedTitle = title ?? t.service.downloadGuide;
 const resolvedDescription = description ?? t.service.downloadGuideDesc;
 const resolvedCta = cta ?? t.service.downloadPdf;
@@ -27,6 +28,7 @@ const resolvedCta = cta ?? t.service.downloadPdf;
       <p class="text-slate-600 mb-6">{resolvedDescription}</p>
       <a
         href={href}
+        download={isStaticAsset ? true : undefined}
         class="inline-flex items-center px-6 py-3 text-sm font-semibold text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors"
       >
         {resolvedCta}

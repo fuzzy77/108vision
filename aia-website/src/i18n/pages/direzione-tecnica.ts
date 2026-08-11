@@ -16,6 +16,8 @@ export interface DirezioneTecnicaContent {
   capacity: { heading: string; text: string };
   process: { heading: string; steps: HowItWorksStep[] };
   plans: ServicePlan[];
+  pdf: { title: string; description: string; cta: string };
+  partnerPdf: { title: string; description: string; cta: string };
 }
 
 const content: LocaleContent<DirezioneTecnicaContent> = {
@@ -122,6 +124,18 @@ const content: LocaleContent<DirezioneTecnicaContent> = {
         highlighted: true,
       },
     ],
+    pdf: {
+      title: 'Presentazione per PMI (PDF)',
+      description:
+        'Tre pagine: il costo dello status quo, tre modalità, Tech Assessment, ownership onesta. Da allegare a una mail o a una call.',
+      cta: 'Scarica presentazione Direzione Tecnica',
+    },
+    partnerPdf: {
+      title: 'Kit per agenzie di consulenza (PDF)',
+      description:
+        'Cosa posso fare io per le vostre proposte: quando proporre Direzione Tecnica, script commerciale, modelli B/C, cap ore.',
+      cta: 'Scarica kit partner Direzione Tecnica',
+    },
   },
   en: {
     meta: {
@@ -226,6 +240,18 @@ const content: LocaleContent<DirezioneTecnicaContent> = {
         highlighted: true,
       },
     ],
+    pdf: {
+      title: 'SME presentation (PDF)',
+      description:
+        'Three pages: cost of status quo, three modes, Tech Assessment, honest ownership. Attach to an email or a call.',
+      cta: 'Download Technical Direction presentation',
+    },
+    partnerPdf: {
+      title: 'Consulting firm partner kit (PDF)',
+      description:
+        'What I can do for your proposals: when to offer Technical Direction, sales script, B/C models, capacity cap.',
+      cta: 'Download Technical Direction partner kit',
+    },
   },
 };
 

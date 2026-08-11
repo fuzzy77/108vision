@@ -16,6 +16,8 @@ export interface SoftwareInManoContent {
   proof: { heading: string; text: string; cta: string; href: string };
   process: { heading: string; steps: HowItWorksStep[] };
   plans: ServicePlan[];
+  pdf: { title: string; description: string; cta: string };
+  partnerPdf: { title: string; description: string; cta: string };
 }
 
 const content: LocaleContent<SoftwareInManoContent> = {
@@ -130,6 +132,18 @@ const content: LocaleContent<SoftwareInManoContent> = {
         highlighted: true,
       },
     ],
+    pdf: {
+      title: 'Presentazione per PMI (PDF)',
+      description:
+        'Tre pagine: i film che conosci già, Discovery → Progetto → Retainer, prova WellBeing, ownership dopo il go-live.',
+      cta: 'Scarica presentazione Software in Mano',
+    },
+    partnerPdf: {
+      title: 'Kit per agenzie di consulenza (PDF)',
+      description:
+        'Cosa posso fare io quando il vostro cliente ha bisogno di software: quando proporre SiM, script, modelli B/C, Discovery.',
+      cta: 'Scarica kit partner Software in Mano',
+    },
   },
   en: {
     meta: {
@@ -242,6 +256,18 @@ const content: LocaleContent<SoftwareInManoContent> = {
         highlighted: true,
       },
     ],
+    pdf: {
+      title: 'SME presentation (PDF)',
+      description:
+        'Three pages: familiar failure patterns, Discovery → Project → Retainer, WellBeing proof, ownership after go-live.',
+      cta: 'Download Software in Hand presentation',
+    },
+    partnerPdf: {
+      title: 'Consulting firm partner kit (PDF)',
+      description:
+        'What I can do when your client needs software: when to offer SiM, sales script, B/C models, Discovery entry.',
+      cta: 'Download Software in Hand partner kit',
+    },
   },
 };
 
