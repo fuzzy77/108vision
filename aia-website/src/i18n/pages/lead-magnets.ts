@@ -14,6 +14,7 @@ export interface GuideIndexItem {
   title: string;
   description: string;
   tag: string;
+  category: 'direzione-tecnica' | 'software-in-mano' | 'approfondimenti';
 }
 
 export interface RisorseIndexContent {
@@ -24,6 +25,7 @@ export interface RisorseIndexContent {
   downloadCta: string;
   cta: { title: string; description: string; ctaText: string };
   breadcrumb: string;
+  categoryTitles: Record<GuideIndexItem['category'], string>;
   guides: GuideIndexItem[];
 }
 
@@ -47,7 +49,7 @@ const magnets: Record<Locale, Record<string, LeadMagnetContent>> = {
     "heroTitle": "Agile pragmatico: delivery continua senza dogma",
     "heroSubtitle": "Non Agile da manuale Scrum. Quello che funziona nelle PMI italiane: consegnare valore velocemente con un team piccolo e budget reale.",
     "bullets": [
-      "CI/CD pipeline: come implementarla in 2 settimane",
+      "CI/CD pipeline: come pianificare un'adozione incrementale",
       "Struttura sprint che non spreca tempo in cerimonie inutili",
       "4 metriche che contano davvero (e 6 da ignorare)",
       "Kanban vs Scrum: come scegliere per il tuo contesto",
@@ -56,15 +58,15 @@ const magnets: Record<Locale, Record<string, LeadMagnetContent>> = {
   },
   "guida-ai-pmi": {
     "title": "Guida AI Adoption per PMI",
-    "description": "Framework pratico per adottare l'AI nella tua PMI. Checklist, casi studio, errori da evitare.",
+    "description": "Framework pratico per adottare l'AI nella tua PMI. Checklist, criteri di valutazione ed errori da evitare.",
     "pdfSlug": "ai-adoption",
     "heroTitle": "Come adottare l'AI nella tua PMI senza bruciare budget",
-    "heroSubtitle": "La guida completa con il framework testato su decine di aziende italiane. Da zero a risultati misurabili.",
+    "heroSubtitle": "Una guida pratica per valutare opportunità, rischi e priorità prima di investire in AI.",
     "bullets": [
       "Framework AI Readiness Assessment in 5 step",
-      "7 errori fatali che il 90% delle PMI commette",
+      "7 errori ricorrenti da evitare nelle PMI",
       "Checklist operativa per il primo progetto AI",
-      "Casi studio reali con ROI documentato",
+      "Schema per definire metriche e verificare il ROI",
       "Template per proposta al management"
     ]
   },
@@ -84,9 +86,9 @@ const magnets: Record<Locale, Record<string, LeadMagnetContent>> = {
   },
   "guida-compliance-ai": {
     "title": "Guida Compliance EU AI Act",
-    "description": "Cosa deve fare la tua azienda per conformarsi all'EU AI Act entro il 2025. Risk classification, documentazione, timeline.",
+    "description": "Come orientarsi negli obblighi dell'EU AI Act. Classificazione del rischio, documentazione e scadenze applicabili.",
     "pdfSlug": "compliance-ai-act",
-    "heroTitle": "EU AI Act: cosa deve fare la tua azienda entro il 2025",
+    "heroTitle": "EU AI Act: come orientarsi tra obblighi e scadenze",
     "heroSubtitle": "L'AI Act è legge. Non è un problema per il futuro. Questa guida ti dice esattamente cosa devi fare, in quale ordine e entro quando.",
     "bullets": [
       "Classificazione del rischio: dove si posizionano i tuoi sistemi AI",
@@ -101,7 +103,7 @@ const magnets: Record<Locale, Record<string, LeadMagnetContent>> = {
     "description": "Come trasformare i dati aziendali in decisioni. Data audit, KPI framework, BI tools, data culture.",
     "pdfSlug": "data-analytics",
     "heroTitle": "Da dati a decisioni: analytics per PMI italiane",
-    "heroSubtitle": "La tua azienda ha dati ovunque ma nessuno li usa per decidere. Questa guida ti insegna a costruire una cultura del dato in 90 giorni.",
+    "heroSubtitle": "La tua azienda ha dati ovunque ma fatica a usarli per decidere. Questa guida propone un percorso concreto per costruire una cultura del dato.",
     "bullets": [
       "Data audit: dove sono i tuoi dati e quanto valgono",
       "KPI framework: scegliere le 5 metriche che contano davvero",
@@ -125,11 +127,11 @@ const magnets: Record<Locale, Record<string, LeadMagnetContent>> = {
     ]
   },
   "guida-factory": {
-    "title": "Guida Development Factory",
-    "description": "Come gestire un team esterno continuativo. Modelli di team, SLA, knowledge transfer, governance ed exit strategy.",
+    "title": "Guida al Retainer evolutivo",
+    "description": "Come governare un rapporto continuativo per far evolvere il software. Capacità, livelli di servizio, trasferimento di conoscenza ed exit strategy.",
     "pdfSlug": "factory",
-    "heroTitle": "Team esterno continuativo: guida alla Development Factory",
-    "heroSubtitle": "Hai un team esterno o stai valutando di crearne uno? Questa guida ti insegna a governarlo senza perdere il controllo del prodotto.",
+    "heroTitle": "Retainer evolutivo: far crescere il software senza perdere il controllo",
+    "heroSubtitle": "Una guida per impostare un rapporto continuativo con responsabilità, capacità mensile e decisioni chiare.",
     "bullets": [
       "Modelli di team: dedicated, shared, staff augmentation — differenze reali",
       "SLA operativi: cosa misurare e come scriverlo nel contratto",
@@ -139,13 +141,13 @@ const magnets: Record<Locale, Record<string, LeadMagnetContent>> = {
     ]
   },
   "guida-fractional-cto": {
-    "title": "Guida Fractional CTO",
-    "description": "Quando e perch├® serve un Fractional CTO. Framework di governance, gestione vendor e team scaling per PMI.",
+    "title": "Guida alla Direzione Tecnica",
+    "description": "Quando e perché serve una Direzione Tecnica. Governance, gestione fornitori e crescita del team per PMI.",
     "pdfSlug": "fractional-cto",
-    "heroTitle": "Quando (e perch├®) serve un Fractional CTO",
-    "heroSubtitle": "La guida pratica per capire se un CTO part-time è la mossa giusta per la tua azienda — e come ingaggiarlo correttamente.",
+    "heroTitle": "Quando (e perché) serve una Direzione Tecnica",
+    "heroSubtitle": "La guida pratica per capire se alla tua azienda manca una guida tecnica e come definire un ingaggio sostenibile.",
     "bullets": [
-      "Framework per valutare se ti serve un Fractional CTO ora",
+      "Framework per valutare se ti serve una Direzione Tecnica",
       "Governance tecnica: cosa gestisce, cosa non gestisce",
       "Come scalare il team senza sbagliare il primo hire",
       "Vendor management: come non farti gestire dai fornitori",
@@ -157,7 +159,7 @@ const magnets: Record<Locale, Record<string, LeadMagnetContent>> = {
     "description": "Come fare tech leadership senza burocrazia. Autonomia del team, 1:1 framework, hiring, performance culture.",
     "pdfSlug": "leadership",
     "heroTitle": "Tech Leadership senza burocrazia",
-    "heroSubtitle": "La guida operativa per chi guida team tecnici: come costruire autonomia, mantenere la qualit├á e far crescere le persone senza microgestire.",
+    "heroSubtitle": "La guida operativa per chi guida team tecnici: come costruire autonomia, mantenere la qualità e far crescere le persone senza microgestire.",
     "bullets": [
       "Framework per delegare senza perdere il controllo",
       "Template 1:1 settimanale che funziona davvero",
@@ -171,7 +173,7 @@ const magnets: Record<Locale, Record<string, LeadMagnetContent>> = {
     "description": "Come automatizzare i processi aziendali senza codice. Process mapping, tool selection, integration patterns, ROI.",
     "pdfSlug": "nocode-automation",
     "heroTitle": "Automatizzare senza codice: guida No-Code per PMI",
-    "heroSubtitle": "Il 70% dei processi ripetitivi nella tua azienda si può automatizzare senza scrivere una riga di codice. Questa guida ti mostra come.",
+    "heroSubtitle": "Molti processi ripetitivi possono essere automatizzati con strumenti no-code. Questa guida ti aiuta a capire quali e come.",
     "bullets": [
       "Process mapping: identifica i processi automatizzabili in un pomeriggio",
       "Tool selection: confronto Make, Zapier, n8n, Power Automate per PMI italiane",
@@ -182,14 +184,14 @@ const magnets: Record<Locale, Record<string, LeadMagnetContent>> = {
   },
   "guida-pa": {
     "title": "Guida PA Digitale",
-    "description": "Innovare nella Pubblica Amministrazione italiana. PNRR, procurement, interoperabilit├á, SPID/CIE, compliance.",
+    "description": "Innovare nella Pubblica Amministrazione italiana. PNRR, procurement, interoperabilità, SPID/CIE, compliance.",
     "pdfSlug": "pubblica-amministrazione",
-    "heroTitle": "Tecnologia per la PA: innovare nella complessit├á",
+    "heroTitle": "Tecnologia per la PA: innovare nella complessità",
     "heroSubtitle": "La guida tecnica per chi lavora con o dentro la Pubblica Amministrazione italiana e vuole portare innovazione reale — non solo slide.",
     "bullets": [
-      "Opportunit├á PNRR 2025: dove sono i fondi e come accedervi",
+      "Opportunità PNRR: come valutare fondi e requisiti applicabili",
       "Procurement PA: come navigare il Codice degli Appalti per soluzioni tech",
-      "Interoperabilit├á: come integrare i sistemi della PA con i propri",
+      "Interoperabilità: come integrare i sistemi della PA con i propri",
       "SPID e CIE: integrazione pratica nei servizi digitali",
       "Framework di compliance: GDPR, AgID, CAD applicati ai progetti concreti"
     ]
@@ -210,12 +212,12 @@ const magnets: Record<Locale, Record<string, LeadMagnetContent>> = {
   },
   "guida-trasformazione-digitale": {
     "title": "Guida Trasformazione Digitale",
-    "description": "Il metodo che funziona per la trasformazione digitale nelle PMI italiane. ROI in 90 giorni, integrazione legacy, change management.",
+    "description": "Un metodo operativo per la trasformazione digitale nelle PMI italiane. Metriche di risultato, integrazione legacy e change management.",
     "pdfSlug": "trasformazione-digitale",
     "heroTitle": "Trasformazione digitale per PMI: il metodo che funziona",
-    "heroSubtitle": "Non la trasformazione digitale delle slide di consulenza. Quella concreta, con budget reale, team italiano e risultati in 90 giorni.",
+    "heroSubtitle": "Non trasformazione digitale da slide: un percorso concreto, con budget reale, priorità e risultati misurabili.",
     "bullets": [
-      "Framework per calcolare il ROI in 90 giorni",
+      "Framework per definire e verificare il ROI",
       "Come integrare i gestionali italiani (TeamSystem, Mexal, Fatture in Cloud)",
       "Change management: convincere le persone, non solo i processi",
       "Process mapping: trovare i quick win nascosti",
@@ -227,10 +229,10 @@ const magnets: Record<Locale, Record<string, LeadMagnetContent>> = {
     "description": "Come prevenire il burnout nel team tech. Segnali precoci, sustainable pace, retention framework.",
     "pdfSlug": "wellbeing",
     "heroTitle": "Prevenire il burnout tech: guida per manager",
-    "heroSubtitle": "Il burnout in un team tech costa il doppio di quanto pensi. Questa guida ti insegna a riconoscerlo prima e a prevenirlo con sistemi concreti.",
+    "heroSubtitle": "Il burnout ha costi umani e operativi spesso invisibili. Questa guida aiuta a riconoscerlo prima e a prevenirlo con sistemi concreti.",
     "bullets": [
       "15 segnali precoci di burnout che i manager ignorano",
-      "Sustainable pace: come misurare la velocit├á sostenibile del team",
+      "Sustainable pace: come misurare la velocità sostenibile del team",
       "Retention framework: cosa tiene le persone (non è lo stipendio)",
       "Team health metrics: 3 indicatori da monitorare ogni settimana",
       "Script per 1:1 focalizzati sul benessere reale"
@@ -244,7 +246,7 @@ const magnets: Record<Locale, Record<string, LeadMagnetContent>> = {
     "heroTitle": "Pragmatic Agile: continuous delivery without dogma",
     "heroSubtitle": "Not textbook Scrum Agile. What works in Italian SMEs: delivering value fast with a small team and a real budget.",
     "bullets": [
-      "CI/CD pipeline: how to implement it in 2 weeks",
+      "CI/CD pipeline: planning an incremental adoption",
       "Sprint structure that does not waste time on useless ceremonies",
       "4 metrics that really matter (and 6 to ignore)",
       "Kanban vs Scrum: how to choose for your context",
@@ -254,14 +256,14 @@ const magnets: Record<Locale, Record<string, LeadMagnetContent>> = {
   },
   "guida-ai-pmi": {
     "title": "AI Adoption Guide for SMEs",
-    "description": "Practical framework to adopt AI in your SME. Checklists, case studies, mistakes to avoid.",
+    "description": "Practical framework to adopt AI in your SME. Checklists, evaluation criteria, and mistakes to avoid.",
     "heroTitle": "How to adopt AI in your SME without burning budget",
-    "heroSubtitle": "The complete guide with a framework tested on dozens of Italian companies. From zero to measurable results.",
+    "heroSubtitle": "A practical guide to assess opportunities, risks, and priorities before investing in AI.",
     "bullets": [
       "AI Readiness Assessment framework in 5 steps",
-      "7 fatal mistakes 90% of SMEs make",
+      "7 recurring mistakes SMEs should avoid",
       "Operational checklist for your first AI project",
-      "Real case studies with documented ROI",
+      "A framework for defining metrics and validating ROI",
       "Template for a management proposal"
     ],
     "pdfSlug": "ai-adoption"
@@ -282,8 +284,8 @@ const magnets: Record<Locale, Record<string, LeadMagnetContent>> = {
   },
   "guida-compliance-ai": {
     "title": "EU AI Act Compliance Guide",
-    "description": "What your company must do to comply with the EU AI Act by 2025. Risk classification, documentation, timeline.",
-    "heroTitle": "EU AI Act: what your company must do by 2025",
+    "description": "How to navigate EU AI Act obligations. Risk classification, documentation, and applicable deadlines.",
+    "heroTitle": "EU AI Act: navigating obligations and deadlines",
     "heroSubtitle": "The AI Act is law. It is not a future problem. This guide tells you exactly what to do, in which order, and by when.",
     "bullets": [
       "Risk classification: where your AI systems sit",
@@ -298,7 +300,7 @@ const magnets: Record<Locale, Record<string, LeadMagnetContent>> = {
     "title": "Data & Analytics Guide for SMEs",
     "description": "How to turn business data into decisions. Data audit, KPI framework, BI tools, data culture.",
     "heroTitle": "From data to decisions: analytics for Italian SMEs",
-    "heroSubtitle": "Your company has data everywhere but nobody uses it to decide. This guide helps you build a data culture in 90 days.",
+    "heroSubtitle": "Your company has data everywhere but struggles to use it for decisions. This guide offers a practical path towards a data culture.",
     "bullets": [
       "Data audit: where your data is and what it is worth",
       "KPI framework: choosing the 5 metrics that really matter",
@@ -312,7 +314,7 @@ const magnets: Record<Locale, Record<string, LeadMagnetContent>> = {
     "title": "Digital Starter Guide",
     "description": "The first digital project for those starting from zero. MVP mindset, vendor selection, budget planning, no-code options.",
     "heroTitle": "The first digital project: guide for those starting from zero",
-    "heroSubtitle": "You have no internal tech team. You do not know where to start. This guide takes you from \"I want to digitise\" to a working system in 30 days.",
+    "heroSubtitle": "You have no internal tech team and do not know where to start. This guide takes you from \"I want to digitise\" to a practical first delivery plan.",
     "bullets": [
       "MVP mindset: building the minimum that delivers value",
       "How to evaluate and choose a software vendor without getting burned",
@@ -323,10 +325,10 @@ const magnets: Record<Locale, Record<string, LeadMagnetContent>> = {
     "pdfSlug": "digital-starter"
   },
   "guida-factory": {
-    "title": "Development Factory Guide",
-    "description": "How to manage an ongoing external team. Team models, SLAs, knowledge transfer, governance, and exit strategy.",
-    "heroTitle": "Ongoing external team: Development Factory guide",
-    "heroSubtitle": "You have an external team or are considering one? This guide teaches you to govern it without losing product control.",
+    "title": "Evolution Retainer Guide",
+    "description": "How to govern an ongoing relationship that evolves your software. Capacity, service levels, knowledge transfer, and exit strategy.",
+    "heroTitle": "Evolution retainer: grow your software without losing control",
+    "heroSubtitle": "A guide to setting up an ongoing relationship with clear accountability, monthly capacity, and decisions.",
     "bullets": [
       "Team models: dedicated, shared, staff augmentation — real differences",
       "Operational SLAs: what to measure and how to write it in the contract",
@@ -337,12 +339,12 @@ const magnets: Record<Locale, Record<string, LeadMagnetContent>> = {
     "pdfSlug": "factory"
   },
   "guida-fractional-cto": {
-    "title": "Fractional CTO Guide",
-    "description": "When and why you need a Fractional CTO. Governance framework, vendor management, and team scaling for SMEs.",
-    "heroTitle": "When (and why) you need a Fractional CTO",
-    "heroSubtitle": "The practical guide to understand if a part-time CTO is the right move for your company — and how to engage one correctly.",
+    "title": "Technical Direction Guide",
+    "description": "When and why you need Technical Direction. Governance, vendor management, and team growth for SMEs.",
+    "heroTitle": "When (and why) you need Technical Direction",
+    "heroSubtitle": "A practical guide to understanding whether your company lacks technical direction and how to define a sustainable engagement.",
     "bullets": [
-      "Framework to assess if you need a Fractional CTO now",
+      "Framework to assess whether you need Technical Direction",
       "Technical governance: what they manage, what they do not",
       "Vendor management: how to avoid being held hostage",
       "Team scaling: when to hire vs when to outsource",
@@ -368,7 +370,7 @@ const magnets: Record<Locale, Record<string, LeadMagnetContent>> = {
     "title": "No-Code Automation Guide for SMEs",
     "description": "How to automate business processes without code. Process mapping, tool selection, integration patterns, ROI.",
     "heroTitle": "Automate without code: No-Code guide for SMEs",
-    "heroSubtitle": "70% of repetitive processes in your company can be automated without writing a line of code. This guide shows you how.",
+    "heroSubtitle": "Many repetitive processes can be automated with no-code tools. This guide helps you identify which ones and how.",
     "bullets": [
       "Process mapping: identify automatable processes in an afternoon",
       "Tool selection: Make, Zapier, n8n, Power Automate compared for Italian SMEs",
@@ -384,7 +386,7 @@ const magnets: Record<Locale, Record<string, LeadMagnetContent>> = {
     "heroTitle": "Technology for the public sector: innovating in complexity",
     "heroSubtitle": "The technical guide for those working with or within Italian Public Administration who want real innovation — not just slides.",
     "bullets": [
-      "PNRR 2025 opportunities: where the funds are and how to access them",
+      "PNRR opportunities: evaluating applicable funding and requirements",
       "Public procurement: navigating the Contracts Code for tech solutions",
       "Interoperability: AgID standards and integration patterns",
       "SPID/CIE integration: practical implementation guide",
@@ -408,11 +410,11 @@ const magnets: Record<Locale, Record<string, LeadMagnetContent>> = {
   },
   "guida-trasformazione-digitale": {
     "title": "Digital Transformation Guide",
-    "description": "The method that works for digital transformation in Italian SMEs. ROI in 90 days, legacy integration, change management.",
+    "description": "An operational method for digital transformation in Italian SMEs. Outcome metrics, legacy integration, and change management.",
     "heroTitle": "Digital transformation for SMEs: the method that works",
-    "heroSubtitle": "Not consulting-slide digital transformation. The concrete kind, with a real budget, Italian team, and results in 90 days.",
+    "heroSubtitle": "Not consulting-slide digital transformation: a concrete path with a real budget, priorities, and measurable outcomes.",
     "bullets": [
-      "Framework to calculate ROI in 90 days",
+      "Framework to define and validate ROI",
       "How to integrate Italian ERPs (TeamSystem, Mexal, Fatture in Cloud)",
       "Change management: getting people on board without resistance",
       "Operational plan: week-by-week roadmap",
@@ -424,7 +426,7 @@ const magnets: Record<Locale, Record<string, LeadMagnetContent>> = {
     "title": "Tech Wellbeing Guide",
     "description": "How to prevent burnout in tech teams. Early signals, sustainable pace, retention framework.",
     "heroTitle": "Preventing tech burnout: guide for managers",
-    "heroSubtitle": "Burnout in a tech team costs twice what you think. This guide teaches you to recognise it early and prevent it with concrete systems.",
+    "heroSubtitle": "Burnout creates human and operational costs that often remain hidden. This guide helps you recognise it early and prevent it with concrete systems.",
     "bullets": [
       "15 early burnout signals managers ignore",
       "Sustainable pace: measuring the team's sustainable velocity",
@@ -441,11 +443,11 @@ const risorseIndex: Record<Locale, Omit<RisorseIndexContent, 'guides'>> = {
   it: {
     meta: {
       title: 'Risorse Gratuite',
-      description: 'Guide, template e checklist gratuite su AI, architettura software, DevOps, leadership tech e trasformazione digitale per PMI italiane.',
+      description: 'Guide gratuite organizzate per Direzione Tecnica, Software in Mano e approfondimenti per PMI.',
     },
-    eyebrow: 'PDF Gratuiti',
-    heading: 'Risorse gratuite per PMI italiane',
-    subheading: 'Guide pratiche su AI, architettura, leadership e trasformazione digitale. Scaricale gratis — nessuna carta di credito, nessuno spam.',
+    eyebrow: 'Guide pratiche',
+    heading: 'Risorse per prendere decisioni tecniche migliori',
+    subheading: 'Scegli il tuo punto di partenza: guidare team e tecnologia, costruire ed evolvere software, oppure approfondire un tema specifico.',
     downloadCta: 'Scarica gratis',
     cta: {
       title: 'Hai bisogno di aiuto personalizzato?',
@@ -453,15 +455,20 @@ const risorseIndex: Record<Locale, Omit<RisorseIndexContent, 'guides'>> = {
       ctaText: 'Prenota una call',
     },
     breadcrumb: 'Risorse',
+    categoryTitles: {
+      'direzione-tecnica': 'Direzione Tecnica',
+      'software-in-mano': 'Software in Mano',
+      approfondimenti: 'Approfondimenti',
+    },
   },
   en: {
     meta: {
       title: 'Free Resources',
-      description: 'Free guides, templates, and checklists on AI, software architecture, DevOps, tech leadership, and digital transformation for SMEs.',
+      description: 'Free guides organised by Technical Direction, Software in Hand, and focused insights for SMEs.',
     },
-    eyebrow: 'Free PDFs',
-    heading: 'Free resources for SMEs',
-    subheading: 'Practical guides on AI, architecture, leadership, and digital transformation. Download free — no credit card, no spam.',
+    eyebrow: 'Practical guides',
+    heading: 'Resources for better technical decisions',
+    subheading: 'Choose where to start: guide teams and technology, build and evolve software, or explore a focused topic.',
     downloadCta: 'Download free',
     cta: {
       title: 'Need personalised help?',
@@ -469,6 +476,11 @@ const risorseIndex: Record<Locale, Omit<RisorseIndexContent, 'guides'>> = {
       ctaText: 'Book a call',
     },
     breadcrumb: 'Resources',
+    categoryTitles: {
+      'direzione-tecnica': 'Technical Direction',
+      'software-in-mano': 'Software in Hand',
+      approfondimenti: 'Insights',
+    },
   },
 };
 
@@ -478,85 +490,99 @@ const guideIndex: Record<Locale, GuideIndexItem[]> = {
     "slug": "guida-agile-devops",
     "title": "Agile pragmatico: delivery continua senza dogma",
     "description": "Agile pragmatico e delivery continua senza dogma. CI/CD pipeline, sprint structure, metriche che contano.",
-    "tag": "Agile & DevOps"
+    "tag": "Agile & DevOps",
+    "category": "direzione-tecnica"
   },
   {
     "slug": "guida-ai-pmi",
     "title": "Come adottare l'AI nella tua PMI senza bruciare budget",
-    "description": "Framework pratico per adottare l'AI nella tua PMI. Checklist, casi studio, errori da evitare.",
-    "tag": "AI Adoption"
+    "description": "Framework pratico per adottare l'AI nella tua PMI. Checklist, criteri di valutazione ed errori da evitare.",
+    "tag": "Governance AI",
+    "category": "direzione-tecnica"
   },
   {
     "slug": "guida-architettura",
     "title": "Scalare senza riscrivere: guida all'architettura evolutiva",
     "description": "Come scalare la tua architettura software senza riscrivere tutto. Modular monolith, bounded contexts, fitness functions.",
-    "tag": "Architettura"
+    "tag": "Architettura",
+    "category": "direzione-tecnica"
   },
   {
     "slug": "guida-compliance-ai",
-    "title": "EU AI Act: cosa deve fare la tua azienda entro il 2025",
-    "description": "Cosa deve fare la tua azienda per conformarsi all'EU AI Act entro il 2025. Risk classification, documentazione, timeline.",
-    "tag": "Compliance AI Act"
+    "title": "EU AI Act: come orientarsi tra obblighi e scadenze",
+    "description": "Come orientarsi negli obblighi dell'EU AI Act. Classificazione del rischio, documentazione e scadenze applicabili.",
+    "tag": "Compliance AI Act",
+    "category": "approfondimenti"
   },
   {
     "slug": "guida-data-analytics",
     "title": "Da dati a decisioni: analytics per PMI italiane",
     "description": "Come trasformare i dati aziendali in decisioni. Data audit, KPI framework, BI tools, data culture.",
-    "tag": "Data & Analytics"
+    "tag": "Data & Analytics",
+    "category": "software-in-mano"
   },
   {
     "slug": "guida-digital-starter",
     "title": "Il primo progetto digitale: guida per chi parte da zero",
     "description": "Il primo progetto digitale per chi parte da zero. MVP mindset, vendor selection, budget planning, no-code options.",
-    "tag": "Digital Starter"
+    "tag": "Primo progetto",
+    "category": "software-in-mano"
   },
   {
     "slug": "guida-factory",
-    "title": "Team esterno continuativo: guida alla Development Factory",
-    "description": "Come gestire un team esterno continuativo. Modelli di team, SLA, knowledge transfer, governance ed exit strategy.",
-    "tag": "Factory"
+    "title": "Retainer evolutivo: far crescere il software senza perdere il controllo",
+    "description": "Come governare un rapporto continuativo per far evolvere il software. Capacità, livelli di servizio, trasferimento di conoscenza ed exit strategy.",
+    "tag": "Retainer evolutivo",
+    "category": "software-in-mano"
   },
   {
     "slug": "guida-fractional-cto",
-    "title": "Quando (e perch├®) serve un Fractional CTO",
-    "description": "Quando e perch├® serve un Fractional CTO. Framework di governance, gestione vendor e team scaling per PMI.",
-    "tag": "Fractional CTO"
+    "title": "Quando (e perché) serve una Direzione Tecnica",
+    "description": "Quando e perché serve una Direzione Tecnica. Governance, gestione fornitori e crescita del team per PMI.",
+    "tag": "Direzione Tecnica",
+    "category": "direzione-tecnica"
   },
   {
     "slug": "guida-leadership",
     "title": "Tech Leadership senza burocrazia",
     "description": "Come fare tech leadership senza burocrazia. Autonomia del team, 1:1 framework, hiring, performance culture.",
-    "tag": "Leadership"
+    "tag": "Leadership",
+    "category": "direzione-tecnica"
   },
   {
     "slug": "guida-nocode",
     "title": "Automatizzare senza codice: guida No-Code per PMI",
     "description": "Come automatizzare i processi aziendali senza codice. Process mapping, tool selection, integration patterns, ROI.",
-    "tag": "No-Code Automation"
+    "tag": "No-Code Automation",
+    "category": "software-in-mano"
   },
   {
     "slug": "guida-pa",
-    "title": "Tecnologia per la PA: innovare nella complessit├á",
-    "description": "Innovare nella Pubblica Amministrazione italiana. PNRR, procurement, interoperabilit├á, SPID/CIE, compliance.",
-    "tag": "Pubblica Amministrazione"
+    "title": "Tecnologia per la PA: innovare nella complessità",
+    "description": "Innovare nella Pubblica Amministrazione italiana. PNRR, procurement, interoperabilità, SPID/CIE, compliance.",
+    "tag": "Pubblica Amministrazione",
+    "category": "approfondimenti"
   },
   {
     "slug": "guida-sviluppo-progetto",
     "title": "Progetto software a scope fisso: come non farsi fregare",
     "description": "Come gestire un progetto software a prezzo fisso senza sorprese. Requirements, milestone, acceptance criteria, contratti.",
-    "tag": "Sviluppo Progetto"
+    "tag": "Sviluppo Progetto",
+    "category": "software-in-mano"
   },
   {
     "slug": "guida-trasformazione-digitale",
     "title": "Trasformazione digitale per PMI: il metodo che funziona",
-    "description": "Il metodo che funziona per la trasformazione digitale nelle PMI italiane. ROI in 90 giorni, integrazione legacy, change management.",
-    "tag": "Trasformazione Digitale"
+    "description": "Un metodo operativo per la trasformazione digitale nelle PMI italiane. Metriche di risultato, integrazione legacy e change management.",
+    "tag": "Trasformazione Digitale",
+    "category": "software-in-mano"
   },
   {
     "slug": "guida-wellbeing",
     "title": "Prevenire il burnout tech: guida per manager",
     "description": "Come prevenire il burnout nel team tech. Segnali precoci, sustainable pace, retention framework.",
-    "tag": "Wellbeing"
+    "tag": "Wellbeing team",
+    "category": "direzione-tecnica"
   }
 ],
   en: [
@@ -564,85 +590,99 @@ const guideIndex: Record<Locale, GuideIndexItem[]> = {
     "slug": "guida-agile-devops",
     "title": "Pragmatic Agile: continuous delivery without dogma",
     "description": "Pragmatic Agile and continuous delivery without dogma. CI/CD pipeline, sprint structure, metrics that matter.",
-    "tag": "Agile & DevOps"
+    "tag": "Agile & DevOps",
+    "category": "direzione-tecnica"
   },
   {
     "slug": "guida-ai-pmi",
     "title": "How to adopt AI in your SME without burning budget",
-    "description": "Practical framework to adopt AI in your SME. Checklists, case studies, mistakes to avoid.",
-    "tag": "AI Adoption"
+    "description": "Practical framework to adopt AI in your SME. Checklists, evaluation criteria, and mistakes to avoid.",
+    "tag": "AI Governance",
+    "category": "direzione-tecnica"
   },
   {
     "slug": "guida-architettura",
     "title": "Scale without rewriting: evolutionary architecture guide",
     "description": "How to scale your software architecture without rewriting everything. Modular monolith, bounded contexts, fitness functions.",
-    "tag": "Architecture"
+    "tag": "Architecture",
+    "category": "direzione-tecnica"
   },
   {
     "slug": "guida-compliance-ai",
-    "title": "EU AI Act: what your company must do by 2025",
-    "description": "What your company must do to comply with the EU AI Act by 2025. Risk classification, documentation, timeline.",
-    "tag": "AI Act Compliance"
+    "title": "EU AI Act: navigating obligations and deadlines",
+    "description": "How to navigate EU AI Act obligations. Risk classification, documentation, and applicable deadlines.",
+    "tag": "AI Act Compliance",
+    "category": "approfondimenti"
   },
   {
     "slug": "guida-data-analytics",
     "title": "From data to decisions: analytics for Italian SMEs",
     "description": "How to turn business data into decisions. Data audit, KPI framework, BI tools, data culture.",
-    "tag": "Data & Analytics"
+    "tag": "Data & Analytics",
+    "category": "software-in-mano"
   },
   {
     "slug": "guida-digital-starter",
     "title": "The first digital project: guide for those starting from zero",
     "description": "The first digital project for those starting from zero. MVP mindset, vendor selection, budget planning, no-code options.",
-    "tag": "Digital Starter"
+    "tag": "First project",
+    "category": "software-in-mano"
   },
   {
     "slug": "guida-factory",
-    "title": "Ongoing external team: Development Factory guide",
-    "description": "How to manage an ongoing external team. Team models, SLAs, knowledge transfer, governance, and exit strategy.",
-    "tag": "Factory"
+    "title": "Evolution retainer: grow your software without losing control",
+    "description": "How to govern an ongoing relationship that evolves your software. Capacity, service levels, knowledge transfer, and exit strategy.",
+    "tag": "Evolution Retainer",
+    "category": "software-in-mano"
   },
   {
     "slug": "guida-fractional-cto",
-    "title": "When (and why) you need a Fractional CTO",
-    "description": "When and why you need a Fractional CTO. Governance framework, vendor management, and team scaling for SMEs.",
-    "tag": "Fractional CTO"
+    "title": "When (and why) you need Technical Direction",
+    "description": "When and why you need Technical Direction. Governance, vendor management, and team growth for SMEs.",
+    "tag": "Technical Direction",
+    "category": "direzione-tecnica"
   },
   {
     "slug": "guida-leadership",
     "title": "Tech leadership without bureaucracy",
     "description": "How to do tech leadership without bureaucracy. Team autonomy, 1:1 framework, hiring, performance culture.",
-    "tag": "Leadership"
+    "tag": "Leadership",
+    "category": "direzione-tecnica"
   },
   {
     "slug": "guida-nocode",
     "title": "Automate without code: No-Code guide for SMEs",
     "description": "How to automate business processes without code. Process mapping, tool selection, integration patterns, ROI.",
-    "tag": "No-Code Automation"
+    "tag": "No-Code Automation",
+    "category": "software-in-mano"
   },
   {
     "slug": "guida-pa",
     "title": "Technology for the public sector: innovating in complexity",
     "description": "Innovating in Italian Public Administration. PNRR, procurement, interoperability, SPID/CIE, compliance.",
-    "tag": "Public Sector"
+    "tag": "Public Sector",
+    "category": "approfondimenti"
   },
   {
     "slug": "guida-sviluppo-progetto",
     "title": "Fixed-scope software project: how not to get burned",
     "description": "How to manage a fixed-price software project without surprises. Requirements, milestones, acceptance criteria, contracts.",
-    "tag": "Project Development"
+    "tag": "Project Development",
+    "category": "software-in-mano"
   },
   {
     "slug": "guida-trasformazione-digitale",
     "title": "Digital transformation for SMEs: the method that works",
-    "description": "The method that works for digital transformation in Italian SMEs. ROI in 90 days, legacy integration, change management.",
-    "tag": "Digital Transformation"
+    "description": "An operational method for digital transformation in Italian SMEs. Outcome metrics, legacy integration, and change management.",
+    "tag": "Digital Transformation",
+    "category": "software-in-mano"
   },
   {
     "slug": "guida-wellbeing",
     "title": "Preventing tech burnout: guide for managers",
     "description": "How to prevent burnout in tech teams. Early signals, sustainable pace, retention framework.",
-    "tag": "Wellbeing"
+    "tag": "Team Wellbeing",
+    "category": "direzione-tecnica"
   }
 ],
 };
@@ -657,13 +697,13 @@ const grazie: Record<Locale, GrazieContent> = {
     followUpTitle: 'Nei prossimi giorni riceverai anche:',
     followUpItems: [
       'Approfondimenti pratici sull\'argomento',
-      'Casi studio reali da PMI italiane',
+      'Approfondimenti ed esempi applicativi per PMI',
       'Invito a una call strategica gratuita',
     ],
     pdfTitles: {
       'ai-adoption': 'Guida AI Adoption per PMI',
-      'ai-platform': 'Guida Piattaforma AI Aziendale',
-      'fractional-cto': 'Guida Fractional CTO',
+      'ai-platform': 'Presentazione Software in Mano',
+      'fractional-cto': 'Guida alla Direzione Tecnica',
       'architettura': 'Guida Scaling Architetturale',
       'trasformazione-digitale': 'Guida Trasformazione Digitale',
       'leadership': 'Guida Tech Leadership',
@@ -671,7 +711,7 @@ const grazie: Record<Locale, GrazieContent> = {
       'wellbeing': 'Guida Tech Wellbeing',
       'digital-starter': 'Guida Digital Starter',
       'sviluppo-progetto': 'Guida Sviluppo Progetto',
-      'factory': 'Guida Development Factory',
+      'factory': 'Guida al Retainer evolutivo',
       'compliance-ai-act': 'Guida Compliance AI Act',
       'nocode-automation': 'Guida No-Code Automation',
       'data-analytics': 'Guida Data & Analytics',
@@ -687,13 +727,13 @@ const grazie: Record<Locale, GrazieContent> = {
     followUpTitle: 'In the coming days you will also receive:',
     followUpItems: [
       'Practical deep-dives on the topic',
-      'Real case studies from Italian SMEs',
+      'Practical deep-dives and examples for SMEs',
       'Invitation to a free strategy call',
     ],
     pdfTitles: {
       'ai-adoption': 'AI Adoption Guide for SMEs',
-      'ai-platform': 'Enterprise AI Platform Guide',
-      'fractional-cto': 'Fractional CTO Guide',
+      'ai-platform': 'Software in Hand Overview',
+      'fractional-cto': 'Technical Direction Guide',
       'architettura': 'Architectural Scaling Guide',
       'trasformazione-digitale': 'Digital Transformation Guide',
       'leadership': 'Tech Leadership Guide',
@@ -701,7 +741,7 @@ const grazie: Record<Locale, GrazieContent> = {
       'wellbeing': 'Tech Wellbeing Guide',
       'digital-starter': 'Digital Starter Guide',
       'sviluppo-progetto': 'Fixed-Scope Project Guide',
-      'factory': 'Development Factory Guide',
+      'factory': 'Evolution Retainer Guide',
       'compliance-ai-act': 'EU AI Act Compliance Guide',
       'nocode-automation': 'No-Code Automation Guide',
       'data-analytics': 'Data & Analytics Guide',
@@ -715,7 +755,16 @@ export function getLeadMagnetContent(slug: string, locale: Locale): LeadMagnetCo
 }
 
 export function getRisorseIndexContent(locale: Locale): RisorseIndexContent {
-  return { ...risorseIndex[locale], guides: guideIndex[locale] };
+  const availableSlugs = new Set(
+    Object.entries(magnets[locale])
+      .filter(([, magnet]) => Boolean(pdfUrls[magnet.pdfSlug]))
+      .map(([slug]) => slug),
+  );
+
+  return {
+    ...risorseIndex[locale],
+    guides: guideIndex[locale].filter((guide) => availableSlugs.has(guide.slug)),
+  };
 }
 
 export function getGrazieContent(locale: Locale): GrazieContent {
@@ -727,19 +776,7 @@ export function getLeadMagnetSlugs(): string[] {
 }
 
 export const pdfUrls: Record<string, string> = {
-  'ai-adoption': '/pdf/AI-Adoption-Manuale-PMI.pdf',
-  'ai-platform': '/pdf/AIA-Manuale-Piattaforma.pdf',
-  'fractional-cto': '/pdf/FCTO-Manuale-FractionalCTO.pdf',
-  'architettura': '/pdf/ARCH-Manuale-Scaling.pdf',
-  'trasformazione-digitale': '/pdf/DIGI-Manuale-Trasformazione.pdf',
-  'leadership': '/pdf/LEAD-Manuale-Leadership.pdf',
-  'agile-devops': '/pdf/AGILE-Manuale-AgileDevOps.pdf',
-  'wellbeing': '/pdf/WELL-Manuale-Wellbeing.pdf',
-  'digital-starter': '/pdf/ZERO-Manuale-FromScratch.pdf',
-  'sviluppo-progetto': '/pdf/PROJ-Manuale-SviluppoProgetto.pdf',
-  'factory': '/pdf/FACT-Manuale-Factory.pdf',
-  'compliance-ai-act': '/pdf/COMP-Manuale-ComplianceAIAct.pdf',
-  'nocode-automation': '/pdf/NOCODE-Manuale-Automation.pdf',
-  'data-analytics': '/pdf/DATA-Manuale-Analytics.pdf',
-  'pubblica-amministrazione': '/pdf/PA-Manuale-PubblicaAmministrazione.pdf',
+  'ai-platform': '/downloads/108vision-software-in-mano.pdf',
+  'fractional-cto': '/downloads/108vision-direzione-tecnica.pdf',
+  'factory': '/downloads/108vision-software-in-mano.pdf',
 };

@@ -11,9 +11,16 @@ export interface SoftwareInManoContent {
   meta: { title: string; description: string };
   breadcrumb: string;
   hero: { title: string; subtitle: string };
-  audience: { heading: string; intro: string; cards: TextCard[] };
-  features: { heading: string; items: ServiceFeature[] };
+  problem: { heading: string; intro: string; cards: TextCard[] };
+  cost: { heading: string; text: string };
+  method: { heading: string; intro: string; items: ServiceFeature[] };
+  deliverables: { heading: string; intro: string; items: ServiceFeature[] };
   proof: { heading: string; text: string; cta: string; href: string };
+  fit: {
+    heading: string;
+    ideal: { title: string; items: string[] };
+    notIdeal: { title: string; items: string[] };
+  };
   process: { heading: string; steps: HowItWorksStep[] };
   plans: ServicePlan[];
   pdf: { title: string; description: string; cta: string };
@@ -29,78 +36,134 @@ const content: LocaleContent<SoftwareInManoContent> = {
     },
     breadcrumb: 'Software in Mano',
     hero: {
-      title: 'Il software lo costruiamo. E lo teniamo in mano.',
+      title: 'Il software non deve diventare un altro problema da gestire.',
       subtitle:
-        'Dalla definizione di cosa serve davvero, all’architettura, allo sviluppo, alle integrazioni, alla manutenzione evolutiva. Non spariamo dopo il go-live.',
+        'Progettiamo, costruiamo e facciamo evolvere il software che serve al tuo business. Un interlocutore dal requisito al go-live, con codice tuo e responsabilità che continuano dopo la consegna.',
     },
-    audience: {
-      heading: 'Per chi è',
+    problem: {
+      heading: 'Situazioni che riconosci',
       intro:
-        'Per PMI che devono digitalizzare un pezzo critico del business, o adottare software esistente che non regge più — senza una software house che sparisce.',
+        'Il problema non è trovare qualcuno che scriva codice. È evitare di costruire la cosa sbagliata, o di restare soli quando entra in produzione.',
       cards: [
         {
-          title: 'Da zero',
-          text: 'Serve un prodotto o un modulo che oggi non esiste. Prima capiamo lo scope, poi costruiamo.',
+          title: 'Il processo vive tra fogli e passaggi manuali',
+          text: 'Le persone ricopiano dati, rincorrono email o usano strumenti che non comunicano tra loro.',
         },
         {
-          title: 'Software da adottare',
-          text: 'Hai già codice (o un fornitore), ma nessuno se ne prende cura: debito, integrazioni, evolutiva.',
+          title: 'Il software esiste, ma nessuno lo possiede',
+          text: 'Il fornitore è sparito, il codice è fragile o ogni modifica apre una trattativa senza visibilità.',
         },
         {
-          title: 'Integrazioni reali',
-          text: 'Gestionale, CRM, flussi manuali che costano ore. Automazione e integrazioni con ROI misurabile.',
+          title: 'Hai un’idea, ma non un perimetro affidabile',
+          text: 'Requisiti, integrazioni e priorità non sono abbastanza chiari per promettere prezzo e risultato senza inventare.',
         },
       ],
     },
-    features: {
-      heading: 'Cosa include',
+    cost: {
+      heading: 'Il costo del software lasciato a metà',
+      text: 'Il lavoro manuale continua, le eccezioni aumentano e la dipendenza dal fornitore cresce. Partire dal codice senza chiarire processo, dati e integrazioni anticipa la spesa ma non riduce il rischio.',
+    },
+    method: {
+      heading: 'Dal problema al software che resta governabile',
+      intro:
+        'Discovery prima delle promesse, delivery con quality gate, gestione dopo il go-live. Ogni fase produce un risultato verificabile e può fermarsi senza lock-in.',
       items: [
         {
-          title: 'Discovery chiusa',
+          title: 'Discover',
           description:
-            'Requisiti prioritizzati, architettura ad alto livello, stima onesta — prima di scrivere codice a vuoto.',
+            'Mappiamo processo, utenti, dati, integrazioni, rischi e criteri di accettazione. Solo dopo definiamo architettura, perimetro e investimento.',
           icon: '🔍',
         },
         {
-          title: 'Build con ownership',
+          title: 'Build',
           description:
-            'Progetto a scope fisso o evolutiva a retainer. Milestone visibili, qualità e responsabilità sul risultato.',
+            'Costruiamo per milestone visibili, con review, test e pipeline automatizzate. Le variazioni di scope diventano decisioni esplicite.',
           icon: '🛠️',
         },
         {
-          title: 'AI dove crea valore',
+          title: 'Run & evolve',
           description:
-            'Feature AI solo se c’è ROI entro 90 giorni. Non un progetto “AI” a parte — parte del prodotto.',
-          icon: '✨',
-        },
-        {
-          title: 'Restiamo dopo',
-          description:
-            'Manutenzione evolutiva, monitoring, priorità mensili. Il software resta in mano, non in un limbo.',
+            'Monitoriamo ciò che conta, gestiamo correzioni ed evoluzione e rivediamo le priorità con ore e responsabilità concordate.',
           icon: '🤝',
         },
       ],
     },
+    deliverables: {
+      heading: 'Cosa consegniamo, oltre alle feature',
+      intro:
+        'Il software deve poter essere rilasciato, osservato e trasferito. La qualità è parte del deliverable, non un extra finale.',
+      items: [
+        {
+          title: 'Codice e accessi di proprietà del cliente',
+          description:
+            'Repository, documentazione e credenziali restano sotto il tuo controllo. Stack standard e handoff esplicito riducono il lock-in.',
+          icon: '🔑',
+        },
+        {
+          title: 'Test e CI/CD',
+          description:
+            'Test sui comportamenti critici e pipeline automatizzate per build, controlli e deploy ripetibili.',
+          icon: '✅',
+        },
+        {
+          title: 'Osservabilità operativa',
+          description:
+            'Log, health check e segnali utili a capire errori, latenza e saturazione prima di lavorare alla cieca.',
+          icon: '📡',
+        },
+        {
+          title: 'Integrazioni governate',
+          description:
+            'ERP, CRM, email e sistemi esterni isolati dietro confini chiari, con timeout, gestione errori e tracciabilità.',
+          icon: '🔌',
+        },
+        {
+          title: 'AI solo con ROI misurabile',
+          description:
+            'L’AI entra se Discovery definisce metrica, baseline, rischio, revisione umana e risultato osservabile entro 90 giorni. Altrimenti non entra.',
+          icon: '✨',
+        },
+      ],
+    },
     proof: {
-      heading: 'Prova concreta',
-      text: 'WellBeing è un’app che abbiamo costruito e teniamo in mano — esempio del metodo Software in Mano, non un terzo canale.',
+      heading: 'La prova è un prodotto che continua a vivere',
+      text: 'WellBeing è un prodotto digitale che abbiamo costruito e continuiamo a gestire: requisiti, privacy, rilasci ed evoluzione. Mostra come teniamo in mano il software dopo il lancio; non è un terzo canale commerciale.',
       cta: 'Scopri WellBeing',
       href: '/wellbeing',
     },
+    fit: {
+      heading: 'Fit e no-fit',
+      ideal: {
+        title: 'Ha senso se',
+        items: [
+          'Devi digitalizzare un processo concreto o adottare software esistente.',
+          'Puoi coinvolgere chi conosce il processo e decide le priorità.',
+          'Vuoi possedere codice, accessi e conoscenza, non dipendere dal fornitore.',
+        ],
+      },
+      notIdeal: {
+        title: 'Non ha senso se',
+        items: [
+          'Cerchi sviluppatori a consumo senza responsabilità sul risultato.',
+          'Vuoi un preventivo fisso prima di chiarire requisiti e rischi.',
+          'L’obiettivo è “mettere l’AI” senza baseline o metrica di business.',
+        ],
+      },
+    },
     process: {
-      heading: 'Come funziona',
+      heading: 'Si entra con una Discovery pagata',
       steps: [
         {
-          title: 'Call di scoping',
-          text: 'Capire il problema in linguaggio business. Se serve build, partiamo da Discovery — non da una stima inventata.',
+          title: 'Call di inquadramento',
+          text: 'Verifichiamo problema, decision maker, utenti, vincoli e accesso alle persone che conoscono il processo. Se non c’è fit, ci fermiamo.',
         },
         {
           title: 'Discovery',
-          text: 'Scope chiuso, priorità, architettura e stima progetto o retainer. Sai cosa costa e cosa no.',
+          text: 'Consegniamo requisiti e criteri di accettazione, architettura proposta, integrazioni, rischi, perimetro incluso/escluso e stima motivata.',
         },
         {
-          title: 'Progetto o retainer',
-          text: 'Consegna a milestone, oppure evolutiva mensile con ore chiare. Poi restiamo per far crescere il prodotto.',
+          title: 'Go / no-go sul build',
+          text: 'La Discovery resta tua e puoi usarla con chiunque. Se proseguiamo, scegliamo progetto a milestone o retainer evolutivo con ore chiare.',
         },
       ],
     },
@@ -110,9 +173,10 @@ const content: LocaleContent<SoftwareInManoContent> = {
         price: 'Entry',
         description: 'Scope, architettura, stima — senza impegno sul build.',
         features: [
-          'Requisiti prioritizzati',
-          'Architettura ad alto livello',
-          'Stima progetto / retainer',
+          'Requisiti e criteri di accettazione',
+          'Architettura e integrazioni',
+          'Scope incluso / escluso',
+          'Stima motivata e rischi',
           'Decisioni go / no-go documentate',
         ],
         cta: 'Prenota una Discovery',
@@ -123,10 +187,10 @@ const content: LocaleContent<SoftwareInManoContent> = {
         price: 'Progetto / Retainer',
         description: 'Costruiamo e teniamo il software nel tempo.',
         features: [
-          'Scope fisso o ore/mese',
-          'Integrazioni e qualità',
-          'AI solo con ROI chiaro',
-          'Evolutiva dopo il go-live',
+          'Codice e accessi del cliente',
+          'Test, CI/CD e osservabilità',
+          'Integrazioni resilienti',
+          'AI solo con ROI misurabile',
         ],
         cta: 'Parliamone',
         highlighted: true,
@@ -135,13 +199,13 @@ const content: LocaleContent<SoftwareInManoContent> = {
     pdf: {
       title: 'Presentazione per PMI (PDF)',
       description:
-        'Tre pagine: i film che conosci già, Discovery → Progetto → Retainer, prova WellBeing, ownership dopo il go-live.',
+        'Cinque pagine: diagnosi, costo dell’inazione, Discovery → progetto → evoluzione, deliverable e fit.',
       cta: 'Scarica presentazione Software in Mano',
     },
     partnerPdf: {
       title: 'Kit per agenzie di consulenza (PDF)',
       description:
-        'Cosa posso fare io quando il vostro cliente ha bisogno di software: quando proporre SiM, script, modelli B/C, Discovery.',
+        'Cinque pagine per qualificare il bisogno software: promessa e confini, modelli B/C, RACI, script e Discovery.',
       cta: 'Scarica kit partner Software in Mano',
     },
   },
@@ -153,78 +217,134 @@ const content: LocaleContent<SoftwareInManoContent> = {
     },
     breadcrumb: 'Software in Hand',
     hero: {
-      title: 'We build the software. And we keep it in hand.',
+      title: 'Software should not become another problem to manage.',
       subtitle:
-        'From what you actually need, to architecture, build, integrations and ongoing evolution. We do not disappear after go-live.',
+        'We design, build and evolve the software your business needs. One counterpart from requirement to go-live, with code you own and accountability that continues after delivery.',
     },
-    audience: {
-      heading: 'Who it is for',
+    problem: {
+      heading: 'Situations you will recognise',
       intro:
-        'For SMEs that need to digitise a critical business piece, or adopt existing software that no longer holds — without a software house that vanishes.',
+        'The problem is not finding someone who can write code. It is avoiding the wrong build—or being left alone once it reaches production.',
       cards: [
         {
-          title: 'From scratch',
-          text: 'You need a product or module that does not exist yet. We clarify scope first, then build.',
+          title: 'The process lives in spreadsheets and handoffs',
+          text: 'People re-enter data, chase emails or use tools that do not communicate.',
         },
         {
-          title: 'Software to adopt',
-          text: 'You already have code (or a vendor), but nobody owns it: debt, integrations, evolution.',
+          title: 'The software exists, but nobody owns it',
+          text: 'The vendor has gone, the code is fragile or every change starts a negotiation with no visibility.',
         },
         {
-          title: 'Real integrations',
-          text: 'ERP, CRM, manual flows that burn hours. Automation and integrations with measurable ROI.',
+          title: 'You have an idea, not a reliable scope',
+          text: 'Requirements, integrations and priorities are not clear enough to promise price and outcome without guessing.',
         },
       ],
     },
-    features: {
-      heading: 'What you get',
+    cost: {
+      heading: 'The cost of half-owned software',
+      text: 'Manual work continues, exceptions grow and vendor dependency deepens. Starting with code before clarifying process, data and integrations brings spending forward without reducing risk.',
+    },
+    method: {
+      heading: 'From the problem to software that stays governable',
+      intro:
+        'Discovery before promises, delivery with quality gates, stewardship after go-live. Every phase produces a verifiable outcome and can stop without lock-in.',
       items: [
         {
-          title: 'Closed Discovery',
+          title: 'Discover',
           description:
-            'Prioritised requirements, high-level architecture, honest estimate — before writing code into the void.',
+            'We map process, users, data, integrations, risks and acceptance criteria. Only then do we define architecture, scope and investment.',
           icon: '🔍',
         },
         {
-          title: 'Build with ownership',
+          title: 'Build',
           description:
-            'Fixed-scope project or retainer evolution. Visible milestones, quality, and accountability for outcomes.',
+            'We build through visible milestones, with reviews, tests and automated pipelines. Scope changes become explicit decisions.',
           icon: '🛠️',
         },
         {
-          title: 'AI where it creates value',
+          title: 'Run & evolve',
           description:
-            'AI features only if ROI within 90 days. Not a separate “AI project” — part of the product.',
-          icon: '✨',
-        },
-        {
-          title: 'We stay after',
-          description:
-            'Evolutionary maintenance, monitoring, monthly priorities. The software stays in hand, not in limbo.',
+            'We monitor what matters, manage fixes and evolution, and revisit priorities with agreed hours and accountability.',
           icon: '🤝',
         },
       ],
     },
+    deliverables: {
+      heading: 'What we deliver beyond features',
+      intro:
+        'Software must be releasable, observable and transferable. Quality is part of the deliverable, not a final add-on.',
+      items: [
+        {
+          title: 'Client-owned code and access',
+          description:
+            'Repository, documentation and credentials remain under your control. Standard technology and explicit handoff reduce lock-in.',
+          icon: '🔑',
+        },
+        {
+          title: 'Tests and CI/CD',
+          description:
+            'Tests around critical behaviour and automated pipelines for repeatable builds, checks and deployments.',
+          icon: '✅',
+        },
+        {
+          title: 'Operational observability',
+          description:
+            'Logs, health checks and useful signals for understanding errors, latency and saturation before working blind.',
+          icon: '📡',
+        },
+        {
+          title: 'Governed integrations',
+          description:
+            'ERP, CRM, email and external systems isolated behind clear boundaries, with timeouts, error handling and traceability.',
+          icon: '🔌',
+        },
+        {
+          title: 'AI only with measurable ROI',
+          description:
+            'AI enters only when Discovery defines a metric, baseline, risk, human review and an observable 90-day outcome. Otherwise it does not.',
+          icon: '✨',
+        },
+      ],
+    },
     proof: {
-      heading: 'Concrete proof',
-      text: 'WellBeing is an app we built and keep in hand — an example of the Software in Hand method, not a third channel.',
+      heading: 'The proof is a product that stays alive',
+      text: 'WellBeing is a digital product we built and continue to operate: requirements, privacy, releases and evolution. It shows how we own software after launch; it is not a third commercial channel.',
       cta: 'Discover WellBeing',
       href: '/wellbeing',
     },
+    fit: {
+      heading: 'Fit and no-fit',
+      ideal: {
+        title: 'A good fit if',
+        items: [
+          'You need to digitise a concrete process or adopt existing software.',
+          'You can involve the people who know the process and decide priorities.',
+          'You want to own code, access and knowledge rather than depend on a vendor.',
+        ],
+      },
+      notIdeal: {
+        title: 'Not a fit if',
+        items: [
+          'You want developers on demand with no accountability for outcomes.',
+          'You expect a fixed quote before requirements and risks are understood.',
+          'The goal is to “add AI” without a baseline or business metric.',
+        ],
+      },
+    },
     process: {
-      heading: 'How it works',
+      heading: 'Start with a paid Discovery',
       steps: [
         {
-          title: 'Scoping call',
-          text: 'Understand the business problem. If build is needed, we start with Discovery — not a made-up estimate.',
+          title: 'Framing call',
+          text: 'We confirm the problem, decision maker, users, constraints and access to people who know the process. If there is no fit, we stop.',
         },
         {
           title: 'Discovery',
-          text: 'Closed scope, priorities, architecture and project/retainer estimate. You know what costs what.',
+          text: 'You receive requirements and acceptance criteria, proposed architecture, integrations, risks, included/excluded scope and a reasoned estimate.',
         },
         {
-          title: 'Project or retainer',
-          text: 'Milestone delivery, or monthly evolution with clear hours. Then we stay to grow the product.',
+          title: 'Build go / no-go',
+          text: 'The Discovery is yours to use with anyone. If we continue, we choose a milestone project or an evolution retainer with clear hours.',
         },
       ],
     },
@@ -234,9 +354,10 @@ const content: LocaleContent<SoftwareInManoContent> = {
         price: 'Entry',
         description: 'Scope, architecture, estimate — no build commitment.',
         features: [
-          'Prioritised requirements',
-          'High-level architecture',
-          'Project / retainer estimate',
+          'Requirements and acceptance criteria',
+          'Architecture and integrations',
+          'Included / excluded scope',
+          'Reasoned estimate and risks',
           'Documented go / no-go',
         ],
         cta: 'Book a Discovery',
@@ -247,10 +368,10 @@ const content: LocaleContent<SoftwareInManoContent> = {
         price: 'Project / Retainer',
         description: 'We build and keep the software over time.',
         features: [
-          'Fixed scope or hours/month',
-          'Integrations and quality',
-          'AI only with clear ROI',
-          'Evolution after go-live',
+          'Client-owned code and access',
+          'Tests, CI/CD and observability',
+          'Resilient integrations',
+          'AI only with measurable ROI',
         ],
         cta: "Let's talk",
         highlighted: true,
@@ -259,13 +380,13 @@ const content: LocaleContent<SoftwareInManoContent> = {
     pdf: {
       title: 'SME presentation (PDF)',
       description:
-        'Three pages: familiar failure patterns, Discovery → Project → Retainer, WellBeing proof, ownership after go-live.',
+        'Five pages: diagnosis, cost of inaction, Discovery → project → evolution, deliverables and fit.',
       cta: 'Download Software in Hand presentation',
     },
     partnerPdf: {
       title: 'Consulting firm partner kit (PDF)',
       description:
-        'What I can do when your client needs software: when to offer SiM, sales script, B/C models, Discovery entry.',
+        'Five pages to qualify the software need: promise and boundaries, B/C models, essential RACI, sales script and Discovery.',
       cta: 'Download Software in Hand partner kit',
     },
   },

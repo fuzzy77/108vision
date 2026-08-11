@@ -3,12 +3,21 @@ title: "108 Vision — Brand, Copy & Struttura Sito Completa"
 author: "108 Vision"
 version: "2.0"
 date: "2026-06-11"
-type: "brand-strategy"
+type: "brand-strategy-legacy"
+status: "superseded"
+superseded_by: "riposizionamento-partner-tecnico.md v2.0 + registro-claim-e-prove.md"
 ---
 
 # 108 Vision
 
 ## Brand Identity & Struttura Sito Completa
+
+> **Documento legacy — non usare come fonte di verità per sito o materiali
+> commerciali.** Il catalogo a 15 servizi, i claim hero e le metriche riportate
+> qui precedono il riposizionamento Partner Tecnico. Le fonti attive sono
+> [riposizionamento-partner-tecnico.md](./riposizionamento-partner-tecnico.md)
+> e [registro-claim-e-prove.md](./registro-claim-e-prove.md). Da questo file si
+> possono recuperare solo pain point e formulazioni dopo verifica.
 
 ---
 

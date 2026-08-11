@@ -32,7 +32,32 @@ const wellbeingPath = localizedPath('/wellbeing', locale);
     subtitle={content.hero.subtitle}
     ctaText={t.common.bookCall}
     ctaLink={contactPath}
+    learnMoreText={t.common.learnMore}
+    learnMoreLink="#canali"
   />
+
+  <section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl mx-auto text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+          {content.problem.heading}
+        </h2>
+        <p class="text-lg text-slate-600">{content.problem.intro}</p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {content.problem.items.map((item) => (
+          <article class="p-6 rounded-xl border border-slate-200">
+            <h3 class="font-semibold text-slate-900 mb-2">{item.title}</h3>
+            <p class="text-sm text-slate-600 leading-relaxed">{item.text}</p>
+          </article>
+        ))}
+      </div>
+      <div class="max-w-4xl mx-auto mt-12 p-8 bg-amber-50 border border-amber-100 rounded-xl text-center">
+        <h3 class="text-xl font-bold text-slate-900 mb-3">{content.cost.heading}</h3>
+        <p class="text-slate-700 leading-relaxed">{content.cost.text}</p>
+      </div>
+    </div>
+  </section>
 
   <section id="canali" class="py-20 bg-slate-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -47,23 +72,7 @@ const wellbeingPath = localizedPath('/wellbeing', locale);
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
         {content.channels.items.map((channel) => (
-          <ServiceCard {...channel} />
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <section class="py-20 bg-white">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="text-3xl font-bold text-slate-900 mb-12 text-center">
-        {content.how.heading}
-      </h2>
-      <div class="space-y-8">
-        {content.how.steps.map((step) => (
-          <div class="border-l-4 border-primary-600 pl-6">
-            <h3 class="font-semibold text-slate-900 mb-1">{step.title}</h3>
-            <p class="text-slate-600">{step.text}</p>
-          </div>
+          <ServiceCard {...channel} learnMoreText={t.common.learnMore} />
         ))}
       </div>
     </div>
@@ -86,6 +95,43 @@ const wellbeingPath = localizedPath('/wellbeing', locale);
         >
           {t.common.discoverApp}
         </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-20 bg-white">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl font-bold text-slate-900 mb-12 text-center">{content.fit.heading}</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {[content.fit.ideal, content.fit.notIdeal].map((group, index) => (
+          <div class={`p-8 rounded-xl border ${index === 0 ? 'bg-primary-50 border-primary-100' : 'bg-slate-50 border-slate-200'}`}>
+            <h3 class="text-xl font-semibold text-slate-900 mb-5">{group.title}</h3>
+            <ul class="space-y-3">
+              {group.items.map((item) => (
+                <li class="flex gap-3 text-sm text-slate-700">
+                  <span aria-hidden="true">{index === 0 ? '✓' : '—'}</span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="py-20 bg-slate-50">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl font-bold text-slate-900 mb-12 text-center">
+        {content.entry.heading}
+      </h2>
+      <div class="space-y-8">
+        {content.entry.steps.map((step) => (
+          <div class="border-l-4 border-primary-600 pl-6">
+            <h3 class="font-semibold text-slate-900 mb-1">{step.title}</h3>
+            <p class="text-slate-600">{step.text}</p>
+          </div>
+        ))}
       </div>
     </div>
   </section>

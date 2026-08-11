@@ -1,0 +1,211 @@
+{
+  "metadata": {
+    "type": "client-asset",
+    "audience": "PMI italiane che devono costruire, recuperare o far evolvere software",
+    "objective": "Aiutare il decisore a diagnosticare il problema software e valutare una Discovery a pagamento",
+    "version": "1.0",
+    "sources": [
+      "tracks/brand/riposizionamento-partner-tecnico.md v2.0",
+      "tracks/software-in-mano/PLAYBOOK.md v1.0",
+      "tracks/brand/design-system.md v1.0"
+    ],
+    "claimStatus": {
+      "primaryClaim": "approved",
+      "commercialStatements": "derived-from-sources",
+      "performanceMetrics": "none",
+      "caseStudies": "none"
+    }
+  },
+  "document": {
+    "output": "108vision-software-in-mano.pdf",
+    "brand": "108 Vision",
+    "claim": "Il partner tecnico che prende in mano la situazione.",
+    "channel": "Software in Mano",
+    "label": "Guida decisionale per PMI",
+    "contact": "108vision.it/software-in-mano · info@108vision.it",
+    "pages": [
+      {
+        "eyebrow": "01 · Diagnosi",
+        "title": "Non vi manca un'app. Vi manca qualcuno che risponda del software.",
+        "lead": "Il software diventa un problema quando il processo dipende da fogli, integrazioni fragili o un fornitore che conosce tutto ma documenta poco. Prima di costruire, serve capire cosa deve reggere davvero.",
+        "blocks": [
+          {
+            "type": "section",
+            "title": "Segnali da mettere a fuoco",
+            "items": [
+              "Un processo critico passa tra Excel, email e inserimenti manuali.",
+              "Il sistema esistente rallenta nuove offerte, canali o modalità operative.",
+              "Ogni modifica richiede la disponibilità di una persona o di un fornitore specifico.",
+              "Integrazioni e dati sono trattati come eccezioni, non come parte del prodotto.",
+              "Il go-live è considerato la fine del lavoro, senza un piano di evoluzione."
+            ]
+          },
+          {
+            "type": "quote",
+            "text": "Software in Mano significa un percorso unico dal problema al rilascio e all'evoluzione, con perimetro, responsabilità e proprietà del codice chiari."
+          },
+          {
+            "type": "callout",
+            "title": "Domanda diagnostica",
+            "text": "Se il sistema si fermasse domani, quale processo del business tornerebbe manuale — e chi saprebbe rimetterlo in funzione?"
+          }
+        ]
+      },
+      {
+        "eyebrow": "02 · Costo dell'inazione",
+        "title": "Il costo cresce mentre il problema sembra ancora gestibile.",
+        "lead": "Il lavoro manuale e il software fragile spesso non compaiono come una singola voce di costo. Si distribuiscono in ritardi, errori, dipendenze e opportunità rimandate.",
+        "blocks": [
+          {
+            "type": "cards",
+            "items": [
+              {
+                "title": "Tempo operativo",
+                "text": "Persone qualificate copiano, riconciliano o verificano dati invece di gestire eccezioni e clienti."
+              },
+              {
+                "title": "Errori silenziosi",
+                "text": "Passaggi manuali e fonti duplicate producono differenze scoperte tardi."
+              },
+              {
+                "title": "Dipendenza",
+                "text": "Conoscenza, accessi e decisioni tecniche restano fuori dal controllo dell'azienda."
+              },
+              {
+                "title": "Crescita bloccata",
+                "text": "Nuovi volumi, canali o integrazioni richiedono workaround invece di capacità riutilizzabile."
+              }
+            ]
+          },
+          {
+            "type": "section",
+            "title": "Costruite una baseline prima del preventivo",
+            "items": [
+              "Mappate attori, passaggi, sistemi e punti in cui il dato viene ricopiato.",
+              "Separate problemi frequenti da eventi rari ma ad alto impatto.",
+              "Identificate chi decide, chi usa il sistema e chi ne gestisce le eccezioni.",
+              "Definite cosa deve essere vero per considerare riuscito il primo rilascio."
+            ]
+          },
+          {
+            "type": "quote",
+            "text": "Un preventivo senza una baseline non elimina l'incertezza: la sposta nel progetto."
+          }
+        ]
+      },
+      {
+        "eyebrow": "03 · Metodo",
+        "title": "Discovery, progetto, evoluzione: una sequenza, non tre promesse.",
+        "lead": "Ogni fase produce un risultato controllabile e un gate di decisione. Il cliente può procedere, ridurre il perimetro o fermarsi con documenti utilizzabili.",
+        "blocks": [
+          {
+            "type": "timeline",
+            "items": [
+              {
+                "title": "1. Discovery",
+                "text": "Problema, utenti, flussi, integrazioni, rischi, architettura e criteri di accettazione."
+              },
+              {
+                "title": "2. Decisione",
+                "text": "Scope incluso ed escluso, milestone, stima e rischi espliciti prima del build."
+              },
+              {
+                "title": "3. Progetto",
+                "text": "Consegne verificabili, review, test e dimostrazioni sul flusso reale."
+              },
+              {
+                "title": "4. Messa in esercizio",
+                "text": "Deploy, accessi, documentazione, formazione e gestione del passaggio."
+              },
+              {
+                "title": "5. Retainer evolutivo",
+                "text": "Priorità e ore mensili chiare per migliorare ciò che è in produzione."
+              }
+            ]
+          },
+          {
+            "type": "callout",
+            "title": "AI come metodo, non come etichetta",
+            "text": "Una funzione AI entra solo quando il processo, i dati, il rischio di errore e il criterio di successo sono chiari. Deve esistere un fallback e una responsabilità umana."
+          }
+        ]
+      },
+      {
+        "eyebrow": "04 · Output",
+        "title": "Cosa ricevete prima, durante e dopo il codice.",
+        "lead": "Gli output esatti dipendono dal contesto. Questi esempi rendono concreto il livello di controllo atteso.",
+        "blocks": [
+          {
+            "type": "cards",
+            "items": [
+              {
+                "title": "Mappa del flusso",
+                "text": "Attori, dati, passaggi, eccezioni e sistemi coinvolti."
+              },
+              {
+                "title": "Specifica verificabile",
+                "text": "Comportamenti e criteri di accettazione comprensibili al business."
+              },
+              {
+                "title": "Architettura motivata",
+                "text": "Scelte, integrazioni e trade-off documentati senza tecnologie decorative."
+              },
+              {
+                "title": "Piano di rilascio",
+                "text": "Milestone, dipendenze, responsabilità e condizioni di go/no-go."
+              },
+              {
+                "title": "Quality gate",
+                "text": "Build, test, sicurezza di base, osservabilità e controllo dello scope."
+              },
+              {
+                "title": "Handoff reale",
+                "text": "Repo, accessi, documentazione e conoscenza restano disponibili al cliente."
+              }
+            ]
+          },
+          {
+            "type": "section",
+            "title": "Principi di controllo",
+            "items": [
+              "Il codice e il repository sono del cliente.",
+              "Lo scope fuori perimetro richiede una decisione esplicita, non una sorpresa a consuntivo.",
+              "Le integrazioni critiche vengono trattate come boundary da progettare e verificare.",
+              "Dopo il rilascio esiste un percorso di gestione, evoluzione o handoff."
+            ]
+          }
+        ]
+      },
+      {
+        "eyebrow": "05 · Fit e prossimo passo",
+        "title": "Pagate prima per ridurre l'incertezza, non per nasconderla nel progetto.",
+        "lead": "La Discovery è un prodotto autonomo: produce scope, architettura e stima decisionale. Se non si prosegue, il materiale resta utilizzabile.",
+        "blocks": [
+          {
+            "type": "fit",
+            "fitTitle": "È un buon fit se",
+            "fitItems": [
+              "Dovete digitalizzare un processo o recuperare software che non regge.",
+              "Il sistema deve integrarsi con dati e strumenti già presenti.",
+              "Volete proprietà del codice e una continuità dopo il go-live.",
+              "Siete disponibili a coinvolgere utenti e decisore nella Discovery."
+            ],
+            "noFitTitle": "Non è il fit giusto se",
+            "noFitItems": [
+              "Cercate solo sviluppatori a giornata o il prezzo/ora più basso.",
+              "Volete un preventivo fisso senza chiarire problema, utenti e rischi.",
+              "La deadline è già decisa ma nessuno può definire cosa significa accettare il lavoro.",
+              "Avete già un team capace e vi manca soltanto la guida tecnica."
+            ]
+          },
+          {
+            "type": "cta",
+            "title": "Avvia una Discovery a pagamento",
+            "text": "Primo passo: contesto, flussi, scope, architettura, rischi e stima. Un documento decisionale prima di impegnare budget sul build.",
+            "action": "108vision.it/software-in-mano"
+          }
+        ]
+      }
+    ]
+  }
+}

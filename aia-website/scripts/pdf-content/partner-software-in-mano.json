@@ -1,0 +1,250 @@
+{
+  "metadata": {
+    "type": "partner-asset",
+    "audience": "Società di consulenza, system integrator e advisor che incontrano bisogni di build, integrazione o recupero software",
+    "objective": "Qualificare una collaborazione B o C e inserire una Discovery a pagamento in un'opportunità concreta",
+    "version": "1.0",
+    "sources": [
+      "tracks/brand/riposizionamento-partner-tecnico.md v2.0",
+      "tracks/brand/partner-onepager-BC.md v1.0",
+      "tracks/brand/partner-accordo-quadro-BC.md v1.0",
+      "tracks/brand/scheda-call-partner-consulenza.md v1.0",
+      "tracks/software-in-mano/PLAYBOOK.md v1.0",
+      "tracks/brand/design-system.md v1.0"
+    ],
+    "claimStatus": {
+      "primaryClaim": "approved",
+      "commercialStatements": "derived-from-sources",
+      "pricingAndLeadTimes": "excluded-until-verified",
+      "legalTerms": "summary-not-legal-advice",
+      "performanceMetrics": "none",
+      "caseStudies": "none"
+    }
+  },
+  "document": {
+    "output": "108vision-partner-software-in-mano.pdf",
+    "brand": "108 Vision",
+    "claim": "Il partner tecnico che prende in mano la situazione.",
+    "channel": "Partner · Software in Mano",
+    "label": "Kit qualificazione e proposta",
+    "contact": "108vision.it/software-in-mano · info@108vision.it",
+    "pages": [
+      {
+        "eyebrow": "01 · Qualification gate",
+        "title": "Prima di vendere software: esiste un problema abbastanza chiaro da scoprire?",
+        "lead": "Software in Mano è adatto quando manca un sistema, quello esistente non regge o un processo critico dipende da lavoro manuale. La Discovery viene prima del preventivo a corpo quando l'incertezza è materiale.",
+        "blocks": [
+          {
+            "type": "checklist",
+            "title": "Gate GO",
+            "items": [
+              "Esiste un processo o risultato business identificabile, non solo un'idea di app.",
+              "Un decisore può definire priorità e accettare compromessi di scope.",
+              "Utenti e referenti dei sistemi coinvolti sono accessibili durante la Discovery.",
+              "Il cliente accetta di rendere espliciti integrazioni, dati, eccezioni e vincoli.",
+              "C'è disponibilità a pagare una Discovery autonoma prima del build.",
+              "Proprietà, accessi e percorso dopo il go-live possono essere concordati."
+            ]
+          },
+          {
+            "type": "checklist",
+            "title": "Gate NO-GO",
+            "items": [
+              "La richiesta è soltanto una squadra a giornata o body rental.",
+              "Budget e deadline sono rigidi, ma nessuno può definire cosa va consegnato.",
+              "Il cliente non concede accesso a utenti, dati o sistemi necessari.",
+              "L'unico criterio è il prezzo/ora rispetto a fornitori commodity.",
+              "La richiesta AI non è collegata a un processo, un rischio e un criterio di successo."
+            ]
+          }
+        ]
+      },
+      {
+        "eyebrow": "02 · Promessa",
+        "title": "Cosa potete promettere. E cosa non va messo in proposta.",
+        "lead": "La promessa riguarda controllo del percorso e responsabilità sul risultato concordato, non capacità illimitata o tecnologie usate come etichetta.",
+        "blocks": [
+          {
+            "type": "fit",
+            "fitTitle": "Promettete",
+            "fitItems": [
+              "Un interlocutore tecnico dal requisito alla messa in esercizio.",
+              "Discovery con scope, architettura, rischi e stima decisionale.",
+              "Progetto con milestone, criteri di accettazione e fuori scope esplicito.",
+              "Codice, repository e accessi sotto il controllo del cliente.",
+              "Percorso di evoluzione o handoff dopo il rilascio.",
+              "AI solo quando processo, dati, fallback e verifica sono definiti."
+            ],
+            "noFitTitle": "Non promettete",
+            "noFitItems": [
+              "Team dedicato full-time o capacità senza limiti.",
+              "Prezzo fisso serio prima di aver ridotto le incognite materiali.",
+              "Qualsiasi integrazione come se fosse un dettaglio privo di rischio.",
+              "Feature AI senza valutazione dei dati, degli errori e della supervisione umana.",
+              "Tempi, risparmi o risultati non misurati sul caso specifico.",
+              "Un go-live senza responsabilità definite per run, supporto ed evoluzione."
+            ]
+          },
+          {
+            "type": "quote",
+            "text": "Per il pezzo software coinvolgiamo 108 Vision: chiarisce cosa serve, lo costruisce nel perimetro concordato e prepara la continuità dopo il rilascio."
+          }
+        ]
+      },
+      {
+        "eyebrow": "03 · Modelli B/C e RACI",
+        "title": "Contratto, visibilità e responsabilità vanno scelti prima dello scope.",
+        "lead": "Il modello B mantiene il partner in front; il modello C rende visibile la co-delivery. Nessuno dei due elimina il bisogno di interlocuzione tecnica col cliente.",
+        "blocks": [
+          {
+            "type": "cards",
+            "items": [
+              {
+                "title": "B · Subcontract",
+                "text": "Il partner firma e governa l'account; 108 Vision eroga Discovery e delivery tecnica secondo il canale concordato."
+              },
+              {
+                "title": "C · Co-delivery",
+                "text": "Proposta comune; il partner guida contesto e change, 108 Vision guida architettura e delivery software."
+              }
+            ]
+          },
+          {
+            "type": "table",
+            "title": "RACI essenziale",
+            "columns": [
+              "Attività",
+              "Partner",
+              "108 Vision",
+              "Cliente"
+            ],
+            "rows": [
+              [
+                "Qualifica business",
+                "A/R",
+                "C",
+                "C"
+              ],
+              [
+                "Scope Discovery",
+                "C",
+                "R",
+                "A"
+              ],
+              [
+                "Requisiti e accessi",
+                "C",
+                "R",
+                "A/R"
+              ],
+              [
+                "Architettura e stima",
+                "I",
+                "A/R",
+                "C"
+              ],
+              [
+                "Priorità e accettazione",
+                "C",
+                "R",
+                "A"
+              ],
+              [
+                "Comunicazione account",
+                "A/R",
+                "C",
+                "I"
+              ]
+            ]
+          },
+          {
+            "type": "callout",
+            "title": "Legenda",
+            "text": "R = esegue · A = approva/risponde · C = consultato · I = informato. La proposta e l'accordo operativo prevalgono su questa sintesi."
+          }
+        ]
+      },
+      {
+        "eyebrow": "04 · Offerta",
+        "title": "La Discovery è il prodotto che rende proponibile il progetto.",
+        "lead": "Serve a trasformare un bisogno ancora ambiguo in una decisione: cosa costruire, con quali confini, rischi e verifiche. Può concludersi anche con uno stop motivato.",
+        "blocks": [
+          {
+            "type": "cards",
+            "items": [
+              {
+                "title": "Input",
+                "text": "Obiettivi, utenti, processo attuale, sistemi, dati, vincoli e accessi."
+              },
+              {
+                "title": "Lavoro",
+                "text": "Interviste, mappa flussi, analisi integrazioni, rischi e opzioni."
+              },
+              {
+                "title": "Output",
+                "text": "Specifica verificabile, architettura, stima, milestone e fuori scope."
+              },
+              {
+                "title": "Gate",
+                "text": "Progetto, prova ridotta, retainer su software esistente o stop."
+              }
+            ]
+          },
+          {
+            "type": "quote",
+            "title": "Script da usare in proposta",
+            "text": "Per costruire o recuperare il software coinvolgiamo 108 Vision, partner tecnico dalla Discovery all'evoluzione. Iniziamo con una Discovery a pagamento: chiarisce flussi, integrazioni, scope, architettura e stima. Il cliente riceve un documento utilizzabile; il progetto parte solo dopo una decisione informata."
+          },
+          {
+            "type": "section",
+            "title": "Allegati minimi alla proposta",
+            "items": [
+              "Problema e obiettivo della Discovery.",
+              "Stakeholder, sistemi e accessi richiesti.",
+              "Output attesi e criteri di accettazione.",
+              "Perimetro escluso e gate verso l'eventuale progetto."
+            ]
+          }
+        ]
+      },
+      {
+        "eyebrow": "05 · Attivazione",
+        "title": "Testate la partnership su un'opportunità reale e ben qualificata.",
+        "lead": "Una collaborazione utile nasce da ruoli chiari e da un cliente concreto, non da una lista generica di competenze.",
+        "blocks": [
+          {
+            "type": "timeline",
+            "items": [
+              {
+                "title": "1. Call partner",
+                "text": "Clienti tipici, proposte attive, gestione attuale del build e preferenza B/C."
+              },
+              {
+                "title": "2. Opportunità nominata",
+                "text": "Processo, decisore, utenti, software attuale e ragione per agire."
+              },
+              {
+                "title": "3. Pre-qualifica",
+                "text": "Gate GO/NO-GO, accessi disponibili e obiettivo della Discovery."
+              },
+              {
+                "title": "4. Proposta",
+                "text": "Scope Discovery, RACI, output, confini e decisione successiva."
+              },
+              {
+                "title": "5. Review post-Discovery",
+                "text": "Scelta congiunta tra progetto, fase ridotta, retainer o stop."
+              }
+            ]
+          },
+          {
+            "type": "cta",
+            "title": "Porta un caso concreto alla call",
+            "text": "Preparare: cliente o settore, processo da cambiare, sistemi coinvolti, decisore, utenti e finestra della proposta.",
+            "action": "info@108vision.it"
+          }
+        ]
+      }
+    ]
+  }
+}

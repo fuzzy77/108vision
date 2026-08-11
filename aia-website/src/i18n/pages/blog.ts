@@ -47,141 +47,109 @@ const blogContent: Record<Locale, BlogContent> = {
     meta: {
       title: 'Blog',
       description:
-        'Articoli su AI, architettura software, leadership tech e trasformazione digitale. Insight pratici da 15+ anni di esperienza.',
+        'Decisioni pratiche su direzione tecnica, architettura, delivery e software per PMI. AI quando serve, senza partire dall’hype.',
     },
     heading: 'Blog',
     subtitle:
-      'Insight pratici su AI, architettura, leadership e trasformazione digitale. Niente hype, solo esperienza condensata.',
+      'Decisioni tecniche spiegate in linguaggio business: team, software, architettura e delivery. AI quando crea valore, non per moda.',
     posts: [
       {
         slug: 'benvenuto',
-        title: 'Perche ogni PMI ha bisogno di un\'AI strategy nel 2025',
+        title: 'Partner Tecnico: prima capiamo se il problema è il team o il software',
         description:
-          'L\'AI non e piu un lusso per le grandi aziende. Ecco come costruire un piano che funziona per le PMI italiane.',
+          'Cosa significa Partner Tecnico per una PMI e perché la prima scelta è tra dare direzione a un team esistente o prendere in mano il software.',
         excerpt:
-          'L\'AI non e piu un lusso per le grandi aziende. Ma adottarla senza strategia e come comprare una Ferrari per andare a fare la spesa. Ecco come costruire un piano che funziona.',
-        date: '2025-01-15',
+          'Non sempre serve un altro fornitore. A volte il software team c’è già e manca direzione; altre volte serve qualcuno che costruisca e faccia evolvere il prodotto. Il punto di partenza cambia.',
+        date: '2026-08-11',
         author: 'Elios Scoglio | 108 Vision',
-        tags: ['AI', 'Strategia', 'PMI'],
+        tags: ['Partner Tecnico', 'PMI', 'Delivery'],
         readTime: '5 min',
         sections: [
           {
             type: 'h2',
-            text: 'Il contesto: l\'AI non aspetta',
+            text: 'Un partner tecnico non è un fornitore con un nome diverso',
           },
           {
             type: 'p',
-            text: 'Nel 2025 l\'intelligenza artificiale non e piu una curiosita tecnologica. E uno strumento di produttivita che le aziende piu agili stanno gia usando per:',
+            text: 'Un’agenzia può eseguire specifiche. Un consulente può consegnare una diagnosi. Il Partner Tecnico serve quando l’azienda ha bisogno che qualcuno prenda ownership delle decisioni tecniche e dei deliverable concordati, restando responsabile anche dopo la prima consegna.',
+          },
+          {
+            type: 'p',
+            text: 'Ownership non significa presenza quotidiana o disponibilità senza limiti. Significa perimetro scritto, responsabilità riconoscibili, rischi nominati e momenti di lavoro concordati. Se serve una guida interna a tempo pieno, la risposta corretta può essere strutturare quell’assunzione.',
+          },
+          {
+            type: 'h2',
+            text: 'La prima domanda: hai già un team o ti serve il software?',
+          },
+          {
+            type: 'p',
+            text: 'Questa distinzione evita di vendere sviluppo a chi ha già sviluppatori e di proporre governance a chi ha bisogno di vedere un prodotto funzionante.',
+          },
+          {
+            type: 'h3',
+            text: 'Hai già un team: Direzione Tecnica',
+          },
+          {
+            type: 'p',
+            text: 'Il team sviluppa, ma le decisioni restano sospese, la qualità dipende dalle singole persone o nessuno traduce le priorità aziendali in una roadmap tecnica. In questo caso non serve sostituire chi scrive codice: serve dare direzione, rendere espliciti i trade-off e far crescere la capacità del team.',
           },
           {
             type: 'ul',
             items: [
-              { label: 'Ridurre i tempi', text: 'di risposta al cliente del 40-60%' },
-              { label: 'Automatizzare', text: 'task ripetitivi che consumano ore ogni settimana' },
-              { label: 'Migliorare', text: 'la qualita delle decisioni con dati analizzati in tempo reale' },
+              { label: 'Punto di partenza:', text: 'Tech Assessment.' },
+              { label: 'Output:', text: 'stato attuale, rischi, priorità e roadmap scritta.' },
+              { label: 'Poi:', text: 'guida strategica, lavoro operativo in slot definiti o costruzione del team, secondo il contesto.' },
             ],
           },
           {
-            type: 'p',
-            text: 'Ma c\'e un problema: la maggior parte delle PMI italiane non sa da dove iniziare.',
-          },
-          {
-            type: 'h2',
-            text: 'Il paradosso delle PMI',
-          },
-          {
-            type: 'p',
-            text: 'Le grandi aziende hanno team AI dedicati, budget milionari e accesso ai migliori talenti. Le PMI no. Ma sono proprio le PMI ad avere il maggior margine di miglioramento.',
-          },
-          {
-            type: 'p',
-            text: 'Un\'azienda da 20 persone che automatizza il 30% dei task amministrativi libera 2-3 FTE equivalenti. Senza assumere nessuno.',
-          },
-          {
-            type: 'h2',
-            text: 'I 3 errori che vedo piu spesso',
-          },
-          {
             type: 'h3',
-            text: '1. Partire dallo strumento, non dal problema',
+            text: 'Il software manca o non regge: Software in Mano',
           },
           {
             type: 'p',
-            text: '"Vogliamo usare ChatGPT" non e una strategia. La domanda giusta e: "Quale problema di business vogliamo risolvere, e l\'AI e lo strumento giusto per farlo?"',
-          },
-          {
-            type: 'h3',
-            text: '2. Investire troppo, troppo presto',
-          },
-          {
-            type: 'p',
-            text: 'Non serve un progetto da 100K per iniziare. Un pilot da 3-5K su un caso d\'uso specifico ti da dati reali in 4-6 settimane. Poi decidi se scalare.',
-          },
-          {
-            type: 'h3',
-            text: '3. Ignorare le persone',
-          },
-          {
-            type: 'p',
-            text: 'L\'AI migliore del mondo fallisce se il team non la adotta. Il change management non e un optional: e il 50% del successo.',
-          },
-          {
-            type: 'h2',
-            text: 'Come costruire una strategia AI per la tua PMI',
-          },
-          {
-            type: 'h3',
-            text: 'Step 1: Assessment (1 settimana)',
-          },
-          {
-            type: 'p',
-            text: 'Mappa i tuoi processi. Identifica dove il tempo viene sprecato in task ripetitivi, dove gli errori sono frequenti, dove le decisioni sono lente.',
-          },
-          {
-            type: 'h3',
-            text: 'Step 2: Prioritizzazione (2 giorni)',
-          },
-          {
-            type: 'p',
-            text: 'Non tutto si puo fare subito. Usa una matrice impatto/effort per scegliere il primo caso d\'uso. Deve essere:',
+            text: 'Il prodotto deve ancora nascere, quello esistente blocca il business oppure manca un interlocutore che lo tenga nel tempo. Qui prendiamo in mano il percorso completo: capire cosa serve, progettare, costruire, integrare, gestire e far evolvere.',
           },
           {
             type: 'ul',
             items: [
-              { label: '', text: 'Ad alto impatto (ore risparmiate o errori evitati)' },
-              { label: '', text: 'A basso rischio (non tocca processi critici)' },
-              { label: '', text: 'Misurabile (KPI chiari prima di iniziare)' },
+              { label: 'Punto di partenza:', text: 'Discovery.' },
+              { label: 'Output:', text: 'requisiti prioritizzati, perimetro, architettura ad alto livello e base concreta per stimare il lavoro.' },
+              { label: 'Poi:', text: 'progetto e continuità evolutiva, con responsabilità e capacità dichiarate.' },
             ],
           },
           {
-            type: 'h3',
-            text: 'Step 3: Pilot (4-6 settimane)',
+            type: 'h2',
+            text: 'Due percorsi, la stessa competenza',
           },
           {
             type: 'p',
-            text: 'Implementa il primo caso d\'uso. Misura. Impara. Il pilot non deve essere perfetto: deve generare dati per decidere il passo successivo.',
-          },
-          {
-            type: 'h3',
-            text: 'Step 4: Scale o Kill (1 giorno)',
-          },
-          {
-            type: 'p',
-            text: 'Se il pilot funziona, scala. Se non funziona, hai speso poco e imparato molto. In entrambi i casi, hai vinto.',
+            text: 'Architettura, integrazioni, delivery e comprensione del business sono le stesse. Cambia il problema da prendere in mano. Un’azienda può anche passare da Software in Mano a Direzione Tecnica quando costruisce un team interno: è un’evoluzione naturale, non un’offerta forzata.',
           },
           {
             type: 'h2',
-            text: 'Conclusione',
+            text: 'AI-native, non AI-first',
           },
           {
             type: 'p',
-            text: 'L\'AI strategy per le PMI non e complicata. E un processo disciplinato di sperimentazione con rischio controllato. Il peggior errore e non iniziare.',
+            text: 'Non partiamo chiedendo dove inserire l’AI. Partiamo dal problema, dai dati disponibili, dal rischio e dal risultato atteso. Se l’AI rende il prodotto o il team più efficace con un valore verificabile, la usiamo. Se aggiunge solo costo, fragilità o complessità, scegliamo altro.',
+          },
+          {
+            type: 'p',
+            text: 'Per questo l’AI non è un terzo percorso commerciale: è una competenza trasversale dentro Direzione Tecnica e Software in Mano.',
+          },
+          {
+            type: 'h2',
+            text: 'Il prossimo passo deve ridurre l’incertezza',
+          },
+          {
+            type: 'p',
+            text: 'La prima call serve a capire il contesto e scegliere il percorso corretto. Il risultato utile non è una promessa generica: è decidere se approfondire con un Tech Assessment, con una Discovery oppure fermarsi perché non c’è fit.',
           },
           {
             type: 'cta',
-            before: 'Se vuoi capire da dove partire nella tua azienda, ',
-            linkText: 'prenota una discovery call gratuita',
-            after: '. 30 minuti, nessun impegno.',
+            before: 'Hai già un team o ti serve il software? ',
+            linkText: 'Raccontaci la situazione',
+            after: ' e individuiamo il prossimo passo.',
           },
         ],
       },
@@ -191,141 +159,109 @@ const blogContent: Record<Locale, BlogContent> = {
     meta: {
       title: 'Blog',
       description:
-        'Articles on AI, software architecture, tech leadership, and digital transformation. Practical insights from 15+ years of experience.',
+        'Practical decisions on technical direction, architecture, delivery, and software for SMEs. AI where it helps, never as the starting hype.',
     },
     heading: 'Blog',
     subtitle:
-      'Practical insights on AI, architecture, leadership, and digital transformation. No hype — just distilled experience.',
+      'Technical decisions in business language: teams, software, architecture, and delivery. AI where it creates value, not because it is fashionable.',
     posts: [
       {
         slug: 'benvenuto',
-        title: 'Why every SME needs an AI strategy in 2025',
+        title: 'Technical Partner: first determine whether the problem is the team or the software',
         description:
-          'AI is no longer a luxury for large enterprises. Here is how to build a plan that works for Italian SMEs.',
+          'What a Technical Partner means for an SME, and why the first choice is between directing an existing team and taking ownership of the software.',
         excerpt:
-          'AI is no longer a luxury for large companies. But adopting it without a strategy is like buying a Ferrari to go grocery shopping. Here is how to build a plan that works.',
-        date: '2025-01-15',
+          'You do not always need another supplier. Sometimes the software team already exists and lacks direction; sometimes you need someone to build and evolve the product. The starting point changes.',
+        date: '2026-08-11',
         author: 'Elios Scoglio | 108 Vision',
-        tags: ['AI', 'Strategy', 'SME'],
+        tags: ['Technical Partner', 'SME', 'Delivery'],
         readTime: '5 min',
         sections: [
           {
             type: 'h2',
-            text: 'The context: AI will not wait',
+            text: 'A Technical Partner is not a supplier with a different name',
           },
           {
             type: 'p',
-            text: 'In 2025, artificial intelligence is no longer a technological curiosity. It is a productivity tool that the most agile companies are already using to:',
+            text: 'An agency can execute specifications. A consultant can deliver a diagnosis. A Technical Partner is needed when the company wants someone to take ownership of agreed technical decisions and deliverables, remaining accountable beyond the first delivery.',
+          },
+          {
+            type: 'p',
+            text: 'Ownership does not mean daily presence or unlimited availability. It means a written scope, identifiable responsibilities, named risks, and agreed working sessions. If you need a full-time internal leader, the right answer may be to structure that hire.',
+          },
+          {
+            type: 'h2',
+            text: 'The first question: do you already have a team, or do you need the software?',
+          },
+          {
+            type: 'p',
+            text: 'This distinction prevents selling development to a company that already has developers, or offering governance to one that needs a working product.',
+          },
+          {
+            type: 'h3',
+            text: 'You already have a team: Technical Direction',
+          },
+          {
+            type: 'p',
+            text: 'The team develops, but decisions remain unresolved, quality depends on individuals, or nobody translates business priorities into a technical roadmap. The answer is not to replace the people writing code: it is to provide direction, make trade-offs explicit, and strengthen the team’s capability.',
           },
           {
             type: 'ul',
             items: [
-              { label: 'Reduce response times', text: 'to customers by 40-60%' },
-              { label: 'Automate', text: 'repetitive tasks that consume hours every week' },
-              { label: 'Improve', text: 'decision quality with data analysed in real time' },
+              { label: 'Starting point:', text: 'Tech Assessment.' },
+              { label: 'Output:', text: 'current state, risks, priorities, and a written roadmap.' },
+              { label: 'Then:', text: 'strategic direction, operational work in defined slots, or team building, depending on context.' },
             ],
           },
           {
-            type: 'p',
-            text: 'But there is a problem: most Italian SMEs do not know where to start.',
-          },
-          {
-            type: 'h2',
-            text: 'The SME paradox',
-          },
-          {
-            type: 'p',
-            text: 'Large companies have dedicated AI teams, million-euro budgets, and access to top talent. SMEs do not. But SMEs are exactly where the greatest room for improvement lies.',
-          },
-          {
-            type: 'p',
-            text: 'A 20-person company that automates 30% of administrative tasks frees up 2-3 FTE equivalents. Without hiring anyone.',
-          },
-          {
-            type: 'h2',
-            text: 'The 3 mistakes I see most often',
-          },
-          {
             type: 'h3',
-            text: '1. Start with the tool, not the problem',
+            text: 'The software is missing or no longer holds up: Software in Hand',
           },
           {
             type: 'p',
-            text: '"We want to use ChatGPT" is not a strategy. The right question is: "Which business problem do we want to solve, and is AI the right tool to do it?"',
-          },
-          {
-            type: 'h3',
-            text: '2. Invest too much, too soon',
-          },
-          {
-            type: 'p',
-            text: 'You do not need a 100K project to get started. A 3-5K pilot on a specific use case gives you real data in 4-6 weeks. Then you decide whether to scale.',
-          },
-          {
-            type: 'h3',
-            text: '3. Ignore the people',
-          },
-          {
-            type: 'p',
-            text: 'The best AI in the world fails if the team does not adopt it. Change management is not optional: it is 50% of success.',
-          },
-          {
-            type: 'h2',
-            text: 'How to build an AI strategy for your SME',
-          },
-          {
-            type: 'h3',
-            text: 'Step 1: Assessment (1 week)',
-          },
-          {
-            type: 'p',
-            text: 'Map your processes. Identify where time is wasted on repetitive tasks, where errors are frequent, where decisions are slow.',
-          },
-          {
-            type: 'h3',
-            text: 'Step 2: Prioritisation (2 days)',
-          },
-          {
-            type: 'p',
-            text: 'You cannot do everything at once. Use an impact/effort matrix to choose the first use case. It must be:',
+            text: 'The product has yet to be built, the existing one blocks the business, or nobody remains accountable for it over time. Here we take ownership of the full path: understand what is needed, design, build, integrate, operate, and evolve it.',
           },
           {
             type: 'ul',
             items: [
-              { label: '', text: 'High impact (hours saved or errors avoided)' },
-              { label: '', text: 'Low risk (does not touch critical processes)' },
-              { label: '', text: 'Measurable (clear KPIs before you start)' },
+              { label: 'Starting point:', text: 'Discovery.' },
+              { label: 'Output:', text: 'prioritised requirements, scope, high-level architecture, and a concrete basis for estimating the work.' },
+              { label: 'Then:', text: 'project delivery and continuous evolution, with declared responsibilities and capacity.' },
             ],
           },
           {
-            type: 'h3',
-            text: 'Step 3: Pilot (4-6 weeks)',
+            type: 'h2',
+            text: 'Two paths, the same expertise',
           },
           {
             type: 'p',
-            text: 'Implement the first use case. Measure. Learn. The pilot does not need to be perfect: it needs to generate data for the next step.',
-          },
-          {
-            type: 'h3',
-            text: 'Step 4: Scale or kill (1 day)',
-          },
-          {
-            type: 'p',
-            text: 'If the pilot works, scale. If it does not, you spent little and learned a lot. Either way, you win.',
+            text: 'Architecture, integrations, delivery, and business understanding are shared. What changes is the problem we take ownership of. A company can also move from Software in Hand to Technical Direction as it builds an internal team: that is a natural evolution, not a forced upsell.',
           },
           {
             type: 'h2',
-            text: 'Conclusion',
+            text: 'AI-native, not AI-first',
           },
           {
             type: 'p',
-            text: 'AI strategy for SMEs is not complicated. It is a disciplined process of experimentation with controlled risk. The worst mistake is not starting.',
+            text: 'We do not start by asking where AI can be inserted. We start with the problem, available data, risk, and expected outcome. If AI makes the product or team more effective with testable value, we use it. If it only adds cost, fragility, or complexity, we choose something else.',
+          },
+          {
+            type: 'p',
+            text: 'That is why AI is not a third commercial path: it is a cross-cutting capability within Technical Direction and Software in Hand.',
+          },
+          {
+            type: 'h2',
+            text: 'The next step should reduce uncertainty',
+          },
+          {
+            type: 'p',
+            text: 'The first call is used to understand the context and choose the right path. The useful outcome is not a generic promise: it is deciding whether to continue with a Tech Assessment, a Discovery, or to stop because there is no fit.',
           },
           {
             type: 'cta',
-            before: 'If you want to understand where to start in your company, ',
-            linkText: 'book a free discovery call',
-            after: '. 30 minutes, no commitment.',
+            before: 'Do you already have a team, or do you need the software? ',
+            linkText: 'Tell us about the situation',
+            after: ' and we will identify the next step.',
           },
         ],
       },

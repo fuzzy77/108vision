@@ -23,7 +23,7 @@ export interface ChiSiamoContent {
   };
   skills: { heading: string; groups: SkillGroup[] };
   philosophy: { heading: string; items: PrincipleCard[] };
-  experience: { heading: string; items: ExperienceItem[] };
+  experience: { heading: string; intro: string; items: ExperienceItem[] };
   cta: { title: string; description: string; ctaText: string };
 }
 
@@ -32,68 +32,61 @@ const content: LocaleContent<ChiSiamoContent> = {
     meta: {
       title: 'Chi Siamo',
       description:
-        '108 Vision - Consulenza tecnologica fondata da Elios Scoglio. 15+ anni in architettura software, AI e trasformazione digitale per PMI italiane.',
+        '108 Vision è il partner tecnico per PMI fondato da Elios Scoglio: ownership, architettura, delivery e AI applicata solo quando serve.',
     },
     breadcrumb: 'Chi Siamo',
     hero: {
       founderLabel: 'Elios Scoglio, Fondatore',
-      title: '108 Vision',
-      subtitle: 'Fondata da Elios Scoglio — Software Architecture Manager | AI Consultant',
+      title: 'Rigore enterprise, applicato alla scala di una PMI',
+      subtitle: 'Elios Scoglio, fondatore di 108 Vision e Software & Architecture Manager',
       paragraphs: [
-        'Da oltre 15 anni progetto e costruisco sistemi software per enterprise e PMI. Il mio lavoro quotidiano è prendere decisioni architetturali difficili su sistemi che gestiscono milioni di transazioni: ticketing, e-commerce, sistemi di compliance fiscale.',
-        "Come Software & Architecture Manager per TicketOne/Eventim Italy gestisco l'evoluzione di una piattaforma che vende milioni di biglietti l'anno, con vincoli di scalabilità, sicurezza e compliance che non ammettono errori.",
-        "Parallelamente, supporto PMI e startup italiane nel loro percorso tecnologico: dall'adozione dell'AI alla modernizzazione dei sistemi legacy, dal team building tecnico alla trasformazione digitale. Con lo stesso rigore che applico ai sistemi enterprise.",
+        'Nel mio ruolo professionale in TicketOne/Eventim Italy lavoro su architettura e software in un contesto enterprise: sistemi complessi, continuità operativa, sicurezza, compliance e decisioni che devono restare comprensibili nel tempo. TicketOne/Eventim è la mia esperienza professionale attuale, non un cliente né un caso studio di 108 Vision.',
+        'Ho fondato 108 Vision per portare quel metodo nelle PMI italiane senza importare la complessità dell’enterprise: trade-off espliciti, responsabilità chiare e software che il team possa governare.',
+        '108 Vision prende ownership delle decisioni tecniche e dei deliverable concordati. Se hai già un team, gli diamo direzione. Se il software manca o non regge, lo progettiamo, costruiamo e facciamo evolvere.',
       ],
     },
     skills: {
-      heading: 'Competenze e specializzazioni',
+      heading: 'Quattro responsabilità, non un elenco di tecnologie',
       groups: [
         {
-          title: 'Architettura Software',
-          items: ['Microservizi, DDD, Event-Driven', '.NET, Java, Spring Boot', 'Cloud-Native, Kubernetes', 'API Design (REST, gRPC, GraphQL)'],
+          title: 'Ownership',
+          items: ['Decisioni e deliverable con un responsabile chiaro', 'Rischi e priorità messi per iscritto', 'Presenza concordata, senza promesse di disponibilità continua'],
         },
         {
-          title: 'AI & Machine Learning',
-          items: ['LLM Engineering & RAG', 'Multi-Agent Systems', 'AI Strategy & Adoption', 'MLOps & Production AI'],
+          title: 'Architettura e governance',
+          items: ['Trade-off comprensibili anche al business', 'Roadmap, decisioni architetturali e confini delle integrazioni', 'Sicurezza, costi e operatività considerati prima del rilascio'],
         },
         {
-          title: 'Leadership & Management',
-          items: ['Engineering Management', 'Team Topology & Structure', 'Technical Governance', 'Stakeholder Communication'],
+          title: 'Delivery',
+          items: ['Dal requisito al software in produzione', 'Qualità verificabile e feedback rapido', 'Consegna, gestione ed evoluzione con continuità'],
         },
         {
-          title: 'DevOps & SRE',
-          items: ['CI/CD Pipeline Design', 'OpenTelemetry, Prometheus', 'Resilience Engineering', 'Infrastructure as Code'],
-        },
-        {
-          title: 'Domain Expertise',
-          items: ['Ticketing & Live Entertainment', 'E-Commerce & Payments', 'Compliance Fiscale (SIAE)', 'Pubblica Amministrazione'],
-        },
-        {
-          title: 'Metodologie',
-          items: ['Agile (Scrum, Kanban, pragmatic)', 'SOLID, Clean Architecture', 'TDD, BDD', 'ADR, Design Docs'],
+          title: 'AI-native, non AI-first',
+          items: ['Partiamo dal problema, non dal modello', 'Usiamo l’AI solo con valore e rischi verificabili', 'Privacy, costi, qualità e fallback fanno parte del progetto'],
         },
       ],
     },
     philosophy: {
-      heading: 'Il mio approccio',
+      heading: 'Come lavoriamo',
       items: [
-        { title: 'Pragmatismo over dogma', text: 'La tecnologia è un mezzo, non un fine. La soluzione migliore è quella che il team riesce a mantenere e che il business riesce a sostenere.' },
-        { title: 'Evidence-based decisions', text: 'Niente decisioni "a pelle". Dati, metriche, esperimenti. Se non possiamo misurarlo, dobbiamo almeno documentare l\'ipotesi.' },
-        { title: 'Autonomia come obiettivo', text: 'Il mio lavoro è rendermi non indispensabile. Trasferisco conoscenza, costruisco processi, faccio crescere le persone.' },
-        { title: 'Trasparenza radicale', text: 'Dico quello che penso, anche quando non è comodo. Trade-off espliciti, rischi nominati, incertezze dichiarate.' },
+        { title: 'Il problema prima della soluzione', text: 'Prima di proporre software o AI, verifichiamo cosa blocca davvero l’azienda e quale risultato rendere osservabile.' },
+        { title: 'Decisioni che restano', text: 'Roadmap, rischi e scelte architetturali diventano deliverable scritti, non conoscenza lasciata in una call.' },
+        { title: 'Autonomia, non dipendenza', text: 'Trasferiamo contesto e metodo al team. Restare partner non significa diventare un collo di bottiglia.' },
+        { title: 'Perimetro onesto', text: 'Responsabilità e momenti di presenza sono concordati. Se serve una figura interna a tempo pieno, lo diciamo prima di iniziare.' },
       ],
     },
     experience: {
-      heading: 'Esperienza',
+      heading: 'Da dove nasce il metodo',
+      intro: 'L’esperienza di Elios dà origine al metodo; gli impegni verso il cliente sono quelli assunti da 108 Vision. I due contesti restano distinti.',
       items: [
-        { period: '2020 - Presente', title: 'Software & Architecture Manager — TicketOne/Eventim Italy', description: 'Governance architetturale piattaforma ticketing (93 componenti). Modernizzazione legacy, AI adoption, team leadership.' },
-        { period: '2015 - 2020', title: 'Senior Software Architect — Enterprise', description: 'Architettura microservizi, cloud migration, DDD. Sistemi ad alta disponibilità e compliance.' },
-        { period: '2010 - 2015', title: 'Full-Stack Developer & Tech Lead', description: 'Sviluppo applicazioni web enterprise. Primi ruoli di leadership tecnica e mentoring.' },
+        { period: 'Ruolo professionale attuale', title: 'Software & Architecture Manager — TicketOne/Eventim Italy', description: 'Architettura, governance e leadership software in un contesto enterprise regolato. È esperienza personale di Elios, non un incarico cliente di 108 Vision.' },
+        { period: 'Percorso professionale', title: 'Architettura, sviluppo e leadership tecnica', description: 'Esperienza costruita tra progettazione di sistemi, delivery, modernizzazione e crescita dei team, con responsabilità progressivamente più ampie.' },
+        { period: '108 Vision', title: 'Partner tecnico per PMI italiane', description: 'Lo stesso rigore decisionale viene adattato a budget, team e vincoli delle PMI, scegliendo solo la complessità che serve.' },
       ],
     },
     cta: {
-      title: 'Parliamo del tuo progetto',
-      description: '30 minuti per capire come posso aiutarti. Nessun impegno, nessun pitch aggressivo.',
+      title: 'Ti manca direzione o ti manca il software?',
+      description: 'Partiamo da questa domanda e definiamo il prossimo passo: Tech Assessment oppure Discovery.',
       ctaText: 'Prenota una call',
     },
   },
@@ -101,50 +94,49 @@ const content: LocaleContent<ChiSiamoContent> = {
     meta: {
       title: 'About Us',
       description:
-        '108 Vision - Technology consulting founded by Elios Scoglio. 15+ years in software architecture, AI, and digital transformation for Italian SMEs.',
+        '108 Vision is the technical partner for SMEs founded by Elios Scoglio: ownership, architecture, delivery, and AI only where it adds value.',
     },
     breadcrumb: 'About Us',
     hero: {
       founderLabel: 'Elios Scoglio, Founder',
-      title: '108 Vision',
-      subtitle: 'Founded by Elios Scoglio — Software Architecture Manager | AI Consultant',
+      title: 'Enterprise rigour, applied at SME scale',
+      subtitle: 'Elios Scoglio, founder of 108 Vision and Software & Architecture Manager',
       paragraphs: [
-        'For over 15 years, I have designed and built software systems for enterprises and SMEs. My daily work involves making difficult architectural decisions on systems that manage millions of transactions: ticketing, e-commerce, fiscal compliance systems.',
-        'As Software & Architecture Manager for TicketOne/Eventim Italy, I oversee the evolution of a platform that sells millions of tickets annually, with scalability, security, and compliance constraints that leave no room for error.',
-        'In parallel, I support Italian SMEs and startups in their technological journey: from AI adoption to legacy modernization, from technical team building to digital transformation — with the same rigor I apply to enterprise systems.',
+        'In my professional role at TicketOne/Eventim Italy, I work on architecture and software in an enterprise environment: complex systems, operational continuity, security, compliance, and decisions that must remain understandable over time. TicketOne/Eventim is my current professional experience, not a 108 Vision client or case study.',
+        'I founded 108 Vision to bring that method to Italian SMEs without importing enterprise complexity: explicit trade-offs, clear accountability, and software the team can govern.',
+        '108 Vision takes ownership of agreed technical decisions and deliverables. If you already have a team, we give it direction. If the software is missing or no longer holds up, we design, build, and evolve it.',
       ],
     },
     skills: {
-      heading: 'Skills and specializations',
+      heading: 'Four responsibilities, not a technology catalogue',
       groups: [
-        { title: 'Software Architecture', items: ['Microservices, DDD, Event-Driven', '.NET, Java, Spring Boot', 'Cloud-Native, Kubernetes', 'API Design (REST, gRPC, GraphQL)'] },
-        { title: 'AI & Machine Learning', items: ['LLM Engineering & RAG', 'Multi-Agent Systems', 'AI Strategy & Adoption', 'MLOps & Production AI'] },
-        { title: 'Leadership & Management', items: ['Engineering Management', 'Team Topology & Structure', 'Technical Governance', 'Stakeholder Communication'] },
-        { title: 'DevOps & SRE', items: ['CI/CD Pipeline Design', 'OpenTelemetry, Prometheus', 'Resilience Engineering', 'Infrastructure as Code'] },
-        { title: 'Domain Expertise', items: ['Ticketing & Live Entertainment', 'E-Commerce & Payments', 'Fiscal Compliance (SIAE)', 'Public Administration'] },
-        { title: 'Methodologies', items: ['Agile (Scrum, Kanban, pragmatic)', 'SOLID, Clean Architecture', 'TDD, BDD', 'ADR, Design Docs'] },
+        { title: 'Ownership', items: ['A clear owner for decisions and deliverables', 'Written risks and priorities', 'Agreed availability, without promises of constant presence'] },
+        { title: 'Architecture and governance', items: ['Trade-offs the business can understand', 'Roadmaps, architecture decisions, and integration boundaries', 'Security, cost, and operations considered before release'] },
+        { title: 'Delivery', items: ['From requirement to production software', 'Verifiable quality and fast feedback', 'Delivery, operation, and continuous evolution'] },
+        { title: 'AI-native, not AI-first', items: ['We start with the problem, not the model', 'We use AI only when value and risks can be tested', 'Privacy, cost, quality, and fallbacks are part of the design'] },
       ],
     },
     philosophy: {
-      heading: 'My approach',
+      heading: 'How we work',
       items: [
-        { title: 'Pragmatism over dogma', text: 'Technology is a means, not an end. The best solution is the one the team can maintain and the business can sustain.' },
-        { title: 'Evidence-based decisions', text: 'No gut-feeling decisions. Data, metrics, experiments. If we cannot measure it, we must at least document the hypothesis.' },
-        { title: 'Autonomy as a goal', text: 'My job is to make myself redundant. I transfer knowledge, build processes, and help people grow.' },
-        { title: 'Radical transparency', text: 'I say what I think, even when it is uncomfortable. Explicit trade-offs, named risks, declared uncertainties.' },
+        { title: 'The problem before the solution', text: 'Before proposing software or AI, we verify what is actually blocking the company and which outcome should become observable.' },
+        { title: 'Decisions that last', text: 'Roadmaps, risks, and architecture choices become written deliverables, not knowledge left behind in a call.' },
+        { title: 'Autonomy, not dependency', text: 'We transfer context and method to the team. Remaining a partner does not mean becoming a bottleneck.' },
+        { title: 'An honest scope', text: 'Responsibilities and working sessions are agreed upfront. If you need a full-time internal leader, we say so before starting.' },
       ],
     },
     experience: {
-      heading: 'Experience',
+      heading: 'Where the method comes from',
+      intro: "Elios's experience shapes the method; client commitments are made by 108 Vision. The two contexts remain separate.",
       items: [
-        { period: '2020 - Present', title: 'Software & Architecture Manager — TicketOne/Eventim Italy', description: 'Architectural governance of the ticketing platform (93 components). Legacy modernization, AI adoption, team leadership.' },
-        { period: '2015 - 2020', title: 'Senior Software Architect — Enterprise', description: 'Microservices architecture, cloud migration, DDD. Systems with high availability and compliance.' },
-        { period: '2010 - 2015', title: 'Full-Stack Developer & Tech Lead', description: 'Development of enterprise web applications. First roles in technical leadership and mentoring.' },
+        { period: 'Current professional role', title: 'Software & Architecture Manager — TicketOne/Eventim Italy', description: "Architecture, governance, and software leadership in a regulated enterprise environment. This is Elios's professional experience, not a 108 Vision client engagement." },
+        { period: 'Professional background', title: 'Architecture, development, and technical leadership', description: 'Experience spanning system design, delivery, modernisation, and team growth, with progressively broader responsibility.' },
+        { period: '108 Vision', title: 'Technical partner for Italian SMEs', description: 'The same decision-making rigour is adapted to SME budgets, teams, and constraints, choosing only the complexity that is needed.' },
       ],
     },
     cta: {
-      title: "Let's talk about your project",
-      description: '30 minutes to understand how I can help you. No obligation, no aggressive pitch.',
+      title: 'Do you lack direction, or do you lack the software?',
+      description: 'We start with that question and define the right next step: a Tech Assessment or Discovery.',
       ctaText: 'Book a call',
     },
   },
