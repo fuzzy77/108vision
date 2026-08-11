@@ -68,6 +68,9 @@ LITELLM_MASTER_KEY=sk-108ai-master-xxx
 
 ```
 
+> Nota (unificazione doc): per l’avvio corretto della **piattaforma** (gateway/dashboard) con i **due file `.env`** e per le **migrazioni DB del gateway**,
+> usa come fonte di verità `dev-quickstart.md`.
+
 ### Step 3 — Avvia TUTTO con un comando
 
 ```bash

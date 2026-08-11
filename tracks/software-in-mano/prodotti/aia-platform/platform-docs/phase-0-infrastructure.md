@@ -76,26 +76,10 @@ This document describes the foundational infrastructure for the AIA Platform. Ph
 
 ### Quick Start — One Command
 
-```bash
-# 1. Clone and enter
-git clone <repo-url> aia-platform
-cd aia-platform
+Per evitare divergenze tra documenti (in particolare sui **due file `.env`** e sulle **migrazioni DB del gateway**),
+usa il **dev quickstart canonicale**:
 
-# 2. Create .env
-cp .env.example .env
-# Edit: DEEPSEEK_API_KEY=sk-... and LITELLM_MASTER_KEY=sk-aia-local-dev-123
-
-# 3. Start EVERYTHING
-make dev
-```
-
-This single command:
-- Runs pre-flight checks (Docker, Node, .env, API keys)
-- Starts Docker infrastructure (PostgreSQL, Redis, Qdrant, LiteLLM, Neo4j)
-- Waits for all services to be healthy
-- Installs pnpm dependencies (if needed)
-- Builds shared packages (@aia/shared, @aia/ai-client, @aia/auth, @aia/graph)
-- Starts Gateway API (port 3000), Dashboard (port 5173), Client (port 5174)
+`tracks/software-in-mano/prodotti/aia-platform/platform-docs/dev-quickstart.md`
 
 ### Other dev commands
 

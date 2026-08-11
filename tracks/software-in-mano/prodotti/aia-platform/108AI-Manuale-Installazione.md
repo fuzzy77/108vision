@@ -112,21 +112,22 @@ make setup
 Apri il file `.env` appena creato e inserisci le chiavi:
 
 ```bash
-# .env — MINIMO per funzionare in locale:
+# .env (root) — MINIMO per funzionare con docker compose
+# Nota: qui usi HOSTNAME container: postgres/redis/qdrant/litellm
 
-# Database
+# Database (container hostname: postgres)
 POSTGRES_USER=aia
 POSTGRES_PASSWORD=una_password_sicura_qui
 POSTGRES_DB=aia_platform
 DATABASE_URL=postgresql://aia:una_password_sicura_qui@postgres:5432/aia_platform
 
-# Redis
+# Redis (container hostname: redis)
 REDIS_URL=redis://redis:6379
 
-# Qdrant
+# Qdrant (container hostname: qdrant)
 QDRANT_URL=http://qdrant:6333
 
-# LiteLLM (chiave admin locale — cambiala in produzione)
+# LiteLLM (container hostname: litellm)
 LITELLM_MASTER_KEY=sk-108ai-dev-local
 LITELLM_URL=http://litellm:4000
 
@@ -137,10 +138,34 @@ DASHSCOPE_API_KEY=sk-la-tua-chiave-alibaba
 # Opzionali (per embedding fallback)
 OPENAI_API_KEY=sk-xxx
 
-# App
+# App (gateway si avvia sul host, ma questi valori possono comunque essere usati)
 NODE_ENV=development
 JWT_SECRET=un_segreto_lungo_almeno_32_caratteri_qui
 PORT=3000
+
+# --- Importante: ENCRYPTION_KEY (se vuoi cifrare credenziali a riposo) ---
+# ENCRYPTION_KEY=<64 hex chars>
+```
+
+E poi crea/aggiorna anche:
+
+```bash
+# apps/gateway/.env — configurazione gateway sul TUO host (localhost)
+
+DATABASE_URL=postgresql://aia:una_password_sicura_qui@localhost:5432/aia_platform
+REDIS_URL=redis://localhost:6379
+QDRANT_URL=http://localhost:6333
+LITELLM_URL=http://localhost:4000
+LITELLM_MASTER_KEY=sk-108ai-dev-local
+
+JWT_SECRET=un_segreto_lungo_almeno_32_caratteri_qui
+NODE_ENV=development
+PORT=3000
+
+NEO4J_URL=bolt://localhost:7687
+NEO4J_USER=neo4j
+NEO4J_PASSWORD=neo4j_dev_password
+APP_URL=http://localhost:5173
 ```
 
 ### 3.3 Avvia tutto
