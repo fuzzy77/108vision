@@ -84,12 +84,13 @@ Vision/
 ## Brand & Identità (`brand/`)
 
 - [riposizionamento-partner-tecnico.md](brand/riposizionamento-partner-tecnico.md) — **Fonte di verità** Partner Tecnico v2
+- [registro-claim-e-prove.md](brand/registro-claim-e-prove.md) — **Gate pubblicazione** per claim, metriche e prove
 - [scheda-call-partner-tecnico.md](brand/scheda-call-partner-tecnico.md) — Scheda call M1 (PMI)
 - [scheda-call-partner-consulenza.md](brand/scheda-call-partner-consulenza.md) — Scheda call partner consulenza (B/C)
 - [partner-onepager-BC.md](brand/partner-onepager-BC.md) — One-pager per società di consulenza
 - [partner-accordo-quadro-BC.md](brand/partner-accordo-quadro-BC.md) — Bozza accordo quadro B/C
 - [linkedin-draft-partner-tecnico.md](brand/linkedin-draft-partner-tecnico.md) — Draft LinkedIn (post-rehearsal)
-- [108-VISION-Brand-Copy-Sito.md](brand/108-VISION-Brand-Copy-Sito.md) — Legacy copy sito (fino a M2)
+- [108-VISION-Brand-Copy-Sito.md](brand/108-VISION-Brand-Copy-Sito.md) — **Superseded**: miniera di pain point, non fonte di claim
 - [brand-voice-strategy.md](brand/brand-voice-strategy.md) — Tone of voice
 - [design-system.md](brand/design-system.md) — Sistema visivo
 

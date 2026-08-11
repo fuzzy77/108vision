@@ -1,184 +1,345 @@
-# Proposta a TicketOne — da Head of Software a Direzione Tecnica
+# Proposta a TicketOne — specializzare il mio ruolo sulla Direzione Tecnica
 
-v1.0 | 2026-08-11 | **Uso:** memo per Emanuele (CTO) · Non pubblico  
-**Autore:** Elios Scoglio  
-**Stato:** bozza da personalizzare prima dell’invio / call
-
----
-
-## Come usare questo file
-
-1. **Pagina 1** = testo da mandare / leggere in call (tono diretto).
-2. **Allegato** = dettaglio operativo se chiede “ok, come lo facciamo”.
-3. Non allegare questo header / note interne al CTO.
-
-### Note interne (solo per te) — prima di mandare
-
-| Punto | Attenzione |
-|---|---|
-| **Rischio principale** | Se suona come “voglio fare meno e tenere lo stipendio”, fallisce. Ancorare a **valore tecnico** + **successore people** + **continuità delivery**. |
-| **Bonus fine anno** | Non legare la proposta al “se non mi date il bonus me ne vado”. Separare: (a) ridisegno ruolo in 90 gg, (b) conversazione bonus/compenso a calendario HR. |
-| **108 Vision** | Accennare onestà + 3 gg flessibili max. Non trasformare la call in pitch consulenza esterna. |
-| **“Non lo faccio più”** | Dire la verità sul burnout **senza** ultimatum. Framing: sostenibilità del contributo senior, non ricatto. |
-| **Red line** `[ignoto]` | Prima della call decidi: cosa accetteresti (solo A? anche C part-time?) e cosa no. |
+v2.0 | 2026-08-11 | Memo riservato per Emanuele (CTO)
+Autore: Elios Scoglio | Stato: bozza da validare con evidenze interne
 
 ---
 
-# PAGINA 1 — Pitch (memo a Emanuele)
+## Come usare il documento
 
-**A:** Emanuele — CTO  
-**Da:** Elios  
-**Oggetto:** Proposta di ridisegno del mio ruolo — direzione tecnica, meno people management
+- **Parte I**: memo da inviare o usare come traccia della conversazione.
+- **Parte II**: allegato operativo per chiudere perimetro, transizione e criteri.
+- Le note marcate `[da verificare]` non vanno presentate come risultati acquisiti.
+- Obiettivo prioritario: **retention in TicketOne** con un ruolo Staff/Principal
+  di Direzione Tecnica senza line management.
+
+---
+
+# PARTE I — Memo a Emanuele
+
+**Oggetto:** Una proposta per usare meglio la mia seniority in TicketOne
 
 Emanuele,
 
-ti scrivo chiaro, come tra noi.
+oggi il mio ruolo formale — **Head of Software Architecture & Development & AI
+Engineer** — tiene insieme due lavori diversi:
 
-Oggi il titolo è **Head of Software Architecture & Development & AI Engineer**. Di fatto gestisco tutto il perimetro (dev, QA, PO, PM): escalation people, people management, sprint, primo livello TSE, primo contatto sulla pianificazione. Stima reale: **~70% management**. Il pezzo per cui porto più valore — architettura, direzione tecnica, qualità del delivery, problemi duri — resta schiacciato.
+1. direzione tecnica, architettura, incident complessi, evoluzione dei flussi e
+   contributo operativo sui punti critici;
+2. people management, escalation, sprint, TSE di primo livello e primo contatto
+   per quasi ogni pianificazione.
 
-Non sto chiedendo di “fare meno”. Sto chiedendo di **fare la cosa giusta per TO e per me**: spostarmi su un ruolo di **Direzione Tecnica** (staff / ownership su decisioni e deliverable tecnici), eventualmente **più operativo** (codice, pair, review sui pezzi critici), e **togliere dal mio tavolo il people management**.
+Il secondo blocco assorbe circa il **70% del mio tempo** `[da misurare con un
+time log]`. Il risultato non è solo personale: TicketOne usa una risorsa senior
+e difficile da sostituire soprattutto come punto di smistamento organizzativo,
+mentre restano meno spazio e continuità per le decisioni tecniche che riducono
+rischio, accelerano il delivery e preparano la piattaforma al cambiamento.
 
-### Cosa propongo in sintesi
+## La proposta
 
-1. **Io** → direzione tecnica + contributo operativo sui temi ad alto leverage (architettura, ADR/governance, risk on-sale / flussi critici, modernizzazione, coaching Tech Lead, assessment hiring tecnico, e sì: anche codice dove serve).
-2. **Un Software / Engineering Manager** (interno o esterno) → people, rituali, primo contatto pianificazione/TSE di primo livello, escalation HR. Posso scrivere la JD, fare i colloqui tecnici e affiancare l’handover.
-3. **Transizione in ~90 giorni**, con piano scritto e criteri di go/no-go — non un “da lunedì cambio nome al badge”.
+Vorrei restare in TicketOne in un ruolo più netto di **Staff/Principal —
+Technical Direction & Architecture**, riportando a te e senza line management.
 
-### Perché adesso
+Il mio perimetro diventerebbe:
 
-- Interesse reale a costruire anche fuori (108 Vision / iniziative laterali): voglio essere **onesto** su tempo e focus, non fare due lavori fingendo.
-- C’è anche **burnout** sul pezzo people: se restiamo sullo status quo, il rischio concreto per TO non è “Elios è meno gentile in stand-up” — è che **il contributo senior che vi serve non lo reggo più in questa forma**.
+- direzione architetturale e decisioni cross-team;
+- ADR, standard e fitness function verificabili;
+- rischio tecnico su on-sale, incidenti e flussi SPORT↔SETA/SUITE;
+- modernizzazione e riduzione del debito che blocca il business;
+- review, pair e anche codice sui punti ad alto leverage;
+- coaching tecnico di Tech Lead e valutazione tecnica nell’hiring;
+- adozione AI dove produce un risultato misurabile, con governance e fallback.
 
-### Cosa NON sto chiedendo
+Un **Software/Engineering Manager** prenderebbe ownership di people management,
+rituali, TSE L1, primo livello di pianificazione e interfaccia operativa con
+PO/PM. Posso preparare la job description, partecipare alla selezione e
+affiancarlo nella transizione.
 
-- Non sto chiedendo di sparire dalle responsabilità tecniche.
-- Non sto chiedendo di scaricare il team senza successore.
-- Non sto chiedendo di chiudere il discorso bonus qui: il **bonus di fine anno** lo affrontiamo nel percorso compensazione/HR; questa mail è sul **ruolo e sul delivery**.
+## Perché conviene a TicketOne
 
-### Prossimo passo
+Il valore non è teorico. I casi da trasformare in evidenza prima della call sono:
 
-Una call dedicata (45–60 min). Esco con: opzione di modello (A/B/C sotto), profilo del manager da cercare/promuovere, e bozza piano 90 giorni. Se per te ha senso, partiamo; se no, preferisco saperlo presto e allinearci senza finta.
+- **velocità di sviluppo**: intervento, baseline e delta `[da documentare]`;
+- **incident management**: cambiamento introdotto e impatto su MTTR/escalation
+  `[da documentare]`;
+- **rilascio T-zone**: decisioni e rischio rimosso `[da documentare]`;
+- **gestione dei flussi**: collo di bottiglia risolto e risultato
+  `[da documentare]`.
+
+La tesi è semplice: dove ho potuto lavorare su sistema, architettura e delivery,
+ho creato leva. Lo status quo mi porta invece sul lavoro più delegabile e lascia
+scoperto quello meno sostituibile.
+
+## Come lo facciamo senza creare un vuoto
+
+Propongo una transizione di **90 giorni**, non un cambio titolo:
+
+1. chiudiamo RACI e ruolo target;
+2. individuiamo o cerchiamo il manager;
+3. trasferisco people/TSE/pianificazione con shadowing;
+4. misuriamo continuità operativa e maggiore capacità tecnica;
+5. al giorno 90 decidiamo su dati se il modello regge.
+
+Il bonus di fine anno resta una conversazione separata sul compenso. Questa è
+una proposta di operating model e retention.
+
+Se sei d’accordo sul problema, facciamo una sessione dedicata di 60 minuti e
+usciamo con RACI, profilo del manager e primi tre risultati tecnici attesi.
 
 Elios
 
 ---
 
-# ALLEGATO — Dettaglio operativo
+# PARTE II — Allegato operativo
 
-## A. As-Is vs To-Be (una tabella)
+## 1. Problema organizzativo da risolvere
 
-| Area | Oggi (As-Is) | Proposto (To-Be) |
-|---|---|---|
-| **Titolo / forma** | Head of Software Architecture & Development & AI Engineer | Direzione Tecnica / Staff·Principal Architecture & Development (nome da chiudere con te) |
-| **Report** | CTO | CTO (invariato, salvo diversa struttura) |
-| **Line management** | Sì — ~8 dev, 3 QA, 2 PO, 2 PM | **No** (o residuale “management light”) |
-| **Focus tempo** | ~70% management | Maggioranza su direzione tecnica + operativo |
-| **People / escalation HR** | Io | Software/Engineering Manager |
-| **Sprint / ceremonie ownership** | Io | Manager + TL (io solo dove serve standard tecnico) |
-| **TSE primo livello** | Io | Manager / processo; io su escalation **tecniche** serie |
-| **Primo contatto pianificazione** | Io | Manager + PO/PM; io su trade-off architetturali e capacity tecnica |
-| **Architettura, ADR, risk tecnici** | Parziale | **Core ownership** |
-| **Codice / pair / review critiche** | Raro | **Sì**, time-boxed sui pezzi ad alto impatto |
-| **Hiring** | End-to-end | Manager su processo people; io su **assessment tecnico** |
+### Sintomo
 
-## B. Tre modelli possibili (scegline uno in call)
+Un solo ruolo è contemporaneamente:
 
-Tutti e tre sono accettabili per me. Preferenza operativa: **A o B** se TO vuole continuità full-time; **C** se volete esplicitare flessibilità.
+- responsabile tecnico;
+- line manager di 8 dev, 3 QA, 2 PO e 2 PM `[organigramma da confermare]`;
+- escalation people;
+- owner di rituali e sprint;
+- TSE di primo livello;
+- primo contatto di pianificazione;
+- escalation sugli incidenti difficili.
 
-| Modello | Cosa significa | Pro per TO | Contro / attenzione |
-|---|---|---|---|
-| **A — Stesso organigramma, senza line** | Resto in azienda; tolgo line management; titolo riallineato a direzione tecnica | Continuità, meno disruption | Serve EM/SW Manager operativo subito |
-| **B — Staff / IC senior esplicito** | Ruolo tipo Principal/Staff Arch + Technical Direction, zero people | Chiaro per il team (“non è più il capo HR”) | Va comunicato bene a PO/PM/dev |
-| **C — Contratto / flessibilità** | Full-time TO con **max 3 giorni flessibili** (o part-time strutturato) per iniziative esterne | Onestà + retention motivazione | Va scritto bene (giorni, disponibilità on-sale, conflitto di interesse) |
+### Rischio per TicketOne
 
-**Nota capacità esterna:** max **3 giorni flessibili** non significa “3 giorni sparisco sempre”: vanno pianificati, con priorità assoluta su incident/on-sale concordati.
-
-## C. Cosa resta “management light” (accettabile)
-
-- Mentoring tecnico e alzata di standard (review, pair, ADR).
-- Coaching dei Tech Lead (non performance HR).
-- Partecipazione a decisioni di hiring **tecniche**.
-- Ownership su qualità architetturale e risk tecnici di piattaforma.
-
-## D. Cosa esce dal mio tavolo (non negoziabile sul pezzo people)
-
-- Escalation people / people management (ferie, conflitti interpersonali, performance HR, “primo sportello umano”).
-- Ownership delle sprint ceremony come rituale di team.
-- Gestione TSE di **primo livello** (triage organizzativo).
-- Essere il **primo contatto** di default per ogni pianificazione.
-
-## E. Profilo del Software / Engineering Manager (da affiancarmi o, se preferite, in sostituzione sul pezzo people)
-
-**Missione:** far funzionare persone, ritmo, interfaccia PMO/TSE di primo livello — così la direzione tecnica può restare sul valore.
-
-**Deve saper fare:** line management del perimetro concordato; rituali; priorità operative con PO/PM; escalation people; reporting di avanzamento; proteggere il focus dei TL/dev.
-
-**Non deve sostituirmi su:** decisioni architetturali finali, ADR critici, trade-off strutturali SPORT↔SETA / compliance / on-sale risk (resta direzione tecnica + CTO).
-
-**Il mio contributo alla ricerca:** JD, griglia assessment, colloqui tecnici del candidato, handover 4–6 settimane, disponibilità a **affiancamento** o a **passaggio completo** del pezzo people — come preferite voi.
-
-## F. Piano 90 giorni (bozza)
-
-| Finestra | Deliverable |
+| Rischio | Effetto |
 |---|---|
-| **Giorni 0–15** | Allineamento CTO su modello A/B/C; RACI one-pager; apertura ricerca o mappa interna successore; comunicazione soft al team (“stiamo rafforzando il pezzo people”) |
-| **Giorni 16–45** | JD pubblicata / screening; io su assessment tecnico; parallelo: elenco ownership tecniche che prendo in carico in modo esplicito (ADR, review gate, risk list) |
-| **Giorni 46–75** | Onboarding manager; shadowing su people/TSE/pianificazione; io riduco progressivamente il “primo contatto” |
-| **Giorni 76–90** | Go/no-go: line management formalmente fuori dal mio ruolo; KPI qualitativi (tempo su direzione/operativo, latenza decisioni architetturali, salute incident) |
+| Seniority dispersa | Le decisioni strutturali competono con urgenze e coordinamento |
+| Collo di bottiglia | Pianificazione ed escalation convergono su una persona |
+| Debito non governato | La modernizzazione perde contro il lavoro quotidiano |
+| Successione fragile | Né people management né direzione tecnica hanno un secondo owner |
+| Retention | Il modello non è sostenibile per la persona nel ruolo |
 
-**Criterio di successo:** non “Elios è più felice”, ma **TO ha people continuity + direzione tecnica più presente sui pezzi che fanno male quando mancano**.
+### Decisione proposta
 
-## G. Valore già dimostrato (ancoraggio, non slide)
+Separare due responsabilità entrambe necessarie:
 
-Da usare a voce se serve concretezza — numeri da ricalibrare se vuoi essere più precisi in call:
+```mermaid
+flowchart LR
+    CTO[CTO]
+    TechnicalDirection["Staff / Principal<br/>Technical Direction"]
+    EngineeringManager["Software / Engineering Manager"]
+    TechSystem["Architettura, rischio, modernizzazione,<br/>incident complessi, codice critico"]
+    PeopleSystem["People, rituali, pianificazione L1,<br/>TSE L1, delivery coordination"]
 
-- Velocità di sviluppo aumentata in modo significativo (fino a ~**60%** nel perimetro in cui abbiamo intervenuto — `[verificare cifra esatta con Emanuele se la cita]`).
-- Gestione incident migliorata.
-- Rilascio **T-zone**.
-- Gestione/razionalizzazione **flussi**.
+    CTO --> TechnicalDirection
+    CTO --> EngineeringManager
+    TechnicalDirection --> TechSystem
+    EngineeringManager --> PeopleSystem
+    TechnicalDirection <-->|"RACI e sync settimanale"| EngineeringManager
+```
 
-Messaggio: il ROI di spostarmi sulla direzione tecnica non è teorico — è coerente con dove ho già creato leva.
+## 2. Modello target
 
-## H. Compenso / bonus (sezione separata — non mescolare al pitch emotivo)
+### Ruolo proposto per Elios
 
-- Questa proposta riguarda **ruolo e operating model**.
-- Il **bonus di fine anno** e l’eventuale adeguamento al nuovo perimetro li affrontiamo nel percorso compensazione con te / HR, a calendario.
-- Obiettivo: evitare che la discussione ruolo diventi una negoziazione salariale mascherata (o viceversa).
+**Titolo di lavoro:** Staff/Principal — Technical Direction & Architecture
+**Reporting:** CTO
+**Line management:** nessuno
+**Modalità:** full-time TicketOne; flessibilità eventuale trattata separatamente
 
-## I. Altre iniziative (accenno onesto)
+### Cinque responsabilità
 
-Sto costruendo anche fuori (**108 Vision** — partner tecnico / direzione tecnica e software per PMI, più iniziative correlate). Non è un secondo lavoro nascosto: è una direzione che mi motiva e che voglio rendere **compatibile** con TO tramite flessibilità limitata (modello C o accordo sui 3 gg), priorità chiare su TO quando serve, e zero ambiguità su conflitti di interesse.
+1. **Direzione:** roadmap tecnica rolling collegata ai rischi e alle priorità di
+   business.
+2. **Architettura:** ADR, boundary, integrazioni, resilienza e fitness function.
+3. **Delivery engineering:** testabilità, CI/CD, osservabilità e riduzione della
+   latenza dal cambiamento al rilascio.
+4. **Hot-path operativo:** review, pair, spike e codice quando l’intervento
+   diretto sblocca un rischio o trasferisce conoscenza.
+5. **Capacità tecnica del team:** mentoring dei Tech Lead, hiring assessment,
+   standard e adozione AI governata.
 
-Se per TO la compatibilità non c’è, preferisco saperlo in questa conversazione — non tra sei mesi.
+### Cosa non diventa
 
-## J. Script call 45–60 min (traccia)
+- un “architetto da slide” separato dal codice;
+- un developer assegnato stabilmente a uno sprint;
+- il PM ombra dei progetti;
+- un sostituto informale dell’Engineering Manager;
+- il punto di escalation per ogni problema di primo livello.
 
-1. Contesto onesto (70% management, burnout people, interesse esterno).  
-2. Proposta in una frase: *direzione tecnica + operativo; people a un manager; 90 gg.*  
-3. Mostrare tabella As-Is / To-Be.  
-4. Chiedere preferenza A / B / C.  
-5. Successore: interno vs ricerca; mio supporto JD + colloqui.  
-6. Cosa resta management light.  
-7. Bonus: “lo teniamo sul binario compensazione, non blocchiamo il ridisegno ruolo”.  
-8. Chiusura: next step scritto entro 1 settimana.
+## 3. RACI essenziale
 
-### Domande da fargli (così non monologhi)
+Legenda: **A** accountable, **R** responsible, **C** consulted, **I** informed.
 
-- Preferisci affiancarmi un EM o sostituire del tutto il pezzo people sul mio ruolo?
-- C’è già qualcuno interno credibile, o apriamo fuori?
-- Quanto ti preoccupa la flessibilità 3 gg vs quanto ti preoccupa perdermi sul pezzo tecnico?
-- Quale titolo comunica meglio al resto di Eventim/IT?
+| Attività | CTO | Technical Direction | Engineering Manager | TL / PO / PM |
+|---|---:|---:|---:|---:|
+| Strategia e priorità tecnologiche | A | R | C | C |
+| ADR e standard architetturali | C | A/R | C | R/C |
+| Modernizzazione SPORT↔SETA/SUITE | A | R | C | C |
+| Incidenti critici / problem management | I | A/R tecnico | R coordinamento | R |
+| People, performance, ferie, conflitti | I | I/C tecnico | A/R | C |
+| Sprint e rituali | I | C selettivo | A | R |
+| Pianificazione L1 | I | C sui trade-off | A/R | R |
+| TSE L1 | I | escalation tecnica | A/R | R |
+| Hiring | A | R assessment tecnico | R processo/people | C |
+| Coaching Tech Lead | I | A/R tecnico | R people | C |
+| Codice / spike critici | I | R selettivo | I | A/R delivery |
+
+## 4. Profilo Software / Engineering Manager
+
+### Missione
+
+Rendere prevedibile il sistema di delivery e sostenibile il sistema people,
+senza usare la Direzione Tecnica come sportello operativo universale.
+
+### Ownership
+
+- line management e performance cycle;
+- escalation people e conflitti;
+- cadenza dei rituali e health del delivery;
+- TSE e triage di primo livello;
+- pianificazione con PO/PM e gestione dipendenze;
+- reporting operativo e capacity;
+- crescita organizzativa dei Tech Lead.
+
+### Requisiti da validare nella ricerca
+
+- esperienza reale su team software multi-ruolo;
+- capacità di leggere metriche di flow senza usarle come target individuali;
+- competenza tecnica sufficiente per distinguere escalation e delega;
+- gestione incidenti e stakeholder;
+- leadership senza micro-management;
+- inglese e lavoro cross-country.
+
+### Mio contributo alla successione
+
+- job description e scorecard;
+- colloqui tecnici e scenario interview;
+- mappa stakeholder, rituali e responsabilità correnti;
+- shadowing e handover 4–6 settimane;
+- retro con CTO e nuovo manager a 30/60/90 giorni.
+
+## 5. Piano di transizione a 90 giorni
+
+| Finestra | People / organizzazione | Direzione tecnica | Gate |
+|---|---|---|---|
+| 0–15 | Conferma organigramma, RACI, sponsor HR | Baseline tempo e backlog decisioni | CTO approva modello e ricerca |
+| 16–30 | JD, shortlist interna/esterna, owner temporanei | Prime 3 decisioni/ADR prioritarie | Nessuna escalation senza owner |
+| 31–60 | Selezione e shadowing manager | Roadmap 90 gg, risk register, fitness function iniziali | Manager selezionato o fallback interno |
+| 61–75 | Trasferimento people, sprint, TSE e planning L1 | Review/codice su 1–2 hot path | <30% tempo Elios su people |
+| 76–90 | Manager accountable e comunicazione definitiva | Tech Update al CTO con outcome e rischi | Go/no-go sul modello target |
+
+### Rollback
+
+Se al giorno 60 non esiste un manager selezionato:
+
+1. nominare un interim con perimetro e durata;
+2. ridurre esplicitamente il numero di attività, non ricomprimerle sul vecchio
+   ruolo;
+3. rivedere la data del passaggio con decisione scritta del CTO.
+
+## 6. KPI della transizione
+
+I target numerici vanno fissati dopo 2 settimane di baseline.
+
+| KPI | Baseline | Target 90 gg | Fonte |
+|---|---|---|---|
+| Tempo Elios su people / coordinamento L1 | ~70% `[da misurare]` | <20–30% | Time log settimanale |
+| Decisioni architetturali senza owner | `[da raccogliere]` | 0 critiche | Decision backlog |
+| Tempo richiesta → decisione tecnica | `[da raccogliere]` | miglioramento concordato | ADR log |
+| Incidenti critici senza postmortem/owner | `[da raccogliere]` | 0 | Incident register |
+| Regressioni on-sale durante transizione | 0 atteso | 0 | Incident / on-sale report |
+| People escalation gestite dal nuovo manager | 0 | 100% del perimetro | Log manager/CTO |
+
+## 7. Evidence pack da preparare prima della call
+
+Per ogni risultato: **contesto → mio intervento → outcome → fonte**.
+
+| Caso | Domanda da chiudere | Fonte minima |
+|---|---|---|
+| Velocità sviluppo | Quale metrica? Da quando a quando? Su quale team? | Jira/flow report |
+| Incident management | È calato MTTR, numero P1 o latenza escalation? | Incident report |
+| T-zone | Quale rischio/tempo/costo è stato rimosso? | Release/decision log |
+| Flussi | Quale collo di bottiglia e quale delta? | Process map + KPI |
+| Architettura | Quali decisioni hanno evitato rework o incidenti? | ADR/design doc |
+| AI engineering | Quale attività migliorata senza rischio qualità/security? | Baseline + report |
+
+**Regola:** il `+60%` non entra nel memo o nella call finché questa tabella non
+ha una fonte difendibile.
+
+## 8. Opzioni di retention
+
+### A — Preferita: Staff/Principal interno
+
+Full-time TicketOne, nessuna line, Engineering Manager affiancato. È l’opzione
+che massimizza continuità e usa meglio la seniority.
+
+### B — Fallback: transizione progressiva
+
+Stesso obiettivo, ma people management trasferito per blocchi in 90 giorni a
+uno o più owner interni mentre si completa la ricerca.
+
+### C — Da discutere solo se necessario: flessibilità contrattuale
+
+Assetto con fino a 3 giorni flessibili per iniziative esterne, con:
+
+- calendario e capacità scritti;
+- blackout su on-sale e momenti critici concordati;
+- gestione esplicita dei conflitti di interesse;
+- SLA ed escalation realistici;
+- review trimestrale.
+
+Non è la proposta di apertura. È un’opzione di compatibilità se A/B non sono
+possibili.
+
+## 9. Sostenibilità, attività esterne e bonus
+
+### Sostenibilità
+
+Il people management continuativo è la componente che non voglio mantenere.
+Non è indisponibilità alla responsabilità: propongo responsabilità più nette e
+misurabili sul sistema tecnico. Il burnout è un segnale di design del ruolo, non
+la tesi economica della proposta.
+
+### 108 Vision e altre iniziative
+
+Esiste un interesse professionale esterno reale. La priorità della proposta è
+però restare e creare più valore in TicketOne. Compatibilità, tempi e conflitti
+di interesse si discutono solo dopo aver condiviso il modello target.
+
+### Bonus
+
+Bonus di fine anno ed eventuale adeguamento del ruolo seguono il processo
+compensation/HR. Non sono condizione implicita per discutere l’operating model.
+
+## 10. Agenda della conversazione con Emanuele
+
+1. Il problema per TicketOne: seniority dispersa e doppia ownership.
+2. Le evidenze: T-zone, incident, flussi, delivery.
+3. Il modello Staff/Principal + Engineering Manager.
+4. Cosa resta / cosa passa, usando il RACI.
+5. Transizione 90 giorni e fallback.
+6. KPI e decisione successiva.
+7. Solo alla fine: sostenibilità e compatibilità esterna.
+
+### Decisioni da ottenere
+
+- Confermiamo il problema?
+- A è il modello target o preferisci B?
+- Ricerca interna, esterna o entrambe?
+- Chi sponsorizza headcount e processo HR?
+- Quali tre outcome tecnici vuoi nei primi 90 giorni?
+- Quando separiamo formalmente ruolo e bonus?
 
 ---
 
-## Checklist pre-invio
+## Checklist personale pre-call
 
-- [ ] Verificare cifra “+60% velocità” (fonte / perimetro) prima di dirla come fatto chiuso  
-- [ ] Decidere red line personale (cosa rifiuti) — oggi `[ignoto]`  
-- [ ] Scegliere preferenza soft tra A/B/C (anche se dici “tutte ok”)  
-- [ ] Accorciare Pagina 1 se mandi mail (max ~350–400 parole)  
-- [ ] Non allegare le “Note interne”
+- [ ] Completare time log di due settimane.
+- [ ] Confermare organigramma e responsabilità attuali.
+- [ ] Preparare almeno tre schede evidence complete.
+- [ ] Definire la red line personale se il people management resta invariato.
+- [ ] Entrare con A come proposta, non con tre opzioni equivalenti.
+- [ ] Non usare metriche non verificabili.
+- [ ] Non aprire la conversazione con 108 Vision o con il bonus.
 
 ---
 
-*Documento personale — tracks/Curriculum — non è materiale commerciale 108 Vision.*
+*Documento personale e riservato. Non è materiale commerciale 108 Vision.*
