@@ -486,10 +486,15 @@ chat.post('/quick', async (c) => {
   const userId = c.get('userId') as string;
 
   const body = await c.req.json();
-  const input = z.object({ message: z.string().min(1).max(32000) }).parse(body);
+  const input = z
+    .object({
+      message: z.string().min(1).max(32000),
+      system: z.string().max(32000).optional(),
+    })
+    .parse(body);
 
   // Load default agent system prompt + principles
-  let systemPrompt = DEFAULT_SYSTEM_PROMPT;
+  let systemPrompt = input.system?.trim() || DEFAULT_SYSTEM_PROMPT;
   const principlesBlock = principlesService.compilePrinciplesPrompt({});
   if (principlesBlock) {
     systemPrompt = principlesBlock + '\n\n---\n\n' + systemPrompt;

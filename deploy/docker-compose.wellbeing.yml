@@ -1,0 +1,68 @@
+version: "3.9"
+
+services:
+  wellbeing-api:
+    build:
+      context: ./repos/wellbeing-app
+      dockerfile: WellBeingApi/Dockerfile
+    container_name: wellbeing-api
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__Postgres: "Host=postgres;Port=5432;Database=wellbeing;Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
+      UserDataStorage__Provider: Postgres
+      Jwt__Key: ${WB_JWT_KEY}
+      Jwt__Issuer: https://${WB_DOMAIN}
+      Jwt__Audience: WellBeingApp
+      Jwt__ExpirationMinutes: 1440
+      Google__ClientId: ${WB_GOOGLE_CLIENT_ID}
+      Google__ClientSecret: ${WB_GOOGLE_CLIENT_SECRET}
+      Facebook__AppId: ${WB_FACEBOOK_APP_ID}
+      Facebook__AppSecret: ${WB_FACEBOOK_APP_SECRET}
+      Admin__ApiKey: ${WB_ADMIN_APIKEY}
+      QwenDashScopeTextGenerator__ApiKey: ${WB_DASHSCOPE_API_KEY}
+      QwenDashScopeTextGenerator__Model: qwen3.6-flash
+      QwenDashScopeTextGenerator__Endpoint: https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions
+      QwenDashScopeTextGenerator__Stream: "true"
+      QwenDashScopeTextGenerator__Temperature: "0.7"
+      QwenDashScopeTextGenerator__MaxOutputTokens: "12192"
+      QwenDashScopeTextGenerator__SystemPromptPath: Assets/QwenCounselorSystemPrompt2.md
+      Qwen3Tts__ApiKey: ${WB_QWEN3TTS_API_KEY}
+      Qwen3Tts__EndpointBase: wss://dashscope-intl.aliyuncs.com/api-ws/v1/realtime
+      Qwen3Tts__Model: qwen3-tts-vd-realtime-2026-01-15
+      Qwen3Tts__Format: wav
+      Qwen3Tts__SampleRate: "24000"
+      Qwen3Tts__Rate: "0.9"
+      AiProviders__TextGenerator: qwen
+      AiProviders__SpeechSynthesis: qwen3tts
+      AudioEffects__Enabled: "true"
+      AudioEffects__Provider: NWaves
+      Catalog__Provider: Database
+      Catalog__SeedOnStartupIfEmpty: "true"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - internal
+    volumes:
+      - wb_media:/app/App_Data/package-media
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.wellbeing.rule=Host(`${WB_DOMAIN}`)"
+      - "traefik.http.routers.wellbeing.entrypoints=websecure"
+      - "traefik.http.routers.wellbeing.tls.certresolver=letsencrypt"
+      - "traefik.http.services.wellbeing.loadbalancer.server.port=8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health/live"]
+      interval: 30s
+      timeout: 10s
+      start_period: 45s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 384M
+
+volumes:
+  wb_media:

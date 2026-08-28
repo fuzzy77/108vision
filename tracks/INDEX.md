@@ -268,6 +268,7 @@ Materiali interni per il consulente. Non per il cliente.
 ## Infrastruttura (`infra/`)
 
 - [manuale-deploy-completo-hetzner.md](infra/manuale-deploy-completo-hetzner.md)
+- [VPS-Spiegato-Semplice.md](infra/VPS-Spiegato-Semplice.md)
 - [VPS-Coolify-Setup-Manual.md](infra/VPS-Coolify-Setup-Manual.md)
 - [Railway-WellBeingApi-Setup-Manual.md](infra/Railway-WellBeingApi-Setup-Manual.md)
 

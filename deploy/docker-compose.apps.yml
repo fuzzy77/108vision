@@ -1,0 +1,109 @@
+version: "3.9"
+
+services:
+  aia-gateway:
+    build:
+      context: ./repos/108vision/aia-platform
+      dockerfile: apps/gateway/Dockerfile
+    container_name: aia-gateway
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/aia_platform
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
+      QDRANT_URL: http://qdrant:6333
+      QDRANT_API_KEY: ${QDRANT_API_KEY}
+      NEO4J_URI: bolt://neo4j:7687
+      NEO4J_USER: neo4j
+      NEO4J_PASSWORD: ${NEO4J_PASSWORD}
+      LITELLM_URL: http://litellm:4000
+      LITELLM_API_KEY: ${LITELLM_MASTER_KEY}
+      BETTER_AUTH_SECRET: ${AIA_AUTH_SECRET}
+      BETTER_AUTH_URL: https://api.${AIA_DOMAIN}
+      JWT_SECRET: ${AIA_JWT_SECRET}
+      CORS_ALLOWED_ORIGINS: https://${AIA_DOMAIN},https://app.${AIA_DOMAIN},https://chat.${AIA_DOMAIN}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - internal
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.aia-gateway.rule=Host(`api.${AIA_DOMAIN}`)"
+      - "traefik.http.routers.aia-gateway.entrypoints=websecure"
+      - "traefik.http.routers.aia-gateway.tls.certresolver=letsencrypt"
+      - "traefik.http.services.aia-gateway.loadbalancer.server.port=3000"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3000/health/live').then(r=>r.ok?process.exit(0):process.exit(1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      start_period: 15s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 384M
+
+  aia-dashboard:
+    build:
+      context: ./repos/108vision/aia-platform/apps/dashboard
+      dockerfile: Dockerfile
+    container_name: aia-dashboard
+    restart: unless-stopped
+    depends_on:
+      - aia-gateway
+    networks:
+      - internal
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.aia-dashboard.rule=Host(`app.${AIA_DOMAIN}`)"
+      - "traefik.http.routers.aia-dashboard.entrypoints=websecure"
+      - "traefik.http.routers.aia-dashboard.tls.certresolver=letsencrypt"
+      - "traefik.http.services.aia-dashboard.loadbalancer.server.port=80"
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+
+  aia-client:
+    build:
+      context: ./repos/108vision/aia-platform/apps/client
+      dockerfile: Dockerfile
+    container_name: aia-client
+    restart: unless-stopped
+    depends_on:
+      - aia-gateway
+    networks:
+      - internal
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.aia-client.rule=Host(`chat.${AIA_DOMAIN}`)"
+      - "traefik.http.routers.aia-client.entrypoints=websecure"
+      - "traefik.http.routers.aia-client.tls.certresolver=letsencrypt"
+      - "traefik.http.services.aia-client.loadbalancer.server.port=80"
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+
+  aia-downloads:
+    image: nginx:1.27-alpine
+    container_name: aia-downloads
+    restart: unless-stopped
+    volumes:
+      - /opt/108vision/public/downloads:/usr/share/nginx/html:ro
+    networks:
+      - internal
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.aia-downloads.rule=Host(`dl.${AIA_DOMAIN}`)"
+      - "traefik.http.routers.aia-downloads.entrypoints=websecure"
+      - "traefik.http.routers.aia-downloads.tls.certresolver=letsencrypt"
+      - "traefik.http.services.aia-downloads.loadbalancer.server.port=80"
+    deploy:
+      resources:
+        limits:
+          memory: 32M

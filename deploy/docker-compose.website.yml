@@ -1,0 +1,35 @@
+version: "3.9"
+
+services:
+  website:
+    build:
+      context: ./repos/108vision/aia-website
+      dockerfile: Dockerfile
+    container_name: website-108vision
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      TINA_PUBLIC_CLIENT_ID: ${TINA_PUBLIC_CLIENT_ID}
+      TINA_TOKEN: ${TINA_TOKEN}
+    networks:
+      - internal
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.website.rule=Host(`${SITE_DOMAIN}`) || Host(`108vision.it`)"
+      - "traefik.http.routers.website.entrypoints=websecure"
+      - "traefik.http.routers.website.tls.certresolver=letsencrypt"
+      - "traefik.http.services.website.loadbalancer.server.port=4321"
+      # Redirect naked → www
+      - "traefik.http.middlewares.www-redirect.redirectregex.regex=^https://108vision\\.it/(.*)"
+      - "traefik.http.middlewares.www-redirect.redirectregex.replacement=https://www.108vision.it/${1}"
+      - "traefik.http.routers.website.middlewares=www-redirect"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:4321').then(r=>r.ok?process.exit(0):process.exit(1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      start_period: 20s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 256M

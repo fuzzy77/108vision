@@ -1,34 +1,37 @@
 # Manuale Deploy Completo — 108 Vision su Hetzner
+**Target:** setup completo di TUTTI i servizi 108 Vision su un singolo VPS Hetzner
 
-**Target:** setup completo di TUTTI i servizi 108 Vision su un singolo VPS Hetzner  
-**Server:** Hetzner CX32 — 4 vCPU, 8 GB RAM, 80 GB NVMe, Ubuntu 24.04  
-**Costo stimato:** ~8 EUR/mese  
-**Tempo stimato setup completo:** 3-4 ore  
-**Ultimo aggiornamento:** 2 luglio 2026
+**Server:** Hetzner CX32 — 4 vCPU, 8 GB RAM, 80 GB NVMe, Ubuntu 24.04
+
+**Costo stimato:** ~8 EUR/mese
+
+**Tempo stimato setup completo:** 3-4 ore
+
+**Ultimo aggiornamento:** 21 agosto 2026
+> **Vuoi prima capire cos'è un VPS e perché questo approccio non ti fa pagare GitHub?** Leggi [VPS-Spiegato-Semplice.md](VPS-Spiegato-Semplice.md) in questo stesso folder.
+> **Deploy automatizzato:** il kit in `deploy/` (repo `fuzzy77/108vision`) contiene bootstrap, compose e webhook con i path corretti del monorepo. Le sezioni §5–§7 restano come riferimento della procedura.
 
 ---
 
 ## Cosa viene deployato
-
 | # | Servizio | Stack | Dominio | Porta interna |
-|---|----------|-------|---------|---------------|
-| 1 | **108 AI Platform — Gateway** | Node.js + Hono | `api.108vision.it` | 3000 |
-| 2 | **108 AI Platform — Dashboard** | React + nginx | `app.108vision.it` | 80 |
-| 3 | **108 AI Platform — Client** | React + nginx | `chat.108vision.it` | 80 |
-| 4 | **108 AI Platform — Desktop Agent** | Bun compiled binary | `dl.108vision.it` | 80 |
-| 5 | **Sito Web 108 Vision** | Astro + TinaCMS | `www.108vision.it` | 4321 |
-| 6 | **WellBeing API** | .NET 9 + PostgreSQL | `wellbeing.108vision.it` | 8080 |
-| 7 | **Infra: PostgreSQL 16 + pgvector** | Shared, multi-DB | interno | 5432 |
-| 8 | **Infra: Redis 7** | Cache condivisa | interno | 6379 |
-| 9 | **Infra: Qdrant** | Vector DB | interno | 6333 |
-| 10 | **Infra: Neo4j 5 Community** | Graph KB | interno | 7687 |
-| 11 | **Infra: LiteLLM** | AI Gateway | `llm.108vision.it` | 4000 |
-| 12 | **Infra: Traefik v3** | Reverse proxy + SSL | — | 80/443 |
+| --- | --- | --- | --- | --- |
+| 1 | 108 AI Platform — Gateway | Node.js + Hono | api.108vision.it | 3000 |
+| 2 | 108 AI Platform — Dashboard | React + nginx | app.108vision.it | 80 |
+| 3 | 108 AI Platform — Client | React + nginx | chat.108vision.it | 80 |
+| 4 | 108 AI Platform — Desktop Agent | Bun compiled binary | dl.108vision.it | 80 |
+| 5 | Sito Web 108 Vision | Astro + TinaCMS | www.108vision.it | 4321 |
+| 6 | WellBeing API | .NET 9 + PostgreSQL | wellbeing.108vision.it | 8080 |
+| 7 | Infra: PostgreSQL 16 + pgvector | Shared, multi-DB | interno | 5432 |
+| 8 | Infra: Redis 7 | Cache condivisa | interno | 6379 |
+| 9 | Infra: Qdrant | Vector DB | interno | 6333 |
+| 10 | Infra: Neo4j 5 Community | Graph KB | interno | 7687 |
+| 11 | Infra: LiteLLM | AI Gateway | llm.108vision.it | 4000 |
+| 12 | Infra: Traefik v3 | Reverse proxy + SSL | — | 80/443 |
 
 ---
 
 ## Indice
-
 1. [Acquisto server e piano](#1-acquisto-server-e-piano)
 2. [Setup iniziale del server](#2-setup-iniziale-del-server)
 3. [Dominio e DNS](#3-dominio-e-dns)
@@ -49,13 +52,12 @@
 ---
 
 ## 0. Checklist completa — Cosa fare, dove, in che ordine
-
 Prima di iniziare, ecco la mappa di **dove** devi andare per ogni passo:
 
 | # | Cosa | Dove lo fai | Account necessario |
-|---|------|-------------|-------------------|
+| --- | --- | --- | --- |
 | 1 | Comprare il server | [console.hetzner.com](https://console.hetzner.com) | Account Hetzner (crea se non hai) |
-| 2 | Configurare DNS | [admin.aruba.it](https://admin.aruba.it) → Gestione DNS `108vision.it` | Account Aruba (gia hai) |
+| 2 | Configurare DNS | [admin.aruba.it](https://admin.aruba.it) → Gestione DNS 108vision.it | Account Aruba (gia hai) |
 | 3 | Setup server (SSH, firewall, Docker) | Terminale locale → SSH nel server | Nessuno |
 | 4 | Clone repos sul server | Terminale SSH nel server | GitHub deploy key |
 | 5 | Creare file .env con secrets | Terminale SSH nel server | API keys: DashScope, DeepSeek |
@@ -70,52 +72,49 @@ Prima di iniziare, ecco la mappa di **dove** devi andare per ogni passo:
 ## 1. Acquisto server Hetzner
 
 ### Dove: [console.hetzner.com](https://console.hetzner.com)
-
 1. Vai su console.hetzner.com → crea account se non lo hai
 2. **Add Server** → configura cosi:
 
 | Campo | Valore da selezionare |
-|---|---|
-| Location | **Falkenstein (fsn1)** |
-| Image | **Ubuntu 24.04** |
-| Type | Shared vCPU → **CX32** (4 vCPU, 8 GB RAM, 80 GB NVMe) |
+| --- | --- |
+| Location | Falkenstein (fsn1) |
+| Image | Ubuntu 24.04 |
+| Type | Shared vCPU → CX32 (4 vCPU, 8 GB RAM, 80 GB NVMe) |
 | Networking | IPv4 + IPv6 (default) |
 | SSH Key | Aggiungi la tua (vedi sotto) |
 | Backups | Si (opzionale, +20% = ~1.50 EUR/mese) |
-| Server name | `108vision-prod` |
+| Server name | 108vision-prod |
 
-3. Clicca **Create & Buy Now**
-4. Dopo ~30 secondi il server e pronto — segna l'**IP** dalla pagina
-
+1. Clicca **Create & Buy Now**
+2. Dopo ~30 secondi il server e pronto — segna l'**IP** dalla pagina
 **Costo:** ~7.50 EUR/mese.
 
 ### Creare la SSH key (sul tuo PC, prima di comprare il server)
-
 Apri **PowerShell** sul tuo PC Windows:
 
 ```powershell
-ssh-keygen -t ed25519 -C "108vision-hetzner" -f "$env:USERPROFILE\.ssh\108vision_hetzner"
-```
+ssh-keygen -t ed25519 -C "108vision-hetzner" -f ".ssh\108vision_hetzner"
 
+```
 Premi Enter due volte (nessuna passphrase per semplicita).
 
 Poi copia la chiave pubblica:
-```powershell
-Get-Content "$env:USERPROFILE\.ssh\108vision_hetzner.pub"
-```
 
+```powershell
+Get-Content ".ssh\108vision_hetzner.pub"
+
+```
 Incolla questo testo nel campo **SSH Keys** durante la creazione del server su Hetzner.
 
 ### Primo accesso (dal tuo PC)
 
 ```bash
 ssh -i ~/.ssh/108vision_hetzner root@<IP_SERVER>
-```
 
+```
 Se chiede "Are you sure you want to continue connecting?" → scrivi `yes`.
 
 ### Upgrade futuro
-
 Quando/se servira piu RAM (usage > 6.5 GB costante): Hetzner → Server → Rescale → CX42 (16 GB, ~14 EUR/mese). Zero downtime, 2 click.
 
 ---
@@ -127,6 +126,7 @@ Quando/se servira piu RAM (usage > 6.5 GB costante): Hetzner → Server → Resc
 ```bash
 apt update && apt upgrade -y
 apt install -y curl git wget htop unzip ufw fail2ban apache2-utils
+
 ```
 
 ### 2.2 Utente non-root
@@ -140,17 +140,20 @@ cp /root/.ssh/authorized_keys /home/deploy/.ssh/
 chown -R deploy:deploy /home/deploy/.ssh
 chmod 700 /home/deploy/.ssh
 chmod 600 /home/deploy/.ssh/authorized_keys
-```
 
+```
 Verifica login da un altro terminale:
+
 ```bash
 ssh -i ~/.ssh/108vision_hetzner deploy@<IP_SERVER>
-```
 
+```
 Poi disabilita root:
+
 ```bash
 sed -i 's/PermitRootLogin yes/PermitRootLogin no/' /etc/ssh/sshd_config
 systemctl restart sshd
+
 ```
 
 ### 2.3 Firewall UFW
@@ -162,6 +165,7 @@ ufw allow 22/tcp
 ufw allow 80/tcp
 ufw allow 443/tcp
 ufw enable
+
 ```
 
 ### 2.4 Swap (2-4 GB)
@@ -174,6 +178,7 @@ swapon /swapfile
 echo '/swapfile none swap sw 0 0' >> /etc/fstab
 echo 'vm.swappiness=10' >> /etc/sysctl.conf
 sysctl -p
+
 ```
 
 ### 2.5 Docker
@@ -182,17 +187,20 @@ sysctl -p
 curl -fsSL https://get.docker.com | sh
 usermod -aG docker deploy
 systemctl enable docker
-```
 
+```
 Logout e rilogin come `deploy`, poi verifica:
+
 ```bash
 docker compose version
+
 ```
 
 ### 2.6 Timezone
 
 ```bash
 timedatectl set-timezone Europe/Rome
+
 ```
 
 ---
@@ -200,7 +208,6 @@ timedatectl set-timezone Europe/Rome
 ## 3. Dominio e DNS
 
 ### Dove: [admin.aruba.it](https://admin.aruba.it)
-
 1. Login su admin.aruba.it
 2. Vai su **Hosting / Domini** → seleziona `108vision.it`
 3. Cerca **Gestione DNS** (o "DNS Avanzato")
@@ -208,26 +215,27 @@ timedatectl set-timezone Europe/Rome
 5. **Aggiungi** i seguenti record A (uno per uno):
 
 | Nome | Tipo | Valore (il tuo IP Hetzner) | Servizio |
-|---|---|---|---|
-| `@` | A | `<IP_SERVER>` | Redirect a www |
-| `www` | A | `<IP_SERVER>` | Sito web 108 Vision |
-| `api` | A | `<IP_SERVER>` | 108 AI Platform — Gateway |
-| `app` | A | `<IP_SERVER>` | 108 AI Platform — Dashboard |
-| `chat` | A | `<IP_SERVER>` | 108 AI Platform — Client |
-| `dl` | A | `<IP_SERVER>` | 108 AI Platform — Downloads |
-| `llm` | A | `<IP_SERVER>` | LiteLLM AI Gateway |
-| `wellbeing` | A | `<IP_SERVER>` | WellBeing API |
-| `traefik` | A | `<IP_SERVER>` | Dashboard Traefik (admin) |
+| --- | --- | --- | --- |
+| @ | A | <IP_SERVER> | Redirect a www |
+| www | A | <IP_SERVER> | Sito web 108 Vision |
+| api | A | <IP_SERVER> | 108 AI Platform — Gateway |
+| app | A | <IP_SERVER> | 108 AI Platform — Dashboard |
+| chat | A | <IP_SERVER> | 108 AI Platform — Client |
+| dl | A | <IP_SERVER> | 108 AI Platform — Downloads |
+| llm | A | <IP_SERVER> | LiteLLM AI Gateway |
+| wellbeing | A | <IP_SERVER> | WellBeing API |
+| traefik | A | <IP_SERVER> | Dashboard Traefik (admin) |
 
-> **Alternativa piu veloce:** un singolo record **wildcard** `*` di tipo A con valore `<IP_SERVER>` copre tutti i sottodomini con un solo record. Su Aruba: Nome = `*`, Tipo = A, Valore = IP.
+> **Alternativa piu veloce:** un singolo record **wildcard** *di tipo A con valore *`<IP_SERVER>`* copre tutti i sottodomini con un solo record. Su Aruba: Nome = *, Tipo = A, Valore = IP.
 
-6. Salva e attendi **15-60 minuti** per la propagazione (i .it possono richiedere fino a 24h nel caso peggiore)
-
+1. Salva e attendi **15-60 minuti** per la propagazione (i .it possono richiedere fino a 24h nel caso peggiore)
 **Verifica dal tuo PC** (dopo 15-30 min):
+
 ```bash
 nslookup api.108vision.it
 nslookup www.108vision.it
 nslookup wellbeing.108vision.it
+
 ```
 Tutti devono restituire l'IP del server Hetzner.
 
@@ -236,7 +244,6 @@ Tutti devono restituire l'IP del server Hetzner.
 ---
 
 ## 4. Infrastruttura Docker Compose
-
 Da questo punto lavora sempre come utente `deploy`.
 
 ### 4.1 Directory di deploy
@@ -245,6 +252,7 @@ Da questo punto lavora sempre come utente `deploy`.
 sudo mkdir -p /opt/108vision
 sudo chown deploy:deploy /opt/108vision
 cd /opt/108vision
+
 ```
 
 ### 4.2 File .env
@@ -299,6 +307,7 @@ TRAEFIK_DASHBOARD_AUTH=<GENERA: htpasswd -nb admin tuapassword | sed 's/\$/\$\$/
 EOF
 
 chmod 600 /opt/108vision/.env
+
 ```
 
 ### 4.3 docker-compose.yml — Infrastruttura
@@ -457,6 +466,7 @@ volumes:
   qdrant_data:
   neo4j_data:
 EOF
+
 ```
 
 ### 4.4 Script inizializzazione multi-database
@@ -475,6 +485,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 \c wellbeing
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 EOF
+
 ```
 
 ### 4.5 LiteLLM config
@@ -503,6 +514,7 @@ general_settings:
   master_key: os.environ/LITELLM_MASTER_KEY
   database_url: os.environ/DATABASE_URL
 EOF
+
 ```
 
 ---
@@ -623,6 +635,7 @@ services:
         limits:
           memory: 32M
 EOF
+
 ```
 
 ### 5.2 Clone repository AIA Platform
@@ -630,19 +643,20 @@ EOF
 ```bash
 mkdir -p /opt/108vision/repos
 cd /opt/108vision/repos
-git clone git@github.com:EliosScoglio/aia-platform.git
+git clone https://github.com/fuzzy77/108vision.git   # monorepo unico: contiene aia-platform/ e aia-website/
+
 ```
 
 ### 5.3 Directory per Desktop Agent downloads
 
 ```bash
 mkdir -p /opt/108vision/public/downloads
+
 ```
 
 ---
 
 ## 6. Deploy: Sito Web 108vision.it
-
 Il sito e attualmente su **Vercel** (free tier). Questa sezione copre sia il deploy su Hetzner che la procedura di migrazione da Vercel.
 
 ### 6.1 docker-compose.website.yml
@@ -672,7 +686,7 @@ services:
       - "traefik.http.services.website.loadbalancer.server.port=4321"
       # Redirect naked → www
       - "traefik.http.middlewares.www-redirect.redirectregex.regex=^https://108vision\\.it/(.*)"
-      - "traefik.http.middlewares.www-redirect.redirectregex.replacement=https://www.108vision.it/$${1}"
+      - "traefik.http.middlewares.www-redirect.redirectregex.replacement=https://www.108vision.it/${1}"
       - "traefik.http.routers.website.middlewares=www-redirect"
     healthcheck:
       test: ["CMD", "node", "-e", "fetch('http://localhost:4321').then(r=>r.ok?process.exit(0):process.exit(1)).catch(()=>process.exit(1))"]
@@ -685,10 +699,10 @@ services:
         limits:
           memory: 256M
 EOF
+
 ```
 
 ### 6.2 Dockerfile per Astro + TinaCMS
-
 Crea `repos/aia-website/Dockerfile`:
 
 ```dockerfile
@@ -709,13 +723,15 @@ ENV HOST=0.0.0.0
 ENV PORT=4321
 EXPOSE 4321
 CMD ["node", "./dist/server/entry.mjs"]
+
 ```
 
 ### 6.3 Clone repository
 
 ```bash
 cd /opt/108vision/repos
-git clone git@github.com:EliosScoglio/108vision.git aia-website
+# aia-website/ è dentro lo stesso monorepo 108vision clonato al §5.2 (non serve un secondo clone)
+
 ```
 
 ### 6.4 Avvio
@@ -723,22 +739,23 @@ git clone git@github.com:EliosScoglio/108vision.git aia-website
 ```bash
 cd /opt/108vision
 docker compose -f docker-compose.yml -f docker-compose.website.yml up -d --build website
-```
 
+```
 Verifica:
+
 ```bash
 curl -s -o /dev/null -w "%{http_code}" https://www.108vision.it
 # Atteso: 200
+
 ```
 
 ### 6.5 Migrazione da Vercel a Hetzner — Procedura step-by-step
-
 La migrazione deve essere fatta con **zero downtime** per il visitatore. La strategia e:
+
 1. Deployare il sito su Hetzner (senza cambiare DNS)
 2. Verificare che funzioni tramite IP diretto
 3. Switchare il DNS da Vercel a Hetzner
 4. Disattivare il progetto su Vercel
-
 **Step 1: Deploy su Hetzner (senza toccare DNS)**
 
 ```bash
@@ -748,8 +765,8 @@ docker compose -f docker-compose.yml -f docker-compose.website.yml up -d --build
 
 # Verifica che il container sia healthy
 docker ps --filter name=website-108vision
-```
 
+```
 **Step 2: Test tramite IP diretto e header Host**
 
 Siccome il DNS punta ancora a Vercel, testa con curl forzando l'Host header:
@@ -763,32 +780,31 @@ curl -H "Host: www.108vision.it" --resolve "www.108vision.it:443:<IP_SERVER>" \
 # Windows: C:\Windows\System32\drivers\etc\hosts
 # Mac/Linux: /etc/hosts
 # <IP_SERVER>  www.108vision.it  108vision.it
-```
 
+```
 Naviga il sito dal browser con la modifica hosts — verifica:
+
 - [ ] Homepage carica correttamente
 - [ ] Pagine interne funzionano (es. `/risorse`)
 - [ ] CSS/JS/immagini si caricano
 - [ ] Form lead magnet funziona (se chiama API esterne come Brevo)
 - [ ] PDF downloadabili
-
 **Step 3: Switch DNS (Aruba)**
 
 Quando il sito su Hetzner funziona perfettamente:
 
 1. Vai su Aruba → Gestione DNS → `108vision.it`
 2. **Elimina** i record attuali che puntano a Vercel:
-   - Elimina il record A `@` → `76.76.21.21`
-   - Elimina il record CNAME `www` → `cname.vercel-dns.com`
+- Elimina il record A `@` → `76.76.21.21`
+- Elimina il record CNAME `www` → `cname.vercel-dns.com`
 3. **Crea** i nuovi record che puntano a Hetzner:
 
 | Tipo | Host | Valore |
-|---|---|---|
-| A | `@` | `<IP_SERVER>` |
-| A | `www` | `<IP_SERVER>` |
+| --- | --- | --- |
+| A | @ | <IP_SERVER> |
+| A | www | <IP_SERVER> |
 
-4. Attendi propagazione DNS (15-60 minuti, max 24h per i .it)
-
+1. Attendi propagazione DNS (15-60 minuti, max 24h per i .it)
 **Step 4: Verifica post-migrazione**
 
 ```bash
@@ -804,32 +820,28 @@ curl -vI https://www.108vision.it 2>&1 | grep "issuer"
 # Verifica redirect naked → www
 curl -I http://108vision.it
 # Atteso: 301/308 → https://www.108vision.it
-```
 
+```
 **Step 5: Disattiva Vercel**
 
 1. Vai su Vercel → Project Settings → Domains
 2. Rimuovi `108vision.it` e `www.108vision.it` dai domini custom
 3. (Opzionale) Elimina il progetto su Vercel o lascialo come backup
-
 **Step 6: Rimuovi file hosts locale**
 
 Se hai modificato `/etc/hosts` o `C:\Windows\System32\drivers\etc\hosts` al punto 2, rimuovi la riga aggiunta.
 
 ### 6.6 Rollback a Vercel (se qualcosa va storto)
-
 Se dopo la migrazione qualcosa non funziona:
 
 1. Su Aruba → ripristina i record DNS di Vercel:
-   - A `@` → `76.76.21.21`
-   - CNAME `www` → `cname.vercel-dns.com`
+- A `@` → `76.76.21.21`
+- CNAME `www` → `cname.vercel-dns.com`
 2. Su Vercel → ri-aggiungi i domini custom al progetto
 3. Attendi propagazione (15-60 min)
-
 Il sito torna su Vercel. Debug il problema su Hetzner con calma.
 
 ### 6.7 Brevo (email marketing) — aggiornamento post-migrazione
-
 Brevo continua a funzionare senza modifiche — i record DNS per email (MX, SPF, DKIM, DMARC) restano invariati perche riguardano la ricezione/invio email, non l'hosting web.
 
 L'unica cosa da verificare: se il form del sito chiama un endpoint API serverless su Vercel (es. `/api/subscribe`), devi spostare quella logica nel container website o nel gateway AIA. Verifica in `aia-website/src/pages/api/` se ci sono route serverless.
@@ -840,13 +852,14 @@ L'unica cosa da verificare: se il form del sito chiama un endpoint API serverles
 
 ### 7.1 Architettura
 
-```
+```plaintext
 Client MAUI App (Android/iOS/Windows)
   → HTTPS → Traefik → WellBeing API (.NET 9, porta 8080)
                           ├── PostgreSQL (shared, DB "wellbeing")
                           ├── Qwen DashScope (AI text generation)
                           ├── Qwen3 TTS (AI speech synthesis via WebSocket)
                           └── App_Data/package-media (audio files, volume mount)
+
 ```
 
 ### 7.2 docker-compose.wellbeing.yml
@@ -922,17 +935,18 @@ services:
 volumes:
   wb_media:
 EOF
+
 ```
 
 ### 7.3 Clone repository WellBeing
 
 ```bash
 cd /opt/108vision/repos
-git clone git@github.com:EliosScoglio/WellBeingApp.git wellbeing-app
+git clone git@github.com:fuzzy77/WellBeingApp.git wellbeing-app
+
 ```
 
 ### 7.4 Caricare i file audio premium
-
 I file MP3 in `App_Data/package-media/` non vanno nell'immagine Docker (troppo grandi). Montali come volume:
 
 ```bash
@@ -945,11 +959,11 @@ scp -r -i ~/.ssh/108vision_hetzner \
 # Modifica il volume bind nel compose se preferisci:
 # volumes:
 #   - /opt/108vision/wellbeing-media:/app/App_Data/package-media:ro
+
 ```
 
 ### 7.5 Variabili ambiente specifiche da configurare
-
-Le voci di `Qwen3Tts__VoiceIds__*` sono molte. Puoi passarle come environment variables nel compose oppure montare un `appsettings.Production.json`:
+Le voci di `Qwen3Tts__VoiceIds__`* sono molte. Puoi passarle come environment variables nel compose oppure montare un *`appsettings.Production.json`*:*
 
 ```bash
 cat > /opt/108vision/repos/wellbeing-app/WellBeingApi/appsettings.Production.json << 'EOF'
@@ -992,57 +1006,60 @@ cat > /opt/108vision/repos/wellbeing-app/WellBeingApi/appsettings.Production.jso
   }
 }
 EOF
+
 ```
 
 ---
 
-## 8. Database condiviso — Multi-database setup
-
-Una sola istanza PostgreSQL serve tutti i servizi. Il file `init-databases.sql` (sezione 4.4) crea i database al primo avvio.
+## *8. Database condiviso — Multi-database setup*
+*Una sola istanza PostgreSQL serve tutti i servizi. Il file *`init-databases.sql`* (sezione 4.4) crea i database al primo avvio.*
 
 | Database | Utente | Usato da |
-|---|---|---|
-| `aia_platform` | `admin108` | 108 AI Gateway |
-| `litellm` | `admin108` | LiteLLM |
-| `wellbeing` | `admin108` | WellBeing API |
+| --- | --- | --- |
+| aia_platform | admin108 | 108 AI Gateway |
+| litellm | admin108 | LiteLLM |
+| wellbeing | admin108 | WellBeing API |
 
-> Per isolamento maggiore puoi creare utenti dedicati modificando `init-databases.sql`:
-> ```sql
+> *Per isolamento maggiore puoi creare utenti dedicati modificando *`init-databases.sql`*:*
+
+> 
+```sql
 > CREATE USER aia_user WITH PASSWORD '<pw>';
 > CREATE USER wb_user WITH PASSWORD '<pw>';
 > GRANT ALL ON DATABASE aia_platform TO aia_user;
 > GRANT ALL ON DATABASE wellbeing TO wb_user;
-> ```
+> 
+```
 
 ---
 
-## 9. SSL con Traefik e Let's Encrypt
+## *9. SSL con Traefik e Let's Encrypt*
+*Traefik gestisce SSL automaticamente per tutti i servizi via HTTP Challenge.*
 
-Traefik gestisce SSL automaticamente per tutti i servizi via HTTP Challenge.
+### *Prerequisiti*
+1. *Tutti i record DNS devono risolvere verso *`<IP_SERVER>`* PRIMA di avviare Traefik*
+2. *Le porte 80 e 443 devono essere aperte (UFW gia configurato)*
 
-### Prerequisiti
-
-1. Tutti i record DNS devono risolvere verso `<IP_SERVER>` PRIMA di avviare Traefik
-2. Le porte 80 e 443 devono essere aperte (UFW gia configurato)
-
-### Verifica
+### *Verifica*
 
 ```bash
 # Dopo 30-60 secondi dall'avvio
 curl -v https://api.108vision.it/health/live 2>&1 | grep "SSL certificate"
 curl -v https://${WB_DOMAIN}/health/live 2>&1 | grep "SSL certificate"
+
 ```
 
-### Rate Limit Let's Encrypt
-
-- Max 5 certificati per dominio registrato per 7 giorni
-- Usa staging durante i test: aggiungi `--certificatesresolvers.letsencrypt.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory` al command di traefik
+### *Rate Limit Let's Encrypt*
+- *Max 5 certificati per dominio registrato per 7 giorni*
+- *Usa staging durante i test: aggiungi *`--certificatesresolvers.letsencrypt.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory`* al command di traefik*
 
 ---
 
-## 10. Git Autodeploy con webhook
+## *10. Git Autodeploy con webhook*
 
-### 10.1 Deploy script unificato
+> **Approccio "VPS-only" (zero costi GitHub):** qui le immagini vengono compilate direttamente sul VPS (`docker compose build`), non su GitHub Actions né su GHCR. Paghi solo il VPS Hetzner. Per capire perché, leggi [VPS-Spiegato-Semplice.md](VPS-Spiegato-Semplice.md).
+
+### *10.1 Deploy script unificato*
 
 ```bash
 cat > /opt/108vision/deploy.sh << 'EOF'
@@ -1089,17 +1106,17 @@ EOF
 chmod +x /opt/108vision/deploy.sh
 sudo touch /var/log/108vision-deploy.log
 sudo chown deploy:deploy /var/log/108vision-deploy.log
+
 ```
 
-### 10.2 Webhook server
-
-Installa e configura come descritto nel manuale originale (`tracks/software-in-mano/prodotti/aia-platform/platform-docs/manuale-deploy-hetzner.md`, sezione 9).
+### *10.2 Webhook server*
+*Installa e configura come descritto nel manuale originale (*`tracks/software-in-mano/prodotti/aia-platform/platform-docs/manuale-deploy-hetzner.md`*, sezione 9).*
 
 ---
 
-## 11. Backup automatico
+## *11. Backup automatico*
 
-### 11.1 Script backup tutti i database
+### *11.1 Script backup tutti i database*
 
 ```bash
 cat > /opt/108vision/backup.sh << 'EOF'
@@ -1135,21 +1152,23 @@ echo "[$(date)] Backup completato"
 EOF
 
 chmod +x /opt/108vision/backup.sh
+
 ```
 
-### 11.2 Cron
+### *11.2 Cron*
 
 ```bash
 crontab -e
 # Aggiungi:
 0 3 * * * /opt/108vision/backup.sh >> /var/log/108vision-backup.log 2>&1
+
 ```
 
 ---
 
-## 12. Monitoring e Health Check
+## *12. Monitoring e Health Check*
 
-### 12.1 Script health check completo
+### *12.1 Script health check completo*
 
 ```bash
 cat > /opt/108vision/health-check.sh << 'EOF'
@@ -1186,16 +1205,16 @@ echo "=== Done ==="
 EOF
 
 chmod +x /opt/108vision/health-check.sh
+
 ```
 
 ---
 
-## 13. RAM Budget
+## *13. RAM Budget*
 
-### CX32 — 8 GB RAM + 4 GB swap
-
+### *CX32 — 8 GB RAM + 4 GB swap*
 | Componente | RAM stimata | Note |
-|---|---|---|
+| --- | --- | --- |
 | OS + Docker daemon | ~700 MB | Kernel, systemd, SSH |
 | Traefik v3 | ~50 MB | Reverse proxy |
 | PostgreSQL 16 (3 DB) | ~500 MB | shared_buffers=128MB |
@@ -1207,23 +1226,22 @@ chmod +x /opt/108vision/health-check.sh
 | AIA Dashboard (nginx) | ~20 MB | File statici |
 | AIA Client (nginx) | ~20 MB | File statici |
 | AIA Downloads (nginx) | ~10 MB | File statici |
-| **WellBeing API (.NET 9)** | ~350 MB | Hard limit 400M |
+| WellBeing API (.NET 9) | ~350 MB | Hard limit 400M |
 | Website (Astro/Node) | ~100 MB | Self-hosted |
-| **Subtotale** | ~3.2 GB | Carico normale |
-| **Buffer disponibile** | ~4.8 GB | Picchi, GC |
-| **Swap** | 4 GB | Safety net per picchi |
+| Subtotale | ~3.2 GB | Carico normale |
+| Buffer disponibile | ~4.8 GB | Picchi, GC |
+| Swap | 4 GB | Safety net per picchi |
 
-**Conclusione:** 8 GB + 4 GB swap regge tutto con margine sufficiente per uso moderato. Neo4j funziona con heap ridotto a 256m — adeguato per un knowledge graph piccolo/medio (< 100k nodi).
+***Conclusione:**** 8 GB + 4 GB swap regge tutto con margine sufficiente per uso moderato. Neo4j funziona con heap ridotto a 256m — adeguato per un knowledge graph piccolo/medio (< 100k nodi).*
 
-### Quando fare upgrade
-
-Upgrade al CX42 (16 GB, ~14 EUR/mese) quando: RAM used > 6.5 GB in condizioni normali (non picco). Su Hetzner il rescale e 2 click, zero downtime.
+### *Quando fare upgrade*
+*Upgrade al CX42 (16 GB, ~14 EUR/mese) quando: RAM used > 6.5 GB in condizioni normali (non picco). Su Hetzner il rescale e 2 click, zero downtime.*
 
 ---
 
-## 14. Security Hardening
+## *14. Security Hardening*
 
-### 14.1 Fail2ban
+### *14.1 Fail2ban*
 
 ```bash
 cat > /etc/fail2ban/jail.local << 'EOF'
@@ -1240,51 +1258,53 @@ EOF
 
 sudo systemctl restart fail2ban
 sudo systemctl enable fail2ban
+
 ```
 
-### 14.2 Aggiornamenti automatici di sicurezza
+### *14.2 Aggiornamenti automatici di sicurezza*
 
 ```bash
 sudo apt install -y unattended-upgrades
 sudo dpkg-reconfigure --priority=low unattended-upgrades
+
 ```
 
-### 14.3 SSH solo con chiave
+### *14.3 SSH solo con chiave*
 
 ```bash
 # Verifica che sia gia cosi (fatto al punto 2.2), altrimenti:
 sudo sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config
 sudo systemctl restart sshd
+
 ```
 
-### 14.4 Porte database non esposte
+### *14.4 Porte database non esposte*
+*Nessuna porta database e esposta nel compose (no *`ports:`* su postgres, redis, qdrant, neo4j). Sono raggiungibili solo dalla rete Docker interna.*
 
-Nessuna porta database e esposta nel compose (no `ports:` su postgres, redis, qdrant, neo4j). Sono raggiungibili solo dalla rete Docker interna.
-
-### 14.5 File .env protetto
+### *14.5 File .env protetto*
 
 ```bash
 chmod 600 /opt/108vision/.env
+
 ```
 
 ---
 
-## 15. Troubleshooting
-
+## *15. Troubleshooting*
 | Problema | Causa probabile | Soluzione |
-|----------|----------------|-----------|
-| Container OOM killed | RAM insufficiente | `docker logs <name>`, riduci limits o upgrade VPS |
-| SSL non funziona | DNS non propagato | `dig +short api.108vision.it`, attendi |
-| 502 Bad Gateway | Container non avviato | `docker compose logs <service>` |
-| WellBeing API crash | JWT key < 16 chars | Verifica `WB_JWT_KEY` (min 32 chars) |
+| --- | --- | --- |
+| Container OOM killed | RAM insufficiente | docker logs <name>, riduci limits o upgrade VPS |
+| SSL non funziona | DNS non propagato | dig +short api.108vision.it, attendi |
+| 502 Bad Gateway | Container non avviato | docker compose logs <service> |
+| WellBeing API crash | JWT key < 16 chars | Verifica WB_JWT_KEY (min 32 chars) |
 | LiteLLM non parte | DB connection string | Verifica che postgres sia healthy |
 | Neo4j "heap too small" | RAM pressure | Riduci heap a 256m |
 | Qwen TTS timeout | WebSocket blocked | Verifica che outbound 443 sia aperto |
-| Website non builda | TinaCMS token scaduto | Rigenera `TINA_TOKEN` |
+| Website non builda | TinaCMS token scaduto | Rigenera TINA_TOKEN |
 
 ---
 
-## Appendice A — Comandi di riferimento rapido
+## *Appendice A — Comandi di riferimento rapido*
 
 ```bash
 # === AVVIO COMPLETO ===
@@ -1324,13 +1344,14 @@ docker exec -it postgres psql -U admin108 -d wellbeing
 # === SPAZIO DISCO ===
 docker system df
 df -h
+
 ```
 
 ---
 
-## Appendice B — Struttura directory sul server
+## *Appendice B — Struttura directory sul server*
 
-```
+```plaintext
 /opt/108vision/
 ├── docker-compose.yml              ← Infra (DB, cache, AI, proxy)
 ├── docker-compose.apps.yml         ← App 108 AI (gateway, dashboard, client, downloads)
@@ -1357,11 +1378,12 @@ df -h
 /var/log/
 ├── 108vision-deploy.log
 └── 108vision-backup.log
+
 ```
 
 ---
 
-## Appendice C — Sequenza di primo avvio
+## *Appendice C — Sequenza di primo avvio*
 
 ```bash
 # 1. Setup server (sezione 2) — 20 min
@@ -1384,8 +1406,8 @@ docker compose -f docker-compose.yml -f docker-compose.wellbeing.yml up -d --bui
 /opt/108vision/health-check.sh
 
 # 10. Configura backup e monitoring
+
 ```
 
 ---
-
-*108 Vision — Costruiamo la direzione, non solo il codice.*
+108 Vision — Costruiamo la direzione, non solo il codice.*

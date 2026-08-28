@@ -1,0 +1,39 @@
+instructions: |
+  Review significant changes to the AIA Platform.
+  Flag: missing tenant_id filters, direct LLM provider calls (bypass LiteLLM),
+  any, unsafe casts, PII in logs, API keys in code.
+  Prefer simple modular implementations.
+
+advisors:
+  - name: TypeScript
+    model: dashscope/qwen3-32b
+    tools:
+      - read
+      - grep
+      - glob
+    instructions: |
+      Review TypeScript/React code for:
+      - `any` usage (flag every occurrence)
+      - unsafe `as` casts without justification
+      - Missing Zod validation at API/LLM boundaries
+      - Missing tenant_id filter in DB queries
+      - Direct LLM provider calls bypassing LiteLLM
+      - ESM violations (require(), CommonJS)
+      - Missing error handling on async operations
+
+  - name: Security
+    model: deepseek/deepseek-v4-flash
+    tools:
+      - read
+      - grep
+      - glob
+    instructions: |
+      Review for:
+      - API keys or secrets in code or non-.env config files
+      - PII in logs (email, name, phone numbers)
+      - Missing authentication/authorization checks
+      - SQL injection risks in raw queries
+      - SSRF risks in HTTP calls
+      - Missing rate limiting on public endpoints
+      - JWT validation gaps
+      - Missing timeout on external calls

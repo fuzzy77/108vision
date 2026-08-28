@@ -16,6 +16,7 @@ import { tenantMiddleware } from './middleware/tenant.js';
 import { health } from './routes/health.js';
 import { auth as authRoutes } from './routes/auth.js';
 import { chat } from './routes/chat.js';
+import { publicChat } from './routes/public-chat.js';
 import { conversations } from './routes/conversations.js';
 import { knowledge } from './routes/knowledge.js';
 import { agentsRouter } from './routes/agents.js';
@@ -100,6 +101,9 @@ app.route('/api/auth', authRoutes);
 
 // Desktop Agent download (no auth required — user downloads before login)
 app.route('/api/desktop-agent', desktopAgentDownload);
+
+// Anonymous assistant (no auth required — visitors can try the AI before login)
+app.route('/api/public', publicChat);
 
 // OpenAI/Anthropic-compatible proxy (API key auth, rate limited, usage tracked)
 // Mounted at /v1 — clients expect /v1/chat/completions, /v1/models, /v1/embeddings, /v1/messages

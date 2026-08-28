@@ -1,0 +1,7 @@
+modelRoles:
+  default: deepseek/deepseek-v4-pro:high
+  smol: deepseek/deepseek-v4-flash
+  task: deepseek/deepseek-v4-flash
+  slow: dashscope/qwen3.8-2.4t-a95b
+  plan: dashscope/qwen3.8-max
+  advisor: deepseek/deepseek-v4-pro
