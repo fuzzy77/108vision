@@ -60,7 +60,7 @@ Il login (`/api/auth/login`) e "Spiega" (`/api/chat/quick`) parlano con il gatew
 
 ```bash
 cd c:/Code/Documents/Lavoro/Personale/Vision/aia-platform
-make up      # docker compose: postgres, redis, qdrant, litellm
+make up      # docker compose: postgres (+pgvector), redis, litellm
 make dev     # gateway Hono su porta 3000 + workers
 ```
 

@@ -21,7 +21,6 @@ cd repos/wellbeing-app && git pull origin main && cd "$DEPLOY_DIR"
 log "Rebuilding containers..."
 docker compose -f docker-compose.yml \
   -f docker-compose.apps.yml \
-  -f docker-compose.website.yml \
   -f docker-compose.wellbeing.yml \
   up -d --build 2>&1 | tee -a "$LOG_FILE"
 
@@ -35,4 +34,5 @@ if [ -n "$UNHEALTHY" ]; then
 fi
 
 docker image prune -f >> "$LOG_FILE" 2>&1
+docker builder prune -f >> "$LOG_FILE" 2>&1
 log "=== Deploy completed ==="

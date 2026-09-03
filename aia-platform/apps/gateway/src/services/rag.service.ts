@@ -1,6 +1,6 @@
 import { type Result, success, failure, AppError } from '@aia/shared';
 import { createAIClient, type ChatMessage } from '@aia/ai-client';
-import { getQdrant, getCollectionName, ensureCollection } from '../lib/qdrant.js';
+import { getPool } from '../lib/db.js';
 import { getEnv } from '../lib/env.js';
 
 export interface RetrievedChunk {
@@ -17,12 +17,13 @@ export interface RetrieveOptions {
 
 /**
  * RAG (Retrieval-Augmented Generation) service.
- * Handles context retrieval from Qdrant and prompt assembly.
+ * Handles context retrieval from pgvector (shared.kb_chunks) and prompt assembly.
  */
 export const ragService = {
   /**
    * Search the tenant's knowledge base for relevant context.
-   * Embeds the query and performs vector similarity search in Qdrant.
+   * Embeds the query and performs cosine similarity search via pgvector.
+   * Always scoped to the given tenant.
    */
   async retrieveContext(
     query: string,
@@ -46,36 +47,45 @@ export const ragService = {
         return failure(new AppError('EMBEDDING_FAILED', 'Failed to generate query embedding', 500));
       }
 
-      const qdrant = getQdrant();
-      const collectionName = getCollectionName(tenantId);
+      // Cosine similarity = 1 - cosine distance; a similarity threshold
+      // translates to distance < (1 - threshold).
+      const vec = `[${queryVector.join(',')}]`;
+      const maxDistance = 1 - threshold;
 
-      // Check if collection exists
-      const collections = await qdrant.getCollections();
-      const exists = collections.collections.some((c) => c.name === collectionName);
+      const result = await getPool().query(
+        `SELECT id,
+                content,
+                1 - (embedding <=> $1::vector) AS score,
+                document_id,
+                document_title,
+                chunk_index
+           FROM shared.kb_chunks
+          WHERE tenant_id = $2
+            AND embedding <=> $1::vector < $3
+          ORDER BY embedding <=> $1::vector
+          LIMIT $4`,
+        [vec, tenantId, maxDistance, limit],
+      );
 
-      if (!exists) {
-        // No knowledge base for this tenant -- return empty
-        return success([]);
-      }
-
-      // Search Qdrant
-      const searchResult = await qdrant.search(collectionName, {
-        vector: queryVector,
-        limit,
-        score_threshold: threshold,
-        with_payload: true,
-      });
-
-      const chunks: RetrievedChunk[] = searchResult.map((point) => ({
-        id: String(point.id),
-        content: (point.payload?.['content'] as string) ?? '',
-        score: point.score,
-        metadata: {
-          documentId: point.payload?.['document_id'],
-          documentTitle: point.payload?.['document_title'],
-          chunkIndex: point.payload?.['chunk_index'],
-        },
-      }));
+      const chunks: RetrievedChunk[] = result.rows.map(
+        (row: {
+          id: string;
+          content: string;
+          score: string | number;
+          document_id: string;
+          document_title: string | null;
+          chunk_index: number;
+        }) => ({
+          id: row.id,
+          content: row.content,
+          score: Number(row.score),
+          metadata: {
+            documentId: row.document_id,
+            documentTitle: row.document_title,
+            chunkIndex: row.chunk_index,
+          },
+        }),
+      );
 
       return success(chunks);
     } catch (error) {
@@ -160,7 +170,8 @@ export const ragService = {
   },
 
   /**
-   * Store vector embeddings in Qdrant.
+   * Store vector embeddings in pgvector (shared.kb_chunks).
+   * Upserts by chunk id; tenant_id is always persisted.
    */
   async storeVectors(
     tenantId: string,
@@ -171,19 +182,36 @@ export const ragService = {
     }>,
   ): Promise<Result<void>> {
     try {
-      await ensureCollection(tenantId);
+      if (vectors.length === 0) {
+        return success(undefined);
+      }
 
-      const qdrant = getQdrant();
-      const collectionName = getCollectionName(tenantId);
-
-      await qdrant.upsert(collectionName, {
-        wait: true,
-        points: vectors.map((v) => ({
-          id: v.id,
-          vector: v.embedding,
-          payload: v.payload,
-        })),
+      const pool = getPool();
+      const values: unknown[] = [];
+      const rows = vectors.map((v, i) => {
+        // 7 parameters per row: id, tenant, doc_id, doc_title, chunk_idx, content, embedding
+        const p = (n: number) => `$${i * 7 + n}`;
+        values.push(
+          v.id,
+          tenantId,
+          v.payload['document_id'] ?? null,
+          v.payload['document_title'] ?? null,
+          v.payload['chunk_index'] ?? 0,
+          v.payload['content'] ?? '',
+          `[${v.embedding.join(',')}]`,
+        );
+        return `(${p(1)}, ${p(2)}, ${p(3)}::uuid, ${p(4)}, ${p(5)}, ${p(6)}, ${p(7)}::vector)`;
       });
+
+      await pool.query(
+        `INSERT INTO shared.kb_chunks
+           (id, tenant_id, document_id, document_title, chunk_index, content, embedding)
+         VALUES ${rows.join(', ')}
+         ON CONFLICT (id) DO UPDATE SET
+           embedding = EXCLUDED.embedding,
+           content = EXCLUDED.content`,
+        values,
+      );
 
       return success(undefined);
     } catch (error) {
@@ -198,32 +226,14 @@ export const ragService = {
   },
 
   /**
-   * Delete all vectors for a specific document from Qdrant.
+   * Delete all vectors for a specific document (tenant-scoped).
    */
   async deleteDocumentVectors(tenantId: string, documentId: string): Promise<Result<void>> {
     try {
-      const qdrant = getQdrant();
-      const collectionName = getCollectionName(tenantId);
-
-      const collections = await qdrant.getCollections();
-      const exists = collections.collections.some((c) => c.name === collectionName);
-
-      if (!exists) {
-        return success(undefined);
-      }
-
-      await qdrant.delete(collectionName, {
-        wait: true,
-        filter: {
-          must: [
-            {
-              key: 'document_id',
-              match: { value: documentId },
-            },
-          ],
-        },
-      });
-
+      await getPool().query(
+        'DELETE FROM shared.kb_chunks WHERE tenant_id = $1 AND document_id = $2',
+        [tenantId, documentId],
+      );
       return success(undefined);
     } catch (error) {
       return failure(

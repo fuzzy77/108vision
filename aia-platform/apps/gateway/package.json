@@ -17,7 +17,6 @@
     "@aia/integrations": "workspace:*",
     "@aia/shared": "workspace:*",
     "@hono/node-server": "^1.12.0",
-    "@qdrant/js-client-rest": "^1.11.0",
     "bcrypt": "^5.1.0",
     "bullmq": "^5.12.0",
     "dotenv": "^17.4.2",

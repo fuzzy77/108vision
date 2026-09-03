@@ -117,11 +117,11 @@ const homeContent: Record<Locale, HomeContent> = {
       },
     },
     entry: {
-      heading: 'Il primo passo è piccolo, pagato e utilizzabile anche senza di noi',
+      heading: 'Il primo incontro è gratuito e ti lascia già qualcosa di concreto',
       steps: [
         {
-          title: '1. Call di inquadramento',
-          text: 'Distinguiamo il problema: hai già un team da guidare, oppure serve costruire o adottare il software?',
+          title: '1. Incontro iniziale gratuito',
+          text: 'Distinguiamo il problema (team da guidare o software da costruire) e ti lasciamo uno studio iniziale di qualche ora con punti di miglioramento specifici già pronti.',
         },
         {
           title: '2. Entry point pagato',
@@ -142,7 +142,7 @@ const homeContent: Record<Locale, HomeContent> = {
     cta: {
       title: 'Partiamo dal problema, non dalla soluzione',
       description:
-        'In una prima call capiamo se serve Direzione Tecnica, Software in Mano oppure nessuno dei due. Se c’è fit, proponiamo l’entry point pagato corretto.',
+        'In una prima call gratuita capiamo se serve Direzione Tecnica, Software in Mano oppure nessuno dei due — e ti lasciamo già indicazioni concrete. Se c’è fit, proponiamo l’entry point corretto.',
     },
   },
   en: {
@@ -220,11 +220,11 @@ const homeContent: Record<Locale, HomeContent> = {
       },
     },
     entry: {
-      heading: 'The first step is small, paid and useful even without us',
+      heading: 'The first meeting is free and already leaves you something concrete',
       steps: [
         {
-          title: '1. Framing call',
-          text: 'We distinguish the problem: do you have a team to lead, or do you need to build or adopt the software?',
+          title: '1. Free initial meeting',
+          text: 'We distinguish the problem (a team to lead or software to build) and leave you a few hours of initial study with specific improvement points already ready.',
         },
         {
           title: '2. Paid entry point',
@@ -245,7 +245,7 @@ const homeContent: Record<Locale, HomeContent> = {
     cta: {
       title: 'Start with the problem, not the solution',
       description:
-        'In an initial call we determine whether you need Technical Direction, Software in Hand, or neither. If there is a fit, we propose the right paid entry point.',
+        'In a free initial call we determine whether you need Technical Direction, Software in Hand, or neither — and already leave you concrete pointers. If there is a fit, we propose the right entry point.',
     },
   },
 };

@@ -28,8 +28,8 @@ Tutti i fix seguenti sono stati applicati e verificati con secondo passaggio ind
 | SEC-14 | Medium | API | `pageSize` clamped [1, 100] |
 | SEC-15 | Medium | Tenant | `getHistory()` riceve e verifica `tenantId` |
 | SEC-16 | Medium | Perf/DoS | Timeout 90s su fetch LiteLLM |
-| SEC-17 | Low | Website | Email regex restrittiva in `/api/subscribe` |
-| SEC-18 | Low | Website | Security headers in `vercel.json` |
+| SEC-17 | Low | Website | Email regex restrittiva sul capture lead (ora gateway `/api/public/lead/subscribe`) |
+| SEC-18 | Low | Website | Security headers nel vhost nginx del sito (`static.nginx.conf.template`) |
 
 ---
 
@@ -96,16 +96,14 @@ Tutti i fix seguenti sono stati applicati e verificati con secondo passaggio ind
 #### BL-03: Content-Security-Policy (Website)
 
 **Severity:** Medium
-**File:** `aia-website/vercel.json`
-**Problema:** Nessun CSP configurato. Script inline e risorse esterne non vincolate.
+**File:** `aia-platform/deploy/static.nginx.conf.template` (vhost `www.`)
+**Problema:** Nessun CSP configurato. Script inline e risorse esterne non vincolate. (`vercel.json` non esiste più: il sito è servito da nginx sul VPS.)
 
-**Fix richiesto:**
-```json
-{
-  "key": "Content-Security-Policy",
-  "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://assets.calendly.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.brevo.com; frame-src https://calendly.com; base-uri 'self'; form-action 'self' https://formspree.io"
-}
+**Fix richiesto:** aggiungere nel blocco `server` del vhost www:
+```nginx
+add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://assets.calendly.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self'; frame-src https://calendly.com; base-uri 'self'; form-action 'self' https://formspree.io" always;
 ```
+(`connect-src 'self'` basta: la chiamata Brevo passa dal gateway via `/api/subscribe`.)
 
 Testare con: `https://csp-evaluator.withgoogle.com/`
 
@@ -244,8 +242,8 @@ Serve un parser command-to-argv robusto (es. `shell-quote` npm).
 #### BL-11: HSTS Header (Website)
 
 **Severity:** Low
-**File:** `aia-website/vercel.json`
-**Fix:** Aggiungere `Strict-Transport-Security: max-age=31536000; includeSubDomains` dopo aver verificato che HTTPS funziona correttamente su tutti i sotto-domini.
+**File:** `aia-platform/deploy/static.nginx.conf.template` (vhost `www.` + apex)
+**Fix:** Aggiungere `add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;` dopo aver verificato che HTTPS (cert Traefik/Let's Encrypt) funziona correttamente su tutti i sotto-domini.
 
 **Effort:** 5 minuti (ma testare prima)
 

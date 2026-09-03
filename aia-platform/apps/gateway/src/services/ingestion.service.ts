@@ -31,7 +31,7 @@ export const ingestionService = {
    * 1. Create document record (status: processing)
    * 2. Chunk the text
    * 3. Generate embeddings for each chunk
-   * 4. Store vectors in Qdrant
+   * 4. Store vectors in pgvector (shared.kb_chunks)
    * 5. Update document status to ready
    */
   async ingestDocument(input: IngestDocumentInput): Promise<Result<string>> {
@@ -106,7 +106,7 @@ export const ingestionService = {
         }
       }
 
-      // Step 4: Store vectors in Qdrant
+      // Step 4: Store vectors in pgvector
       const storeResult = await ragService.storeVectors(metadata.tenantId, allVectors);
       if (!storeResult.success) {
         await db
@@ -173,7 +173,7 @@ export const ingestionService = {
       return failure(new AppError('DOCUMENT_NOT_FOUND', 'Document not found', 404));
     }
 
-    // Delete vectors from Qdrant
+    // Delete vectors from pgvector
     const deleteResult = await ragService.deleteDocumentVectors(tenantId, documentId);
     if (!deleteResult.success) {
       return failure(deleteResult.error);

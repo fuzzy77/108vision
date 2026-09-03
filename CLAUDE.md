@@ -64,7 +64,7 @@ Vision/
 │       ├── multi-agent/        ← Multi-Agent Orchestration (orchestrator, plan builder)
 │       ├── notifications/      ← Unified Notification Channel (7 canali, routing, quiet hours)
 │       └── resources/          ← Resource Management (monitor RAM/disk/token, auto-healing, CLI)
-└── aia-website/                ← Sito web (Astro + TinaCMS) — solo codice
+└── aia-website/                ← Sito marketing (Astro statico) — buildato e servito dal VPS (aia-static)
 ```
 
 Posizionamento: `tracks/brand/riposizionamento-partner-tecnico.md`. Path ex-`108-*`: vedi `tracks/INDEX.md`.
@@ -187,7 +187,7 @@ Questi principi informano ogni raccomandazione, advisory e decisione tecnica. So
 | ORM | Drizzle + PostgreSQL 16 + pgvector |
 | Frontend | React 19 + Vite 6 + Tailwind 4 + shadcn/ui |
 | Auth | Better Auth |
-| Vector DB | Qdrant |
+| Vector DB | PostgreSQL + pgvector (Neon serverless) |
 | AI Gateway | LiteLLM (3 tier: fast-cheap/balanced/powerful) |
 | Graph KB | Neo4j Community |
 | Cache | Redis 7 |

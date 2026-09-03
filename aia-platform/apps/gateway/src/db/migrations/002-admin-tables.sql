@@ -20,8 +20,8 @@ CREATE TABLE IF NOT EXISTS shared.agent_templates (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX idx_agent_templates_category ON shared.agent_templates(category);
-CREATE INDEX idx_agent_templates_is_public ON shared.agent_templates(is_public);
+CREATE INDEX IF NOT EXISTS idx_agent_templates_category ON shared.agent_templates(category);
+CREATE INDEX IF NOT EXISTS idx_agent_templates_is_public ON shared.agent_templates(is_public);
 
 -- -----------------------------------------------------------
 -- Usage Daily (aggregated usage per tenant/model/day)
@@ -39,9 +39,9 @@ CREATE TABLE IF NOT EXISTS shared.usage_daily (
   CONSTRAINT uq_usage_daily_tenant_date_model UNIQUE (tenant_id, date, model)
 );
 
-CREATE INDEX idx_usage_daily_tenant_id ON shared.usage_daily(tenant_id);
-CREATE INDEX idx_usage_daily_date ON shared.usage_daily(date);
-CREATE INDEX idx_usage_daily_tenant_date ON shared.usage_daily(tenant_id, date);
+CREATE INDEX IF NOT EXISTS idx_usage_daily_tenant_id ON shared.usage_daily(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_usage_daily_date ON shared.usage_daily(date);
+CREATE INDEX IF NOT EXISTS idx_usage_daily_tenant_date ON shared.usage_daily(tenant_id, date);
 
 -- -----------------------------------------------------------
 -- Invitations (user invitations for onboarding)
@@ -59,6 +59,6 @@ CREATE TABLE IF NOT EXISTS shared.invitations (
   CONSTRAINT chk_invitation_status CHECK (status IN ('pending', 'accepted', 'expired', 'revoked'))
 );
 
-CREATE INDEX idx_invitations_tenant_id ON shared.invitations(tenant_id);
-CREATE INDEX idx_invitations_token ON shared.invitations(token);
-CREATE INDEX idx_invitations_email ON shared.invitations(email);
+CREATE INDEX IF NOT EXISTS idx_invitations_tenant_id ON shared.invitations(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_invitations_token ON shared.invitations(token);
+CREATE INDEX IF NOT EXISTS idx_invitations_email ON shared.invitations(email);

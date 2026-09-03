@@ -118,6 +118,12 @@ const content: LocaleContent<SoftwareInManoContent> = {
           icon: '🔌',
         },
         {
+          title: 'App mobile iOS e Android',
+          description:
+            'React Native/Expo o Blazor Hybrid/.NET MAUI: una sola base di codice per iOS, Android e Windows, con lo stesso rigore del backend.',
+          icon: '📱',
+        },
+        {
           title: 'AI solo con ROI misurabile',
           description:
             'L’AI entra se Discovery definisce metrica, baseline, rischio, revisione umana e risultato osservabile entro 90 giorni. Altrimenti non entra.',
@@ -151,11 +157,11 @@ const content: LocaleContent<SoftwareInManoContent> = {
       },
     },
     process: {
-      heading: 'Si entra con una Discovery pagata',
+      heading: 'Il primo incontro è gratuito — e ti lascia già qualcosa di concreto',
       steps: [
         {
-          title: 'Call di inquadramento',
-          text: 'Verifichiamo problema, decision maker, utenti, vincoli e accesso alle persone che conoscono il processo. Se non c’è fit, ci fermiamo.',
+          title: 'Incontro iniziale gratuito',
+          text: 'Verifichiamo il problema reale e, in ogni caso, ti lasciamo un valore concreto: uno studio iniziale di qualche ora con punti di miglioramento specifici già pronti da applicare.',
         },
         {
           title: 'Discovery',
@@ -197,16 +203,16 @@ const content: LocaleContent<SoftwareInManoContent> = {
       },
     ],
     pdf: {
-      title: 'Presentazione per PMI (PDF)',
+      title: 'La presentazione che spiega il metodo ai tuoi stakeholder',
       description:
-        'Cinque pagine: diagnosi, costo dell’inazione, Discovery → progetto → evoluzione, deliverable e fit.',
-      cta: 'Scarica presentazione Software in Mano',
+        'Cinque pagine pronte da inoltrare: cosa ti costa restare fermo, come funziona Discovery → progetto → evoluzione, e cosa ottieni in concreto.',
+      cta: 'Scarica subito la presentazione Software in Mano',
     },
     partnerPdf: {
-      title: 'Kit per agenzie di consulenza (PDF)',
+      title: 'Il kit per qualificare il bisogno e vendere meglio',
       description:
-        'Cinque pagine per qualificare il bisogno software: promessa e confini, modelli B/C, RACI, script e Discovery.',
-      cta: 'Scarica kit partner Software in Mano',
+        'Cinque pagine per agenzie: promessa e confini, modelli B/C, RACI, script commerciale e Discovery. Pronto da usare nella prossima call.',
+      cta: 'Scarica subito il kit partner Software in Mano',
     },
   },
   en: {
@@ -299,6 +305,12 @@ const content: LocaleContent<SoftwareInManoContent> = {
           icon: '🔌',
         },
         {
+          title: 'iOS and Android mobile apps',
+          description:
+            'React Native/Expo or Blazor Hybrid/.NET MAUI: one codebase for iOS, Android and Windows, with the same rigour as the backend.',
+          icon: '📱',
+        },
+        {
           title: 'AI only with measurable ROI',
           description:
             'AI enters only when Discovery defines a metric, baseline, risk, human review and an observable 90-day outcome. Otherwise it does not.',
@@ -332,11 +344,11 @@ const content: LocaleContent<SoftwareInManoContent> = {
       },
     },
     process: {
-      heading: 'Start with a paid Discovery',
+      heading: 'The first meeting is free — and already leaves you something concrete',
       steps: [
         {
-          title: 'Framing call',
-          text: 'We confirm the problem, decision maker, users, constraints and access to people who know the process. If there is no fit, we stop.',
+          title: 'Free initial meeting',
+          text: 'We confirm the real problem and, in any case, leave you concrete value: a few hours of initial study with specific improvement points already ready to apply.',
         },
         {
           title: 'Discovery',
@@ -378,16 +390,16 @@ const content: LocaleContent<SoftwareInManoContent> = {
       },
     ],
     pdf: {
-      title: 'SME presentation (PDF)',
+      title: 'The presentation that explains the method to your stakeholders',
       description:
-        'Five pages: diagnosis, cost of inaction, Discovery → project → evolution, deliverables and fit.',
-      cta: 'Download Software in Hand presentation',
+        'Five pages ready to forward: what staying put costs, how Discovery → project → evolution works, and what you get in practice.',
+      cta: 'Download the Software in Hand presentation now',
     },
     partnerPdf: {
-      title: 'Consulting firm partner kit (PDF)',
+      title: 'The kit to qualify the need and sell better',
       description:
-        'Five pages to qualify the software need: promise and boundaries, B/C models, essential RACI, sales script and Discovery.',
-      cta: 'Download Software in Hand partner kit',
+        'Five pages for agencies: promise and boundaries, B/C models, RACI, sales script and Discovery. Ready for your next call.',
+      cta: 'Download the Software in Hand partner kit now',
     },
   },
 };

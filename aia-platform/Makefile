@@ -65,14 +65,6 @@ redis:
 redis-monitor:
 	docker compose exec redis redis-cli monitor
 
-# --- Qdrant ---
-
-qdrant-health:
-	curl -s http://localhost:6333/healthz | python3 -m json.tool || echo "Qdrant not reachable"
-
-qdrant-collections:
-	curl -s http://localhost:6333/collections | python3 -m json.tool || echo "Qdrant not reachable"
-
 # --- LiteLLM ---
 
 llm-health:

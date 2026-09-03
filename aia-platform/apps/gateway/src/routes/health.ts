@@ -1,7 +1,6 @@
 import { Hono } from 'hono';
 import { getPool } from '../lib/db.js';
 import { getRedis } from '../lib/redis.js';
-import { getQdrant } from '../lib/qdrant.js';
 import { createAIClient } from '@aia/ai-client';
 import { healthCheck as neo4jHealthCheck } from '@aia/graph';
 import { getEnv } from '../lib/env.js';
@@ -50,21 +49,6 @@ health.get('/', async (c) => {
     checks['redis'] = {
       status: 'fail',
       latencyMs: Date.now() - redisStart,
-      message: error instanceof Error ? error.message : 'Connection failed',
-    };
-    overallHealthy = false;
-  }
-
-  // Qdrant check
-  const qdrantStart = Date.now();
-  try {
-    const qdrant = getQdrant();
-    await qdrant.getCollections();
-    checks['qdrant'] = { status: 'pass', latencyMs: Date.now() - qdrantStart };
-  } catch (error) {
-    checks['qdrant'] = {
-      status: 'fail',
-      latencyMs: Date.now() - qdrantStart,
       message: error instanceof Error ? error.message : 'Connection failed',
     };
     overallHealthy = false;

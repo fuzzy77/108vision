@@ -23,10 +23,10 @@
           │
    ┌──────┴──────────────────────────┐
    │         Service Layer           │
-   ├─────────┬──────────┬───────────┤
-   │ LiteLLM │ Qdrant   │ PostgreSQL│
-   │(AI Gate)│(Vectors) │ (Data)    │
-   └─────────┴──────────┴───────────┘
+   ├─────────┬────────────┬──────────┤
+   │ LiteLLM │ PostgreSQL │  Neo4j   │
+   │(AI Gate)│(data+vector)│(Graph KB)│
+   └─────────┴────────────┴──────────┘
           │                    │
    ┌──────┴─────┐      ┌──────┴──────┐
    │   Redis    │      │ 108 AI      │
@@ -42,7 +42,7 @@
 | Reverse Proxy | Traefik v3 | SSL termination, routing, rate limiting |
 | Database | PostgreSQL 16 + pgvector | Relational data + vector embeddings |
 | Cache | Redis 7 | Sessions, rate limiting, job queues |
-| Vector DB | Qdrant | Knowledge base semantic search |
+| Vector DB | PostgreSQL + pgvector (Neon) | Knowledge base semantic search (`shared.kb_chunks`) |
 | AI Gateway | LiteLLM | Model routing, cost tracking, fallbacks |
 | Runtime | Node.js 20 + TypeScript | Application services |
 | Monorepo | npm workspaces | Code sharing across apps |
@@ -121,7 +121,6 @@ make up
 # 3. Verify services
 make status
 make llm-health
-make qdrant-health
 ```
 
 ### Environment Variables (critical)
@@ -133,7 +132,7 @@ make qdrant-health
 | `OPENAI_API_KEY` | Fallback embeddings (optional) |
 | `LITELLM_MASTER_KEY` | LiteLLM admin key |
 | `JWT_SECRET` | Auth token signing |
-| `POSTGRES_PASSWORD` | Database |
+| `DATABASE_URL` | PostgreSQL (Neon — `aia_platform`) |
 
 ## Coding Conventions
 
@@ -181,10 +180,10 @@ make qdrant-health
 
 ## Deployment
 
-- Target: Hetzner VPS (Ubuntu 24.04)
-- Deploy via `make deploy` or `./scripts/deploy.sh`
+- Target: Hetzner VPS CX23 (Ubuntu 24.04) + Neon (Postgres serverless) — il sito marketing (Astro statico, `aia-website/`) è buildato e servito da `aia-static` sul VPS
+- Deploy: webhook GitHub → `deploy/deploy.sh` (git pull + compose build) — vedi `deploy/README.md`
 - Zero-downtime: Docker Compose recreates only changed services
-- Backups: Daily automated + pre-deploy snapshots
+- Backups: Neon PITR (DB) + `make backup` (Neo4j/Redis/config) sul VPS
 
 ---
 
@@ -192,7 +191,7 @@ make qdrant-health
 
 | Feature | Differenziatore | Perche' conta |
 |---------|-----------------|---------------|
-| **Hybrid RAG** | Qdrant (vector) + Neo4j (knowledge graph) | Reasoning multi-hop su conoscenza aziendale — non solo semantic search |
+| **Hybrid RAG** | pgvector (vector) + Neo4j (knowledge graph) | Reasoning multi-hop su conoscenza aziendale — non solo semantic search |
 | **Desktop Agent** | OS-level capabilities con risk classification + shell/grep/edit | L'AI opera sul PC dell'utente come Claude Code/Cursor, ma anche per utenti non-dev |
 | **Persistent Memory** | pgvector semantic search, auto-inject nel prompt | L'AI ricorda preferenze, contesto, decisioni — su ogni dispositivo, ogni sessione |
 | **Model routing cost-optimized** | 5 tier LiteLLM, 70-80% risparmio vs single model | Il 90% dei task usa modelli economici senza perdita di qualita' |

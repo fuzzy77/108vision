@@ -9,7 +9,7 @@
 - ORM: Drizzle + PostgreSQL 16 + pgvector
 - Frontend: React 19 + Vite 6 + Tailwind 4 + shadcn/ui
 - AI Gateway: LiteLLM (all LLM calls through it — never direct provider)
-- Vector DB: Qdrant
+- Vector DB: PostgreSQL + pgvector (Neon serverless, region eu-central-1)
 - Cache: Redis 7
 - Monorepo: npm workspaces (@108ai/* packages)
 - Desktop Agent: esbuild bundled binary

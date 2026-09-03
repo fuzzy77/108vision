@@ -2,7 +2,7 @@
  * BullMQ worker for graph entity extraction.
  *
  * Processes document chunks asynchronously after they have been stored
- * in Qdrant. Graph extraction is non-blocking: failures do NOT affect
+ * in pgvector (shared.kb_chunks). Graph extraction is non-blocking: failures do NOT affect
  * document availability via vector search.
  */
 

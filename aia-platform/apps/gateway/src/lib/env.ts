@@ -9,7 +9,6 @@ config({ path: resolve(__dirname, '..', '..', '.env'), override: true });
 const envSchema = z.object({
   DATABASE_URL: z.string().url(),
   REDIS_URL: z.string().url(),
-  QDRANT_URL: z.string().url(),
   LITELLM_URL: z.string().url(),
   LITELLM_MASTER_KEY: z.string().default(''),
   JWT_SECRET: z.string().min(16),
@@ -42,6 +41,9 @@ const envSchema = z.object({
   SMTP_FROM: z.string().email().default('noreply@108ai.dev'),
   APP_URL: z.string().url().default('http://localhost:5173'),
   CORS_ALLOWED_ORIGINS: z.string().default(''),
+  // Brevo (newsletter/lead capture from the marketing site). Empty = endpoint
+  // returns 503; no secret is required for the rest of the stack.
+  BREVO_API_KEY: z.string().default(''),
 });
 
 export type Env = z.infer<typeof envSchema>;

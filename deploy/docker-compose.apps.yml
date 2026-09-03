@@ -1,5 +1,7 @@
 version: "3.9"
 
+# Stack applicativo — si somma a docker-compose.yml (infra).
+# Postgres è esterno (Neon); Qdrant non esiste più (pgvector in Neon).
 services:
   aia-gateway:
     build:
@@ -10,10 +12,8 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
-      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/aia_platform
+      DATABASE_URL: ${NEON_DATABASE_URL}
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
-      QDRANT_URL: http://qdrant:6333
-      QDRANT_API_KEY: ${QDRANT_API_KEY}
       NEO4J_URI: bolt://neo4j:7687
       NEO4J_USER: neo4j
       NEO4J_PASSWORD: ${NEO4J_PASSWORD}
@@ -22,10 +22,9 @@ services:
       BETTER_AUTH_SECRET: ${AIA_AUTH_SECRET}
       BETTER_AUTH_URL: https://api.${AIA_DOMAIN}
       JWT_SECRET: ${AIA_JWT_SECRET}
-      CORS_ALLOWED_ORIGINS: https://${AIA_DOMAIN},https://app.${AIA_DOMAIN},https://chat.${AIA_DOMAIN}
+      CORS_ALLOWED_ORIGINS: https://www.${AIA_DOMAIN},https://${AIA_DOMAIN},https://app.${AIA_DOMAIN},https://chat.${AIA_DOMAIN}
+      BREVO_API_KEY: ${BREVO_API_KEY:-}
     depends_on:
-      postgres:
-        condition: service_healthy
       redis:
         condition: service_healthy
     networks:
@@ -47,63 +46,50 @@ services:
         limits:
           memory: 384M
 
-  aia-dashboard:
+  # Website marketing (www. + apex redirect) + dashboard (app.) + client chat (chat.)
+  # + downloads (dl.) in un solo nginx.
+  aia-static:
     build:
-      context: ./repos/108vision/aia-platform/apps/dashboard
-      dockerfile: Dockerfile
-    container_name: aia-dashboard
+      # context = radice del repo: deve vedere sia aia-platform/ sia aia-website/
+      context: ./repos/108vision
+      dockerfile: aia-platform/deploy/static.Dockerfile
+    container_name: aia-static
     restart: unless-stopped
-    depends_on:
-      - aia-gateway
-    networks:
-      - internal
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.aia-dashboard.rule=Host(`app.${AIA_DOMAIN}`)"
-      - "traefik.http.routers.aia-dashboard.entrypoints=websecure"
-      - "traefik.http.routers.aia-dashboard.tls.certresolver=letsencrypt"
-      - "traefik.http.services.aia-dashboard.loadbalancer.server.port=80"
-    deploy:
-      resources:
-        limits:
-          memory: 64M
-
-  aia-client:
-    build:
-      context: ./repos/108vision/aia-platform/apps/client
-      dockerfile: Dockerfile
-    container_name: aia-client
-    restart: unless-stopped
-    depends_on:
-      - aia-gateway
-    networks:
-      - internal
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.aia-client.rule=Host(`chat.${AIA_DOMAIN}`)"
-      - "traefik.http.routers.aia-client.entrypoints=websecure"
-      - "traefik.http.routers.aia-client.tls.certresolver=letsencrypt"
-      - "traefik.http.services.aia-client.loadbalancer.server.port=80"
-    deploy:
-      resources:
-        limits:
-          memory: 64M
-
-  aia-downloads:
-    image: nginx:1.27-alpine
-    container_name: aia-downloads
-    restart: unless-stopped
+    environment:
+      AIA_DOMAIN: ${AIA_DOMAIN}
+      NGINX_ENVSUBST_FILTER: AIA_DOMAIN
     volumes:
-      - /opt/108vision/public/downloads:/usr/share/nginx/html:ro
+      - /opt/108vision/public/downloads:/usr/share/nginx/html/downloads:ro
+    depends_on:
+      - aia-gateway
     networks:
       - internal
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.aia-downloads.rule=Host(`dl.${AIA_DOMAIN}`)"
-      - "traefik.http.routers.aia-downloads.entrypoints=websecure"
-      - "traefik.http.routers.aia-downloads.tls.certresolver=letsencrypt"
-      - "traefik.http.services.aia-downloads.loadbalancer.server.port=80"
+      # router 1: sito marketing (www. serve, apex → 301 via vhost nginx)
+      - "traefik.http.routers.aia-site.rule=Host(`www.${AIA_DOMAIN}`, `${AIA_DOMAIN}`)"
+      - "traefik.http.routers.aia-site.entrypoints=websecure"
+      - "traefik.http.routers.aia-site.tls.certresolver=letsencrypt"
+      # router 2: dashboard
+      - "traefik.http.routers.aia-app.rule=Host(`app.${AIA_DOMAIN}`)"
+      - "traefik.http.routers.aia-app.entrypoints=websecure"
+      - "traefik.http.routers.aia-app.tls.certresolver=letsencrypt"
+      # router 3: client chat
+      - "traefik.http.routers.aia-chat.rule=Host(`chat.${AIA_DOMAIN}`)"
+      - "traefik.http.routers.aia-chat.entrypoints=websecure"
+      - "traefik.http.routers.aia-chat.tls.certresolver=letsencrypt"
+      # router 4: downloads
+      - "traefik.http.routers.aia-dl.rule=Host(`dl.${AIA_DOMAIN}`)"
+      - "traefik.http.routers.aia-dl.entrypoints=websecure"
+      - "traefik.http.routers.aia-dl.tls.certresolver=letsencrypt"
+      - "traefik.http.services.aia-static.loadbalancer.server.port=80"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/healthz"]
+      interval: 30s
+      timeout: 3s
+      start_period: 5s
+      retries: 3
     deploy:
       resources:
         limits:
-          memory: 32M
+          memory: 48M

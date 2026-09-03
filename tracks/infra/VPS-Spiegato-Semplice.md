@@ -36,11 +36,12 @@ Il VPS è la via di mezzo: **piena libertà, costo fisso e prevedibile**.
 
 | Voce | Costo | Note |
 |---|---|---|
-| VPS Hetzner CX32 (4 vCPU · 8 GB RAM · 80 GB NVMe · Ubuntu 24.04) | **~8 €/mese fisso** | l'unico costo |
+| VPS Hetzner CX23 (2 vCPU · 4 GB RAM · 40 GB NVMe · Ubuntu 24.04) | **~6,70 €/mese fisso** | costo principale |
+| Neon (PostgreSQL serverless) — free tier | **0 €** | i database non stanno più sul VPS |
 | Dominio 108vision.it (Aruba) | già pagato | non cambia |
 | GitHub (solo hosting del codice → `git pull`) | **0 €** | repo privati gratuiti |
 | SSL / HTTPS (Let's Encrypt via Traefik) | **0 €** | automatico |
-| **Totale** | **~8 €/mese fisso** | nessuna sorpresa a fine mese |
+| **Totale** | **~6,70 €/mese fisso** | nessuna sorpresa a fine mese |
 
 ---
 
@@ -54,7 +55,7 @@ Esistono **due modi** di fare il deploy automatico. La differenza sta in *chi co
 - **Rischio concreto:** ogni push che tagga l'immagine con lo SHA genera una nuova copia da 200–400 MB → in poche settimane superi la soglia → arriva la bolletta.
 
 ### Modo B — VPS only (scelto)
-- Le immagini Docker vengono **compilate direttamente sul tuo VPS** (che paghi già con gli 8 €/mese).
+- Le immagini Docker vengono **compilate direttamente sul tuo VPS** (che paghi già con i ~7 €/mese).
 - Nessun computer temporaneo GitHub → **0 minuti CI**.
 - Nessuna immagine su GHCR → **0 storage, 0 transfer**.
 - GitHub viene usato **solo come cassaforte del codice** (un normale repo git), che è gratis.
@@ -67,7 +68,7 @@ Esistono **due modi** di fare il deploy automatico. La differenza sta in *chi co
 ## 4. Come funziona il deploy VPS-only (flusso)
 
 ```
-Tu (PC)                    GitHub (gratis)                 VPS Hetzner (~8 €/mese)
+Tu (PC)                    GitHub (gratis)                 VPS Hetzner (~6,70 €/mese)
   │  git push                 │                                │
   │──────────────────────────▶│   (notifica webhook)           │
   │                           │───────────────────────────────▶│
@@ -91,12 +92,11 @@ Tu (PC)                    GitHub (gratis)                 VPS Hetzner (~8 €/m
 | Servizio | A cosa serve | Indirizzo |
 |---|---|---|
 | **Traefik** | "portiere" che smista le richieste e mette l'HTTPS | — |
-| **Sito 108 Vision** (Astro) | il sito pubblico | www.108vision.it |
+| **Sito 108 Vision + Dashboard + Chat + Download** (nginx) | il sito pubblico e le tre interfacce web — un solo container | 108vision.it (→www) / app. / chat. / dl.108vision.it |
 | **Gateway AIA** (Hono) | API della piattaforma 108 Vision | api.108vision.it |
 | **WellBeing API** (.NET 9) | backend dell'app WellBeing | wellbeing.108vision.it |
-| **PostgreSQL** | database (dati WellBeing + piattaforma) | interno |
+| **PostgreSQL** | database — **su Neon** (cloud), non sul VPS | esterno |
 | **Redis** | memoria veloce (cache) | interno |
-| **Qdrant** | database vettoriale per l'AI | interno |
 | **Neo4j** | grafo della conoscenza | interno |
 | **LiteLLM** | porta unica verso i modelli AI (DeepSeek/Qwen) | interno |
 
@@ -106,10 +106,10 @@ Tutto dentro **contenitori Docker**, avviati insieme con un solo comando (`docke
 
 ## 6. Cosa devi fare tu (una sola volta)
 
-1. **Comprare il VPS** Hetzner CX32 (~8 €/mese) — 10 minuti.
-2. **Puntare i DNS** (Aruba) dei sottodomini verso l'IP del VPS.
-3. **Eseguire lo script bootstrap** che preparo io: installa Docker, crea le cartelle, scarica i file di deploy, avvia tutto.
-4. **Inserire i segreti** (chiavi API DashScope/DeepSeek, password DB, OAuth Google/Facebook) nel file `.env` **sul VPS** — mai su GitHub.
+1. **Comprare il VPS** Hetzner CX23 (~6,70 €/mese) + creare il progetto **Neon** (free tier, region eu-central-1) — 15 minuti.
+2. **Puntare i DNS** (Aruba): **tutti** i record — `@ www api app chat dl llm wellbeing traefik` → IP del VPS.
+3. **Eseguire lo script bootstrap** che preparo io: installa Docker, crea le cartelle, scarica i file di deploy, avvia tutto. Poi una volta: `psql ... -f bootstrap-neon.sql` crea lo schema su Neon.
+4. **Inserire i segreti** (chiavi API DashScope/DeepSeek, URL Neon, OAuth Google/Facebook) nel file `.env` **sul VPS** — mai su GitHub.
 
 Da lì in poi: **ogni `git push` aggiorna sito e app da solo.**
 

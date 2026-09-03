@@ -4,9 +4,9 @@
 
 Installare e configurare una VPS economica con **Coolify** come piattaforma di deployment self-hosted per:
 
-1. **AIA Platform** (108 Vision) — Hono API + React Dashboard + PostgreSQL + Redis + Qdrant + Neo4j + LiteLLM
-2. **AIA Website** — Astro + TinaCMS
-3. **WellBeingApp API** — .NET 9 API + PostgreSQL + AI services (Qwen TTS/Text)
+1. **AIA Platform** (108 Vision) — Hono API + React Dashboard + PostgreSQL (Neon) + Redis + Neo4j + LiteLLM — RAG su pgvector
+2. **AIA Website** — Astro statico — servito dalla VPS (§5)
+3. **WellBeingApp API** — .NET 9 API + PostgreSQL (Neon) + AI services (Qwen TTS/Text)
 
 ---
 
@@ -16,22 +16,22 @@ Installare e configurare una VPS economica con **Coolify** come piattaforma di d
 
 | Provider | Piano | vCPU | RAM | Disco | Prezzo/mese | Note |
 |----------|-------|------|-----|-------|-------------|------|
-| **Hetzner** (consigliato) | CX32 | 4 | 8 GB | 80 GB NVMe | ~7-8 EUR | Datacenter EU (Falkenstein/Helsinki), ottima rete |
-| **Hetzner** | CX42 | 4 | 16 GB | 160 GB NVMe | ~14 EUR | Se servono Neo4j + Qdrant + tutti i servizi |
+| **Hetzner** (consigliato) | **CX23** | 2 | 4 GB | 40 GB NVMe | ~6.70 EUR | Con Postgres su **Neon** (free tier) — scelta attuale |
+| **Hetzner** | CX32 | 4 | 8 GB | 80 GB NVMe | ~7-8 EUR | Se si vuole anche Postgres locale |
+| **Hetzner** | CX42 | 4 | 16 GB | 160 GB NVMe | ~14 EUR | Carico completo senza Neon |
 | **Netcup** | VPS 2000 G11 | 6 | 8 GB | 256 GB | ~9 EUR | Buon rapporto storage/prezzo |
-| **Contabo** | Cloud VPS M | 6 | 16 GB | 400 GB | ~12 EUR | Tanto storage, rete meno stabile |
 
 ### Requisiti minimi per il carico completo
 
 | Risorsa | Minimo | Consigliato |
 |---------|--------|-------------|
-| vCPU | 4 | 6 |
-| RAM | 8 GB | 16 GB |
-| Disco | 80 GB NVMe | 160 GB NVMe |
+| vCPU | 2 | 4 |
+| RAM | 4 GB (con Neon) | 8 GB |
+| Disco | 40 GB NVMe | 80 GB NVMe |
 | OS | Ubuntu 24.04 LTS | Ubuntu 24.04 LTS |
 | IPv4 | 1 statico | 1 statico |
 
-> **Raccomandazione:** Hetzner CX42 (16 GB RAM, ~14 EUR/mese) per far girare tutto senza swap pressure. Se vuoi risparmiare, CX32 (8 GB) funziona disabilitando Neo4j e limitando Qdrant a 512 MB.
+> **Raccomandazione (attuale):** Hetzner **CX23** + **Neon** per i database: limiti compose ~1.76 GB totali, margini ampi su 4 GB. `tracks/infra/manuale-deploy-completo-hetzner.md` è la fonte di verità.
 
 ---
 
@@ -149,7 +149,7 @@ ufw delete allow 8000/tcp
 │ Gateway│Dashboard│ Client  │    LiteLLM         │
 │ (Hono) │(React) │(React)  │  (AI Gateway)      │
 ├────────┴────────┴──────────┴────────────────────┤
-│  PostgreSQL  │  Redis  │  Qdrant  │  Neo4j      │
+│ PostgreSQL(Neon)│ Redis │Neo4j │ pgvector in Neon │
 └──────────────┴─────────┴──────────┴─────────────┘
 ```
 
@@ -169,20 +169,8 @@ version: "3.9"
 
 services:
   # === DATABASES ===
-  postgres:
-    image: pgvector/pgvector:pg16
-    restart: always
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER:-aia}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB:-aia_platform}
-    volumes:
-      - pg_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-aia}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+  # PostgreSQL è su Neon (esterno): aia_platform, litellm e wellbeing
+  # sono database dello stesso progetto eu-central-1, endpoint -pooler.
 
   redis:
     image: redis:7-alpine
@@ -196,18 +184,6 @@ services:
       timeout: 5s
       retries: 5
 
-  qdrant:
-    image: qdrant/qdrant:latest
-    restart: always
-    environment:
-      QDRANT__SERVICE__API_KEY: ${QDRANT_API_KEY}
-    volumes:
-      - qdrant_data:/qdrant/storage
-    # Limita RAM su VPS piccola
-    deploy:
-      resources:
-        limits:
-          memory: 512M
 
   neo4j:
     image: neo4j:5-community
@@ -231,13 +207,10 @@ services:
     restart: always
     environment:
       LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY}
-      DATABASE_URL: postgresql://${POSTGRES_USER:-aia}:${POSTGRES_PASSWORD}@postgres:5432/litellm
+      DATABASE_URL: ${NEON_LITELLM_DATABASE_URL}
     volumes:
       - ./litellm-config.yaml:/app/config.yaml
     command: ["--config", "/app/config.yaml", "--port", "4000"]
-    depends_on:
-      postgres:
-        condition: service_healthy
 
   # === APPLICATION ===
   gateway:
@@ -250,10 +223,8 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
-      DATABASE_URL: postgresql://${POSTGRES_USER:-aia}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-aia_platform}
+      DATABASE_URL: ${NEON_DATABASE_URL}
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
-      QDRANT_URL: http://qdrant:6333
-      QDRANT_API_KEY: ${QDRANT_API_KEY}
       NEO4J_URI: bolt://neo4j:7687
       NEO4J_USER: neo4j
       NEO4J_PASSWORD: ${NEO4J_PASSWORD}
@@ -262,8 +233,6 @@ services:
       BETTER_AUTH_SECRET: ${AUTH_SECRET}
       BETTER_AUTH_URL: https://api.108vision.it
     depends_on:
-      postgres:
-        condition: service_healthy
       redis:
         condition: service_healthy
     labels:
@@ -282,9 +251,7 @@ services:
       - "traefik.http.services.dashboard.loadbalancer.server.port=80"
 
 volumes:
-  pg_data:
   redis_data:
-  qdrant_data:
   neo4j_data:
 ```
 
@@ -293,16 +260,13 @@ volumes:
 Nella sezione "Environment Variables" del progetto:
 
 ```env
-# Database
-POSTGRES_USER=aia
-POSTGRES_PASSWORD=<genera-password-32-char>
-POSTGRES_DB=aia_platform
+# Neon (Postgres esterno — eu-central-1, endpoint -pooler, scale-to-zero OFF)
+NEON_DATABASE_URL=postgresql://USER:PW@ep-xxx-pooler.eu-central-1.aws.neon.tech/aia_platform?sslmode=require
+NEON_LITELLM_DATABASE_URL=postgresql://USER:PW@ep-xxx-pooler.eu-central-1.aws.neon.tech/litellm?sslmode=require
+WB_DATABASE_URL=Host=ep-xxx-pooler.eu-central-1.aws.neon.tech;Database=wellbeing;Username=USER;Password=PW
 
 # Redis
 REDIS_PASSWORD=<genera-password-32-char>
-
-# Qdrant
-QDRANT_API_KEY=<genera-api-key>
 
 # Neo4j
 NEO4J_PASSWORD=<genera-password-32-char>
@@ -364,38 +328,30 @@ Per il monorepo, configura build separati per ogni app:
 
 ---
 
-## 5. Deployment: AIA Website (Astro + TinaCMS)
+## 5. Deployment: AIA Website (Astro) — sulla VPS
 
-### 5.1 Opzione A: Self-hosted su Coolify (consigliato per indipendenza)
+Il sito è `output: 'static'` (niente adapter serverless): va **buildato e servito dalla VPS**, non da Vercel.
 
-Coolify UI → New Resource → Application:
+### 5.1 Con il kit deploy/ (strada attuale)
+
+Il sito è già dentro il container `aia-static` del kit `deploy/` (stage `site: npm ci && astro build`, vhost nginx su `www.108vision.it`, apex 301→www). Con Coolify NON serve un resource separato per il sito: basta che i record DNS `@`/`www` puntino alla VPS e che il compose del kit sia deployato.
+
+### 5.2 Coolify standalone (solo sito, senza kit)
+
+Coolify UI → New Resource → Application (Static):
 
 | Campo | Valore |
 |-------|--------|
 | Source | Git repo URL |
 | Branch | `main` |
 | Build Pack | Nixpacks |
-| Build Command | `npx tinacms build && npx astro build` |
-| Start Command | `node ./dist/server/entry.mjs` |
-| Port | 4321 |
-| Domain | `108vision.it` |
+| Build Command | `cd aia-website && npm ci && npm run build` |
+| Output directory | `aia-website/dist` |
+| Domain | `www.108vision.it` (+ `108vision.it` con redirect) |
 
-Variabili ambiente:
-```env
-TINA_PUBLIC_CLIENT_ID=<tina-cloud-client-id>
-TINA_TOKEN=<tina-read-token>
-# oppure self-hosted TinaCMS:
-TINA_PUBLIC_IS_LOCAL=false
-```
+> **NOTA:** `POST /api/subscribe` (form lead → Brevo) richiede il gateway: il proxy nginx del kit (`location = /api/subscribe` → `aia-gateway`) è la via più semplice. Il form NON funziona come sito puramente statico isolato.
 
-### 5.2 Opzione B: Mantenere su Vercel (gratis, zero maintenance)
-
-Se il sito è già su Vercel con il free tier, ha senso tenerlo lì:
-- Build automatica da Git push
-- CDN globale inclusa
-- Zero costi per siti statici/SSR leggeri
-
-> **Raccomandazione:** tieni il website su Vercel (gratis, CDN globale) e usa la VPS solo per backend/databases.
+TinaCMS: niente sidecar in produzione — contenuti letti da `content/` committato; editing locale con `tinacms dev` → commit → push.
 
 ---
 
@@ -431,7 +387,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Production
       ASPNETCORE_URLS: http://+:8080
-      ConnectionStrings__Postgres: "Host=wellbeing-db;Port=5432;Database=wellbeing;Username=wellbeing;Password=${WB_DB_PASSWORD}"
+      ConnectionStrings__Postgres: "${WB_DATABASE_URL}"
       UserDataStorage__Provider: Postgres
       Jwt__Key: ${WB_JWT_KEY}
       Jwt__Issuer: https://wellbeing-api.tuodominio.it
@@ -445,9 +401,6 @@ services:
       Facebook__AppSecret: ${FACEBOOK_APP_SECRET}
       Admin__Username: ${WB_ADMIN_USER}
       Admin__Password: ${WB_ADMIN_PASSWORD}
-    depends_on:
-      wellbeing-db:
-        condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health/live"]
       interval: 30s
@@ -462,23 +415,7 @@ services:
     volumes:
       - wb_media:/app/media:ro
 
-  wellbeing-db:
-    image: postgres:16-alpine
-    restart: always
-    environment:
-      POSTGRES_USER: wellbeing
-      POSTGRES_PASSWORD: ${WB_DB_PASSWORD}
-      POSTGRES_DB: wellbeing
-    volumes:
-      - wb_pg_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U wellbeing"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
 volumes:
-  wb_pg_data:
   wb_media:
 ```
 
@@ -514,8 +451,8 @@ ENTRYPOINT ["dotnet", "WellBeingApi.dll"]
 ### 6.4 Variabili ambiente Coolify
 
 ```env
-# Database
-WB_DB_PASSWORD=<genera-password-32-char>
+# Neon (database wellbeing sullo stesso progetto)
+WB_DATABASE_URL=Host=ep-xxx-pooler.eu-central-1.aws.neon.tech;Database=wellbeing;Username=USER;Password=PW
 
 # JWT (minimo 32 caratteri!)
 WB_JWT_KEY=<genera-key-64-char-alfanumerica>
@@ -533,46 +470,31 @@ WB_ADMIN_USER=admin
 WB_ADMIN_PASSWORD=<genera-password-sicura>
 ```
 
-### 6.5 Alternativa: Database condiviso
+### 6.5 Database: tutto su Neon
 
-Se vuoi risparmiare RAM, usa la stessa istanza PostgreSQL di AIA Platform:
-
-```env
-ConnectionStrings__Postgres=Host=postgres;Port=5432;Database=wellbeing;Username=wellbeing;Password=<password>
-```
-
-Crea il database e l'utente:
-```sql
-CREATE USER wellbeing WITH PASSWORD '<password>';
-CREATE DATABASE wellbeing OWNER wellbeing;
-```
+Con Neon non serve un DB condiviso locale: `aia_platform`, `litellm` e `wellbeing`
+sono tre database dello stesso progetto (eu-central-1). Crea `wellbeing` dalla console
+Neon (o `psql "$NEON_DATABASE_URL" -c 'CREATE DATABASE wellbeing'`); le tabelle li
+popola da sé la API .NET al primo avvio.
 
 ---
 
 ## 7. Configurazione Condivisa
 
-### 7.1 PostgreSQL condiviso (singola istanza, multi-database)
+### 7.1 PostgreSQL su Neon (setup multi-database)
 
-Se usi un solo PostgreSQL per tutto:
+```bash
+# dal terminale locale o dal VPS, una tantum
+psql "<NEON_DATABASE_URL>" -c 'CREATE DATABASE litellm'
+psql "<NEON_DATABASE_URL>" -c 'CREATE DATABASE wellbeing'
 
-```sql
--- Esegui dentro il container postgres
-CREATE DATABASE aia_platform;
-CREATE DATABASE wellbeing;
-CREATE DATABASE litellm;
-
-CREATE USER aia WITH PASSWORD '<pw1>';
-CREATE USER wellbeing WITH PASSWORD '<pw2>';
-CREATE USER litellm WITH PASSWORD '<pw3>';
-
-GRANT ALL PRIVILEGES ON DATABASE aia_platform TO aia;
-GRANT ALL PRIVILEGES ON DATABASE wellbeing TO wellbeing;
-GRANT ALL PRIVILEGES ON DATABASE litellm TO litellm;
-
--- pgvector extension per AIA
-\c aia_platform
-CREATE EXTENSION IF NOT EXISTS vector;
+# estensioni + schema shared + migrations 001→008 (kit deploy/)
+psql "<NEON_DATABASE_URL>" -f bootstrap-neon.sql
 ```
+
+Regole: endpoint **`-pooler`** ( PgBouncer — la API .NET e LiteLLM aprono troppe
+connessioni per il direct endpoint), **scale-to-zero OFF**, `sslmode=require`.
+LiteLLM e la API .NET migrano il proprio schema automaticamente al primo avvio.
 
 ### 7.2 Backup automatico
 
@@ -585,9 +507,8 @@ BACKUP_DIR="/opt/backup/daily"
 DATE=$(date +%Y%m%d_%H%M)
 mkdir -p $BACKUP_DIR
 
-# PostgreSQL (tutti i database)
-docker exec $(docker ps -qf "name=postgres") \
-  pg_dumpall -U aia > "$BACKUP_DIR/pg_all_$DATE.sql"
+# PostgreSQL — ora su Neon: dump remoto (PITR Nativo di Neon copre il restore point-in-time)
+pg_dump "$NEON_DATABASE_URL" > "$BACKUP_DIR/aia_$DATE.sql"
 
 # Comprimi e ruota (mantieni ultimi 7 giorni)
 gzip "$BACKUP_DIR/pg_all_$DATE.sql"
@@ -633,35 +554,34 @@ volumes:
 | Servizio | RAM stimata |
 |----------|-------------|
 | Coolify + Traefik | ~500 MB |
-| PostgreSQL (shared) | ~500 MB |
-| Redis | ~100 MB |
-| Qdrant | ~512 MB |
-| Neo4j | ~768 MB |
-| LiteLLM | ~256 MB |
-| AIA Gateway (Node.js) | ~200 MB |
-| AIA Dashboard (Nginx) | ~50 MB |
-| WellBeingApi (.NET 9) | ~300 MB |
-| **TOTALE** | **~3.2 GB** |
+| ~~PostgreSQL (shared)~~ | **su Neon — 0 MB sul VPS** |
+| Redis | ~96 MB (limit) |
+| ~~Qdrant~~ | **rimossa — RAG su pgvector in Neon** |
+| Neo4j | ~450 MB (limit) |
+| LiteLLM | ~400 MB (limit) |
+| AIA Gateway (Node.js) | ~384 MB (limit) |
+| AIA Static (Nginx dashboard+client+dl) | ~48 MB (limit) |
+| WellBeingApi (.NET 9) | ~384 MB (limit) |
+| **TOTALE limits** | **~1.76 GB** |
 
-Con OS + buffer: **~5 GB** effettivi → 8 GB funziona, 16 GB comodo.
+Con OS + buffer: **~2.5-3 GB** → CX23 (4 GB) funziona.
 
 ### 8.2 Costo mensile totale
 
 | Voce | Costo |
 |------|-------|
-| VPS Hetzner CX32 (8 GB) | 7.50 EUR |
-| oppure CX42 (16 GB) | 14.00 EUR |
+| VPS Hetzner CX23 (4 GB) | 6.70 EUR |
+| Neon (free tier / Launch) | 0-19 EUR |
 | Domini (se non già posseduti) | ~1-2 EUR/mese ammortizzato |
 | Backup storage (Backblaze B2) | ~1 EUR |
-| **TOTALE** | **~9-17 EUR/mese** |
+| **TOTALE** | **~7-27 EUR/mese** |
 
-### 8.3 Configurazione "Risparmio massimo" (8 GB RAM)
+### 8.3 Configurazione "Risparmio massimo" (4 GB RAM)
 
-Se vuoi stare su 8 GB:
-- Disabilita Neo4j (usa solo se hai il knowledge graph attivo)
-- Limita Qdrant a 256 MB
-- Limita PostgreSQL a 256 MB shared_buffers
-- Usa 4 GB swap
+Con Postgres su Neon il margine è già ampio. Se serve ancora:
+- disabilita Neo4j (`GRAPH_EXTRACTION_ENABLED=false`)
+- `docker builder prune -f` prima della build
+- swap 4 GB (già nel bootstrap)
 
 ---
 
@@ -687,7 +607,7 @@ Se vuoi stare su 8 GB:
 
 ### AIA Website
 
-- [ ] Deploy su Vercel (o Coolify se preferisci self-hosted)
+- [ ] Sito buildato e servito dalla VPS (container `aia-static` del kit deploy/)
 - [ ] TinaCMS configurato e funzionante
 - [ ] Dominio `108vision.it` puntato correttamente
 
@@ -718,10 +638,10 @@ Se vuoi stare su 8 GB:
 | Container OOM killed | RAM insufficiente | Aumenta swap o riduci limiti servizi |
 | SSL non funziona | DNS non propagato | Attendi 5-10 min, verifica con `dig` |
 | 502 Bad Gateway | Container non avviato o health check fallito | `docker logs <container>` |
-| DB connection refused | Container DB non ready | Verifica `depends_on` + `healthcheck` |
+| DB connection refused | Neon endpoint unreachable / scale-to-zero | Verifica URL `-pooler`, scale-to-zero OFF |
 | LiteLLM 401 | Master key errata | Verifica variabile `LITELLM_MASTER_KEY` |
 | .NET API crash all'avvio | JWT key troppo corta | Usa minimo 32 caratteri alfanumerici |
-| Qdrant OOM | Collection troppo grande | Limita `deploy.resources.limits.memory` |
+| Cold start / timeout DB | Neon scale-to-zero attivo | Disattivalo; usa endpoint `-pooler` |
 
 ---
 
@@ -734,8 +654,8 @@ docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
 # Logs di un servizio
 docker logs --tail 100 -f <container_name>
 
-# Accesso shell PostgreSQL
-docker exec -it $(docker ps -qf "name=postgres") psql -U aia -d aia_platform
+# Accesso shell PostgreSQL (Neon, dal terminale locale)
+psql "$NEON_DATABASE_URL"
 
 # Accesso Redis CLI
 docker exec -it $(docker ps -qf "name=redis") redis-cli -a <password>

@@ -156,7 +156,6 @@ async function showStatus() {
   const checks = [
     ['PostgreSQL', null],
     ['Redis', null],
-    ['Qdrant', 'http://localhost:6333/healthz'],
     ['LiteLLM', 'http://localhost:4000/health'],
     ['Neo4j', 'http://localhost:7474'],
     ['Gateway', 'http://localhost:3000/health'],
@@ -224,7 +223,6 @@ async function startAll(skipInfra = false) {
 
     log('Waiting for services to be healthy (30s max)...');
     const healthChecks = [
-      ['Qdrant', 'http://localhost:6333/healthz'],
       ['LiteLLM', 'http://localhost:4000/health'],
     ];
 
@@ -321,7 +319,6 @@ async function startAll(skipInfra = false) {
   console.log(`  ${C.green}Infrastructure:${C.reset}`);
   console.log('    PostgreSQL    → localhost:5432');
   console.log('    Redis         → localhost:6379');
-  console.log('    Qdrant        → localhost:6333');
   console.log('    LiteLLM       → localhost:4000');
   console.log('    Neo4j         → localhost:7474 (browser) / :7687 (bolt)');
   console.log('');

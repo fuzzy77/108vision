@@ -62,23 +62,6 @@ services:
       timeout: 5s
       retries: 5
 
-  qdrant:
-    image: qdrant/qdrant:latest
-    container_name: aia-qdrant
-    restart: unless-stopped
-    ports:
-      - "6333:6333"
-    volumes:
-      - qdrant-data:/qdrant/storage
-      - ./infrastructure/qdrant/config.yaml:/qdrant/config/production.yaml:ro
-    networks:
-      - aia-network
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:6333/healthz"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   litellm:
     image: ghcr.io/berriai/litellm:main-latest
     container_name: aia-litellm
@@ -144,7 +127,6 @@ services:
 volumes:
   postgres-data:
   redis-data:
-  qdrant-data:
   neo4j_data:
   neo4j_logs:
   traefik-certs:

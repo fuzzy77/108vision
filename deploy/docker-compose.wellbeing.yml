@@ -10,7 +10,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Production
       ASPNETCORE_URLS: http://+:8080
-      ConnectionStrings__Postgres: "Host=postgres;Port=5432;Database=wellbeing;Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
+      ConnectionStrings__Postgres: "${WB_DATABASE_URL}"
       UserDataStorage__Provider: Postgres
       Jwt__Key: ${WB_JWT_KEY}
       Jwt__Issuer: https://${WB_DOMAIN}
@@ -40,9 +40,6 @@ services:
       AudioEffects__Provider: NWaves
       Catalog__Provider: Database
       Catalog__SeedOnStartupIfEmpty: "true"
-    depends_on:
-      postgres:
-        condition: service_healthy
     networks:
       - internal
     volumes:

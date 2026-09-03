@@ -88,7 +88,6 @@ show_status() {
   echo -e "${BLUE}Health Checks:${NC}"
   check_health "PostgreSQL" "docker compose exec -T postgres pg_isready -U aia -d aia_platform" 2>/dev/null
   check_health "Redis" "docker compose exec -T redis redis-cli ping" 2>/dev/null
-  check_health "Qdrant" "curl -sf http://localhost:6333/healthz" 2>/dev/null
   check_health "LiteLLM" "curl -sf http://localhost:4000/health" 2>/dev/null
   check_health "Neo4j" "curl -sf http://localhost:7474" 2>/dev/null
   check_health "Gateway" "curl -sf http://localhost:3000/health" 2>/dev/null
@@ -175,7 +174,7 @@ if [ "$SKIP_INFRA" = false ]; then
   # Wait for health
   log "Waiting for services to be healthy..."
   RETRIES=30
-  for service in postgres redis qdrant litellm; do
+  for service in postgres redis litellm; do
     for i in $(seq 1 $RETRIES); do
       if docker compose ps "$service" 2>/dev/null | grep -q "healthy"; then
         ok "$service is healthy"
@@ -251,7 +250,6 @@ echo ""
 echo -e "  ${GREEN}Infrastructure:${NC}"
 echo -e "    PostgreSQL    → localhost:5432"
 echo -e "    Redis         → localhost:6379"
-echo -e "    Qdrant        → localhost:6333"
 echo -e "    LiteLLM       → localhost:4000"
 echo -e "    Neo4j         → localhost:7474 (browser) / :7687 (bolt)"
 echo ""

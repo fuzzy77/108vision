@@ -11,6 +11,16 @@ export interface ExperienceItem {
   title: string;
   description: string;
 }
+export interface ClientItem {
+  name: string;
+  role: string;
+  text: string;
+}
+
+export interface AiExpertiseItem {
+  title: string;
+  text: string;
+}
 
 export interface ChiSiamoContent {
   meta: { title: string; description: string };
@@ -24,6 +34,8 @@ export interface ChiSiamoContent {
   skills: { heading: string; groups: SkillGroup[] };
   philosophy: { heading: string; items: PrincipleCard[] };
   experience: { heading: string; intro: string; items: ExperienceItem[] };
+  clients: { heading: string; intro: string; items: ClientItem[] };
+  aiExpertise: { heading: string; intro: string; items: AiExpertiseItem[] };
   cta: { title: string; description: string; ctaText: string };
 }
 
@@ -38,9 +50,9 @@ const content: LocaleContent<ChiSiamoContent> = {
     hero: {
       founderLabel: 'Elios Scoglio, Fondatore',
       title: 'Rigore enterprise, applicato alla scala di una PMI',
-      subtitle: 'Elios Scoglio, fondatore di 108 Vision e Software & Architecture Manager',
+      subtitle: 'Elios Scoglio, fondatore di 108 Vision',
       paragraphs: [
-        'Nel mio ruolo professionale in TicketOne/Eventim Italy lavoro su architettura e software in un contesto enterprise: sistemi complessi, continuità operativa, sicurezza, compliance e decisioni che devono restare comprensibili nel tempo. TicketOne/Eventim è la mia esperienza professionale attuale, non un cliente né un caso studio di 108 Vision.',
+        'L’esperienza maturata in TicketOne/Eventim Italy copre architettura e software in un contesto enterprise: sistemi complessi, continuità operativa, sicurezza, compliance e decisioni che devono restare comprensibili nel tempo.',
         'Ho fondato 108 Vision per portare quel metodo nelle PMI italiane senza importare la complessità dell’enterprise: trade-off espliciti, responsabilità chiare e software che il team possa governare.',
         '108 Vision prende ownership delle decisioni tecniche e dei deliverable concordati. Se hai già un team, gli diamo direzione. Se il software manca o non regge, lo progettiamo, costruiamo e facciamo evolvere.',
       ],
@@ -79,9 +91,27 @@ const content: LocaleContent<ChiSiamoContent> = {
       heading: 'Da dove nasce il metodo',
       intro: 'L’esperienza di Elios dà origine al metodo; gli impegni verso il cliente sono quelli assunti da 108 Vision. I due contesti restano distinti.',
       items: [
-        { period: 'Ruolo professionale attuale', title: 'Software & Architecture Manager — TicketOne/Eventim Italy', description: 'Architettura, governance e leadership software in un contesto enterprise regolato. È esperienza personale di Elios, non un incarico cliente di 108 Vision.' },
+        { period: 'Esperienza enterprise', title: 'TicketOne / CTS Eventim Group', description: 'Architettura, governance e modernizzazione di sistemi ticketing mission-critical.' },
         { period: 'Percorso professionale', title: 'Architettura, sviluppo e leadership tecnica', description: 'Esperienza costruita tra progettazione di sistemi, delivery, modernizzazione e crescita dei team, con responsabilità progressivamente più ampie.' },
         { period: '108 Vision', title: 'Partner tecnico per PMI italiane', description: 'Lo stesso rigore decisionale viene adattato a budget, team e vincoli delle PMI, scegliendo solo la complessità che serve.' },
+      ],
+    },
+    clients: {
+      heading: 'Clienti con cui ho lavorato',
+      intro: 'Esperienza costruita su prodotti reali e contesti in cui ho guidato delivery, mobile e AI.',
+      items: [
+        { name: 'TicketOne / CTS Eventim', role: 'Head of Software Architecture & Development', text: 'Architettura, governance e modernizzazione di sistemi ticketing mission-critical.' },
+        { name: 'Aruba S.p.A.', role: 'Engineering Manager / Tech Lead', text: 'Delivery cloud, app mobile React Native/Expo e automazione per le operations.' },
+        { name: 'Toscano Immobiliare', role: 'Technical Leader / Cloud Architect', text: 'Document intelligence, semantic search e app nativa Blazor Hybrid/.NET MAUI.' },
+      ],
+    },
+    aiExpertise: {
+      heading: 'Expertise AI: dal prodotto al cliente',
+      intro: 'L’AI la costruiamo e la usiamo davvero, non la raccontiamo: dalla mia app personale alle esperienze con i clienti.',
+      items: [
+        { title: 'App personale', text: 'WellBeing e l’AIA Platform: generazione, retrieval e semantic search, pipeline LLM con validazione, fallback e controllo dei costi.' },
+        { title: 'Aruba', text: 'AI applicata all’analisi dei log e all’automazione operativa, dentro i controlli di qualità e rilascio esistenti.' },
+        { title: 'Toscano Immobiliare', text: 'Document intelligence, valutazione predittiva, semantic search e contenuti generativi integrati in una piattaforma multi-tenant.' },
       ],
     },
     cta: {
@@ -100,9 +130,9 @@ const content: LocaleContent<ChiSiamoContent> = {
     hero: {
       founderLabel: 'Elios Scoglio, Founder',
       title: 'Enterprise rigour, applied at SME scale',
-      subtitle: 'Elios Scoglio, founder of 108 Vision and Software & Architecture Manager',
+      subtitle: 'Elios Scoglio, founder of 108 Vision',
       paragraphs: [
-        'In my professional role at TicketOne/Eventim Italy, I work on architecture and software in an enterprise environment: complex systems, operational continuity, security, compliance, and decisions that must remain understandable over time. TicketOne/Eventim is my current professional experience, not a 108 Vision client or case study.',
+        'Experience gained at TicketOne/Eventim Italy spans architecture and software in an enterprise environment: complex systems, operational continuity, security, compliance, and decisions that must remain understandable over time.',
         'I founded 108 Vision to bring that method to Italian SMEs without importing enterprise complexity: explicit trade-offs, clear accountability, and software the team can govern.',
         '108 Vision takes ownership of agreed technical decisions and deliverables. If you already have a team, we give it direction. If the software is missing or no longer holds up, we design, build, and evolve it.',
       ],
@@ -129,9 +159,27 @@ const content: LocaleContent<ChiSiamoContent> = {
       heading: 'Where the method comes from',
       intro: "Elios's experience shapes the method; client commitments are made by 108 Vision. The two contexts remain separate.",
       items: [
-        { period: 'Current professional role', title: 'Software & Architecture Manager — TicketOne/Eventim Italy', description: "Architecture, governance, and software leadership in a regulated enterprise environment. This is Elios's professional experience, not a 108 Vision client engagement." },
+        { period: 'Enterprise experience', title: 'TicketOne / CTS Eventim Group', description: 'Architecture, governance, and modernisation of mission-critical ticketing systems.' },
         { period: 'Professional background', title: 'Architecture, development, and technical leadership', description: 'Experience spanning system design, delivery, modernisation, and team growth, with progressively broader responsibility.' },
         { period: '108 Vision', title: 'Technical partner for Italian SMEs', description: 'The same decision-making rigour is adapted to SME budgets, teams, and constraints, choosing only the complexity that is needed.' },
+      ],
+    },
+    clients: {
+      heading: 'Clients I have worked with',
+      intro: 'Experience built on real products and contexts where I led delivery, mobile, and AI.',
+      items: [
+        { name: 'TicketOne / CTS Eventim', role: 'Head of Software Architecture & Development', text: 'Architecture, governance, and modernisation of mission-critical ticketing systems.' },
+        { name: 'Aruba S.p.A.', role: 'Engineering Manager / Tech Lead', text: 'Cloud delivery, React Native/Expo mobile app, and automation for operations.' },
+        { name: 'Toscano Immobiliare', role: 'Technical Leader / Cloud Architect', text: 'Document intelligence, semantic search, and a native Blazor Hybrid/.NET MAUI app.' },
+      ],
+    },
+    aiExpertise: {
+      heading: 'AI expertise: from my own app to client work',
+      intro: 'We build and use AI for real, not just talk about it: from my personal app to client engagements.',
+      items: [
+        { title: 'Personal app', text: 'WellBeing and the AIA Platform: generation, retrieval and semantic search, LLM pipelines with validation, fallbacks and cost control.' },
+        { title: 'Aruba', text: 'AI applied to log analysis and operational automation, inside existing quality and release controls.' },
+        { title: 'Toscano Immobiliare', text: 'Document intelligence, predictive valuation, semantic search and generative content integrated into a multi-tenant platform.' },
       ],
     },
     cta: {

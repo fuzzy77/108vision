@@ -1,0 +1,201 @@
+# ============================================================
+# 108 Vision — static.nginx.conf.template
+# envsubst: solo ${AIA_DOMAIN} (compose imposta NGINX_ENVSUBST_FILTER=AIA_DOMAIN,
+# altrimenti $uri/$host verrebbero sostituiti)
+# ============================================================
+
+# --- default: healthcheck + rifiuto host sconosciuti ---
+server {
+    listen 80 default_server;
+    server_name _;
+
+    location = /healthz {
+        add_header Content-Type text/plain;
+        return 200 "ok\n";
+    }
+
+    location / {
+        return 404;
+    }
+}
+
+# --- apex → www (redirect permanente) ---
+server {
+    listen 80;
+    server_name ${AIA_DOMAIN};
+
+    location = /healthz {
+        add_header Content-Type text/plain;
+        return 200 "ok\n";
+    }
+
+    location / {
+        return 301 https://www.${AIA_DOMAIN}$request_uri;
+    }
+}
+
+# --- website marketing: www.${AIA_DOMAIN} (Astro static) ---
+server {
+    listen 80;
+    server_name www.${AIA_DOMAIN};
+
+    root /usr/share/nginx/html/site;
+    index index.html;
+
+    gzip on;
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml text/javascript image/svg+xml;
+    gzip_vary on;
+    gzip_min_length 256;
+
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;
+
+    location = /healthz {
+        add_header Content-Type text/plain;
+        return 200 "ok\n";
+    }
+
+    # Asset Astro con hash in nome → cache aggressiva
+    location /_astro/ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
+    # Newsletter form → gateway (lead capture, Brevo)
+    location = /api/subscribe {
+        proxy_pass http://aia-gateway:3000/api/public/lead/subscribe;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Astro build 'directory': /pagina/ → /pagina/index.html (niente SPA fallback: SEO)
+    location / {
+        try_files $uri $uri/index.html $uri/ =404;
+    }
+}
+
+# --- dashboard: app.${AIA_DOMAIN} ---
+server {
+    listen 80;
+    server_name app.${AIA_DOMAIN};
+
+    root /usr/share/nginx/html/app;
+    index index.html;
+
+    gzip on;
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml text/javascript image/svg+xml;
+    gzip_vary on;
+    gzip_min_length 256;
+
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+
+    location = /healthz {
+        add_header Content-Type text/plain;
+        return 200 "ok\n";
+    }
+
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
+    # API proxy (fallback; in genere Traefik instrada api.* direttamente)
+    location /api/ {
+        proxy_pass http://aia-gateway:3000/api/;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 30s;
+        proxy_connect_timeout 5s;
+    }
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}
+
+# --- client chat: chat.${AIA_DOMAIN} ---
+server {
+    listen 80;
+    server_name chat.${AIA_DOMAIN};
+
+    root /usr/share/nginx/html/chat;
+    index index.html;
+
+    gzip on;
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml text/javascript image/svg+xml;
+    gzip_vary on;
+    gzip_min_length 256;
+
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+
+    location = /healthz {
+        add_header Content-Type text/plain;
+        return 200 "ok\n";
+    }
+
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
+    # Service worker — mai in cache
+    location = /sw.js {
+        expires off;
+        add_header Cache-Control "no-cache, no-store, must-revalidate";
+    }
+
+    # API proxy con streaming SSE
+    location /api/ {
+        proxy_pass http://aia-gateway:3000/api/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_buffering off;
+        proxy_cache off;
+    }
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}
+
+# --- downloads: dl.${AIA_DOMAIN} (bind volume montato su html/downloads) ---
+server {
+    listen 80;
+    server_name dl.${AIA_DOMAIN};
+
+    root /usr/share/nginx/html/downloads;
+
+    gzip on;
+    gzip_types text/plain text/css application/json application/javascript image/svg+xml;
+    gzip_vary on;
+    gzip_min_length 256;
+
+    add_header X-Content-Type-Options "nosniff" always;
+
+    location = /healthz {
+        add_header Content-Type text/plain;
+        return 200 "ok\n";
+    }
+
+    autoindex on;
+    autoindex_exact_size off;
+    autoindex_localtime off;
+}

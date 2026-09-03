@@ -3,7 +3,6 @@ import { eq } from 'drizzle-orm';
 import { type Result, success, failure, AppError } from '@aia/shared';
 import { getDb } from '../lib/db.js';
 import { tenants, users, agents, invitations, agentTemplates } from '../db/schema.js';
-import { ensureCollection } from '../lib/qdrant.js';
 import { emailService } from './email.service.js';
 
 export interface CreateTenantInput {
@@ -25,9 +24,8 @@ export interface InviteUserInput {
  */
 export const onboardingService = {
   /**
-   * Create a new tenant with full provisioning:
-   * 1. Insert tenant record in DB
-   * 2. Create Qdrant collection for knowledge base
+   * Insert tenant record in DB.
+   * Knowledge base vectors live in shared.kb_chunks (pgvector) — no per-tenant provisioning needed.
    */
   async createTenant(
     input: CreateTenantInput,
@@ -66,9 +64,6 @@ export const onboardingService = {
       if (!tenant) {
         return failure(new AppError('TENANT_CREATE_FAILED', 'Failed to create tenant', 500));
       }
-
-      // Provision Qdrant collection
-      await ensureCollection(tenant.id);
 
       return success({ tenantId: tenant.id, slug: tenant.slug });
     } catch (error) {

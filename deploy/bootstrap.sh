@@ -68,18 +68,15 @@ mkdir -p "$DEPLOY_DIR/repos" "$DEPLOY_DIR/public/downloads"
 # --- 7. Copia i file di deploy ---
 cp "$SCRIPT_DIR"/docker-compose.yml \
    "$SCRIPT_DIR"/docker-compose.apps.yml \
-   "$SCRIPT_DIR"/docker-compose.website.yml \
    "$SCRIPT_DIR"/docker-compose.wellbeing.yml \
-   "$SCRIPT_DIR"/init-databases.sql \
    "$SCRIPT_DIR"/litellm-config.yaml \
+   "$SCRIPT_DIR"/bootstrap-neon.sql \
    "$DEPLOY_DIR/"
 
 cp "$SCRIPT_DIR"/deploy.sh "$DEPLOY_DIR/deploy.sh"
 chmod +x "$DEPLOY_DIR/deploy.sh"
 cp "$SCRIPT_DIR"/webhook-server.mjs "$DEPLOY_DIR/webhook-server.mjs"
 
-# Dockerfile del sito (non è ancora nel repo aia-website)
-cp "$SCRIPT_DIR"/website.Dockerfile "$DEPLOY_DIR/repos/108vision/aia-website/Dockerfile"
 
 # --- 8. .env ---
 if [ ! -f "$DEPLOY_DIR/.env" ]; then
@@ -119,14 +116,19 @@ chown -R deploy:deploy "$DEPLOY_DIR"
 
 log "WEBHOOK_SECRET (incollalo nel webhook GitHub): $WEBHOOK_SECRET"
 
-# --- 10. Primo avvio ---
+# --- 10. Schema Neon + primo avvio ---
+log "DOPO il bootstrap: crea i 3 DB su Neon (console: aia_platform, litellm, wellbeing),"
+log "compila \$NEON_* / \$WB_DATABASE_URL in $DEPLOY_DIR/.env, poi esegui lo schema:"
+log "  sudo -u deploy bash -c 'cd $DEPLOY_DIR && set -a && . ./.env && set +a && psql \"\$NEON_DATABASE_URL\" -f bootstrap-neon.sql'"
+
 cd "$DEPLOY_DIR"
-log "Primo avvio (build sul VPS — può richiedere diversi minuti)..."
+log "Primo avvio infra..."
+docker compose -f docker-compose.yml up -d
+log "Build app (può richiedere diversi minuti)..."
 docker compose -f docker-compose.yml \
   -f docker-compose.apps.yml \
-  -f docker-compose.website.yml \
   -f docker-compose.wellbeing.yml \
   up -d --build
 
 log "Fatto. Stato:"
-docker compose -f docker-compose.yml -f docker-compose.apps.yml -f docker-compose.website.yml -f docker-compose.wellbeing.yml ps
+docker compose -f docker-compose.yml -f docker-compose.apps.yml -f docker-compose.wellbeing.yml ps

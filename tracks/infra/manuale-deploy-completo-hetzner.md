@@ -1,13 +1,15 @@
 # Manuale Deploy Completo — 108 Vision su Hetzner
 **Target:** setup completo di TUTTI i servizi 108 Vision su un singolo VPS Hetzner
 
-**Server:** Hetzner CX32 — 4 vCPU, 8 GB RAM, 80 GB NVMe, Ubuntu 24.04
+**Server:** Hetzner CX23 — 2 vCPU, 4 GB RAM, 40 GB NVMe, Ubuntu 24.04
 
-**Costo stimato:** ~8 EUR/mese
+**Database:** PostgreSQL su **Neon** (free tier, region eu-central-1, endpoint `-pooler`, scale-to-zero OFF) — nessun DB locale
+
+**Costo stimato:** ~6.70 EUR/mese VPS + 0 EUR Neon free tier
 
 **Tempo stimato setup completo:** 3-4 ore
 
-**Ultimo aggiornamento:** 21 agosto 2026
+**Ultimo aggiornamento:** 30 agosto 2026 (slim CX23: Postgres→Neon, Qdrant rimossa — RAG su pgvector, sito Astro servito dal VPS, static unificato)
 > **Vuoi prima capire cos'è un VPS e perché questo approccio non ti fa pagare GitHub?** Leggi [VPS-Spiegato-Semplice.md](VPS-Spiegato-Semplice.md) in questo stesso folder.
 > **Deploy automatizzato:** il kit in `deploy/` (repo `fuzzy77/108vision`) contiene bootstrap, compose e webhook con i path corretti del monorepo. Le sezioni §5–§7 restano come riferimento della procedura.
 
@@ -17,17 +19,14 @@
 | # | Servizio | Stack | Dominio | Porta interna |
 | --- | --- | --- | --- | --- |
 | 1 | 108 AI Platform — Gateway | Node.js + Hono | api.108vision.it | 3000 |
-| 2 | 108 AI Platform — Dashboard | React + nginx | app.108vision.it | 80 |
-| 3 | 108 AI Platform — Client | React + nginx | chat.108vision.it | 80 |
-| 4 | 108 AI Platform — Desktop Agent | Bun compiled binary | dl.108vision.it | 80 |
-| 5 | Sito Web 108 Vision | Astro + TinaCMS | www.108vision.it | 4321 |
-| 6 | WellBeing API | .NET 9 + PostgreSQL | wellbeing.108vision.it | 8080 |
-| 7 | Infra: PostgreSQL 16 + pgvector | Shared, multi-DB | interno | 5432 |
-| 8 | Infra: Redis 7 | Cache condivisa | interno | 6379 |
-| 9 | Infra: Qdrant | Vector DB | interno | 6333 |
-| 10 | Infra: Neo4j 5 Community | Graph KB | interno | 7687 |
-| 11 | Infra: LiteLLM | AI Gateway | llm.108vision.it | 4000 |
-| 12 | Infra: Traefik v3 | Reverse proxy + SSL | — | 80/443 |
+| 2 | 108 AI Platform — Static (Sito + Dashboard + Client + Downloads) | Astro + React + nginx (un container, 5 vhost) | www. / app. / chat. / dl.108vision.it (+ apex 301) | 80 |
+| 3 | Sito Web 108 Vision | Astro statico — buildato nello stesso container `aia-static` | 108vision.it → 301 www | 80 |
+| 4 | WellBeing API | .NET 9 | wellbeing.108vision.it | 8080 |
+| 5 | PostgreSQL 16 + pgvector | **Neon (esterno)** — shared, multi-DB; RAG in `shared.kb_chunks` | esterno | 5432 |
+| 6 | Infra: Redis 7 | Cache condivisa | interno | 6379 |
+| 7 | Infra: Neo4j 5 Community | Graph KB | interno | 7687 |
+| 8 | Infra: LiteLLM | AI Gateway | llm.108vision.it | 4000 |
+| 9 | Infra: Traefik v3 | Reverse proxy + SSL | — | 80/443 |
 
 ---
 
@@ -62,7 +61,7 @@ Prima di iniziare, ecco la mappa di **dove** devi andare per ogni passo:
 | 4 | Clone repos sul server | Terminale SSH nel server | GitHub deploy key |
 | 5 | Creare file .env con secrets | Terminale SSH nel server | API keys: DashScope, DeepSeek |
 | 6 | Avviare i container | Terminale SSH nel server | Nessuno |
-| 7 | Migrare sito da Vercel | [admin.aruba.it](https://admin.aruba.it) + [vercel.com](https://vercel.com) | Account Aruba + Vercel |
+| 7 | Setup Neon (DB + schema) | [console.neon.tech](https://console.neon.tech) + terminale | Account Neon (free) |
 | 8 | Verificare tutto | Browser | Nessuno |
 
 **Tempo totale stimato:** 3-4 ore (la maggior parte e attesa DNS)
@@ -79,7 +78,7 @@ Prima di iniziare, ecco la mappa di **dove** devi andare per ogni passo:
 | --- | --- |
 | Location | Falkenstein (fsn1) |
 | Image | Ubuntu 24.04 |
-| Type | Shared vCPU → CX32 (4 vCPU, 8 GB RAM, 80 GB NVMe) |
+| Type | Shared vCPU → **CX23** (2 vCPU, 4 GB RAM, 40 GB NVMe) — basta perché Postgres è su Neon |
 | Networking | IPv4 + IPv6 (default) |
 | SSH Key | Aggiungi la tua (vedi sotto) |
 | Backups | Si (opzionale, +20% = ~1.50 EUR/mese) |
@@ -87,7 +86,7 @@ Prima di iniziare, ecco la mappa di **dove** devi andare per ogni passo:
 
 1. Clicca **Create & Buy Now**
 2. Dopo ~30 secondi il server e pronto — segna l'**IP** dalla pagina
-**Costo:** ~7.50 EUR/mese.
+**Costo:** ~6.70 EUR/mese.
 
 ### Creare la SSH key (sul tuo PC, prima di comprare il server)
 Apri **PowerShell** sul tuo PC Windows:
@@ -211,33 +210,34 @@ timedatectl set-timezone Europe/Rome
 1. Login su admin.aruba.it
 2. Vai su **Hosting / Domini** → seleziona `108vision.it`
 3. Cerca **Gestione DNS** (o "DNS Avanzato")
-4. **Elimina** eventuali record A/CNAME preesistenti per `@` e `www` che puntano a Vercel (`76.76.21.21` o `cname.vercel-dns.com`) — li ricreiamo verso Hetzner
-5. **Aggiungi** i seguenti record A (uno per uno):
+4. **Tutti** i record puntano al VPS — sito compreso. Rimuovi eventuali record Vercel residui su `@` e `www` (A `76.76.21.21` / CNAME `cname.vercel-dns.com`).
+5. **Aggiungi/modifica** i seguenti record A (uno per uno):
 
 | Nome | Tipo | Valore (il tuo IP Hetzner) | Servizio |
 | --- | --- | --- | --- |
-| @ | A | <IP_SERVER> | Redirect a www |
-| www | A | <IP_SERVER> | Sito web 108 Vision |
+| @ | A | <IP_SERVER> | Sito web — redirect 301 a www |
+| www | A | <IP_SERVER> | Sito web 108 Vision (aia-static) |
 | api | A | <IP_SERVER> | 108 AI Platform — Gateway |
-| app | A | <IP_SERVER> | 108 AI Platform — Dashboard |
-| chat | A | <IP_SERVER> | 108 AI Platform — Client |
-| dl | A | <IP_SERVER> | 108 AI Platform — Downloads |
+| app | A | <IP_SERVER> | 108 AI Platform — Dashboard (aia-static) |
+| chat | A | <IP_SERVER> | 108 AI Platform — Client (aia-static) |
+| dl | A | <IP_SERVER> | 108 AI Platform — Downloads (aia-static) |
 | llm | A | <IP_SERVER> | LiteLLM AI Gateway |
 | wellbeing | A | <IP_SERVER> | WellBeing API |
 | traefik | A | <IP_SERVER> | Dashboard Traefik (admin) |
 
-> **Alternativa piu veloce:** un singolo record **wildcard** *di tipo A con valore *`<IP_SERVER>`* copre tutti i sottodomini con un solo record. Su Aruba: Nome = *, Tipo = A, Valore = IP.
+> **Nota wildcard:** un record *di tipo A con valore *`<IP_SERVER>`* copre i sottodomini ma NON l'apex `@` — per `108vision.it` serve comunque il record A dedicato su `@`. Su Aruba: Nome = *, Tipo = A, Valore = IP, più Nome = (vuoto), Tipo = A, Valore = IP.
 
 1. Salva e attendi **15-60 minuti** per la propagazione (i .it possono richiedere fino a 24h nel caso peggiore)
 **Verifica dal tuo PC** (dopo 15-30 min):
 
 ```bash
-nslookup api.108vision.it
-nslookup www.108vision.it
-nslookup wellbeing.108vision.it
+nslookup api.108vision.it      # → IP del server Hetzner
+nslookup www.108vision.it      # → IP del server Hetzner
+nslookup 108vision.it          # → IP del server Hetzner
+nslookup wellbeing.108vision.it # → IP del server Hetzner
 
 ```
-Tutti devono restituire l'IP del server Hetzner.
+Tutti i domini devono restituire l'IP del server Hetzner.
 
 > **IMPORTANTE:** NON toccare i record MX, TXT, DKIM, DMARC che hai gia per Zoho Mail e Brevo — quelli restano invariati. Modifica SOLO i record A/CNAME per hosting web.
 
@@ -259,15 +259,14 @@ cd /opt/108vision
 
 ```bash
 cat > /opt/108vision/.env << 'EOF'
-# === Database PostgreSQL (condiviso) ===
-POSTGRES_USER=admin108
-POSTGRES_PASSWORD=<GENERA: openssl rand -base64 32>
+# === Neon (PostgreSQL serverless — region eu-central-1, endpoint -pooler, scale-to-zero OFF) ===
+# 3 database nello stesso progetto: aia_platform, litellm, wellbeing
+NEON_DATABASE_URL=postgresql://USER:PW@ep-xxx-pooler.eu-central-1.aws.neon.tech/aia_platform?sslmode=require
+NEON_LITELLM_DATABASE_URL=postgresql://USER:PW@ep-xxx-pooler.eu-central-1.aws.neon.tech/litellm?sslmode=require
+WB_DATABASE_URL=Host=ep-xxx-pooler.eu-central-1.aws.neon.tech;Database=wellbeing;Username=USER;Password=PW
 
 # === Redis ===
 REDIS_PASSWORD=<GENERA: openssl rand -base64 32>
-
-# === Qdrant ===
-QDRANT_API_KEY=<GENERA: openssl rand -base64 32>
 
 # === Neo4j ===
 NEO4J_PASSWORD=<GENERA: openssl rand -base64 32>
@@ -281,7 +280,6 @@ AIA_AUTH_SECRET=<GENERA: openssl rand -base64 64>
 AIA_DOMAIN=108vision.it
 
 # === WellBeing API ===
-WB_DB_PASSWORD=<GENERA: openssl rand -base64 32>
 WB_JWT_KEY=<GENERA: openssl rand -base64 48>
 WB_DOMAIN=wellbeing.108vision.it
 WB_GOOGLE_CLIENT_ID=25086642155-dc094bf2782sfvkrs7a67mbenu0q7r32.apps.googleusercontent.com
@@ -291,11 +289,6 @@ WB_FACEBOOK_APP_SECRET=<TUA_SECRET>
 WB_ADMIN_APIKEY=<GENERA: openssl rand -base64 32>
 WB_DASHSCOPE_API_KEY=<TUA_KEY_DASHSCOPE>
 WB_QWEN3TTS_API_KEY=<TUA_KEY_DASHSCOPE>
-
-# === Sito 108vision.it ===
-SITE_DOMAIN=www.108vision.it
-TINA_PUBLIC_CLIENT_ID=<TUA_TINA_CLIENT_ID>
-TINA_TOKEN=<TUA_TINA_TOKEN>
 
 # === AI Provider Keys (LiteLLM) ===
 DEEPSEEK_API_KEY=<TUA_KEY>
@@ -353,35 +346,13 @@ services:
       - "traefik.http.routers.traefik-dashboard.middlewares=traefik-auth"
       - "traefik.http.middlewares.traefik-auth.basicauth.users=${TRAEFIK_DASHBOARD_AUTH}"
 
-  # === DATABASES ===
-  postgres:
-    image: pgvector/pgvector:pg16
-    container_name: postgres
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: aia_platform
-    volumes:
-      - pg_data:/var/lib/postgresql/data
-      - ./init-databases.sql:/docker-entrypoint-initdb.d/init.sql:ro
-    networks:
-      - internal
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    deploy:
-      resources:
-        limits:
-          memory: 1G
-
+  # === CACHE / QUEUE ===
+  # PostgreSQL è su Neon (esterno): nessun container DB su questo VPS.
   redis:
     image: redis:7-alpine
     container_name: redis
     restart: unless-stopped
-    command: redis-server --requirepass ${REDIS_PASSWORD} --maxmemory 256mb --maxmemory-policy allkeys-lru
+    command: redis-server --requirepass ${REDIS_PASSWORD} --maxmemory 64mb --maxmemory-policy allkeys-lru
     volumes:
       - redis_data:/data
     networks:
@@ -394,22 +365,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 300M
-
-  qdrant:
-    image: qdrant/qdrant:latest
-    container_name: qdrant
-    restart: unless-stopped
-    environment:
-      QDRANT__SERVICE__API_KEY: ${QDRANT_API_KEY}
-    volumes:
-      - qdrant_data:/qdrant/storage
-    networks:
-      - internal
-    deploy:
-      resources:
-        limits:
-          memory: 256M
+          memory: 96M
 
   neo4j:
     image: neo4j:5-community
@@ -437,15 +393,12 @@ services:
     restart: unless-stopped
     environment:
       LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY}
-      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/litellm
+      DATABASE_URL: ${NEON_LITELLM_DATABASE_URL}
       DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY}
       DASHSCOPE_API_KEY: ${DASHSCOPE_API_KEY}
     volumes:
       - ./litellm-config.yaml:/app/config.yaml:ro
     command: ["--config", "/app/config.yaml", "--port", "4000"]
-    depends_on:
-      postgres:
-        condition: service_healthy
     networks:
       - internal
     labels:
@@ -461,32 +414,28 @@ services:
 
 volumes:
   traefik-certs:
-  pg_data:
   redis_data:
-  qdrant_data:
-  neo4j_data:
+  neo4j_data
 EOF
 
 ```
 
-### 4.4 Script inizializzazione multi-database
+### 4.4 Inizializzazione Neon (sostituisce init-databases.sql)
+
+Sul VPS, dopo il bootstrap del repo (file reale: `deploy/bootstrap-neon.sql`, copiato in `/opt/108vision/`):
 
 ```bash
-cat > /opt/108vision/init-databases.sql << 'EOF'
--- Crea database e utenti aggiuntivi (il DB principale aia_platform viene creato da POSTGRES_DB)
-CREATE DATABASE litellm;
-CREATE DATABASE wellbeing;
+# 1. crea i DB extra una tantum (aia_platform è il DB di default del progetto Neon)
+psql "$NEON_DATABASE_URL" -c 'CREATE DATABASE litellm'
+psql "$NEON_DATABASE_URL" -c 'CREATE DATABASE wellbeing'
 
--- Estensioni
-\c aia_platform
-CREATE EXTENSION IF NOT EXISTS vector;
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
-\c wellbeing
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-EOF
-
+# 2. estensioni (vector, uuid-ossp, pg_trgm, unaccent) + schema shared + migrations 001→008
+#    (i \ir del file si risolvono relativi a /opt/108vision — esegui DA quella directory)
+cd /opt/108vision && set -a && . ./.env && set +a
+psql "$NEON_DATABASE_URL" -f bootstrap-neon.sql
 ```
+
+LiteLLM e la API .NET creano il proprio schema automaticamente al primo avvio.
 
 ### 4.5 LiteLLM config
 
@@ -530,17 +479,15 @@ version: "3.9"
 services:
   aia-gateway:
     build:
-      context: ./repos/aia-platform
+      context: ./repos/108vision/aia-platform
       dockerfile: apps/gateway/Dockerfile
     container_name: aia-gateway
     restart: unless-stopped
     environment:
       NODE_ENV: production
       PORT: 3000
-      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/aia_platform
+      DATABASE_URL: ${NEON_DATABASE_URL}
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
-      QDRANT_URL: http://qdrant:6333
-      QDRANT_API_KEY: ${QDRANT_API_KEY}
       NEO4J_URI: bolt://neo4j:7687
       NEO4J_USER: neo4j
       NEO4J_PASSWORD: ${NEO4J_PASSWORD}
@@ -551,8 +498,6 @@ services:
       JWT_SECRET: ${AIA_JWT_SECRET}
       CORS_ALLOWED_ORIGINS: https://${AIA_DOMAIN},https://app.${AIA_DOMAIN},https://chat.${AIA_DOMAIN}
     depends_on:
-      postgres:
-        condition: service_healthy
       redis:
         condition: service_healthy
     networks:
@@ -574,66 +519,44 @@ services:
         limits:
           memory: 384M
 
-  aia-dashboard:
+  # Dashboard (app.) + client chat (chat.) + downloads (dl.) in UN SOLO nginx.
+  aia-static:
     build:
-      context: ./repos/aia-platform/apps/dashboard
-      dockerfile: Dockerfile
-    container_name: aia-dashboard
+      context: ./repos/108vision/aia-platform
+      dockerfile: deploy/static.Dockerfile
+    container_name: aia-static
     restart: unless-stopped
-    depends_on:
-      - aia-gateway
-    networks:
-      - internal
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.aia-dashboard.rule=Host(`app.${AIA_DOMAIN}`)"
-      - "traefik.http.routers.aia-dashboard.entrypoints=websecure"
-      - "traefik.http.routers.aia-dashboard.tls.certresolver=letsencrypt"
-      - "traefik.http.services.aia-dashboard.loadbalancer.server.port=80"
-    deploy:
-      resources:
-        limits:
-          memory: 64M
-
-  aia-client:
-    build:
-      context: ./repos/aia-platform/apps/client
-      dockerfile: Dockerfile
-    container_name: aia-client
-    restart: unless-stopped
-    depends_on:
-      - aia-gateway
-    networks:
-      - internal
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.aia-client.rule=Host(`chat.${AIA_DOMAIN}`)"
-      - "traefik.http.routers.aia-client.entrypoints=websecure"
-      - "traefik.http.routers.aia-client.tls.certresolver=letsencrypt"
-      - "traefik.http.services.aia-client.loadbalancer.server.port=80"
-    deploy:
-      resources:
-        limits:
-          memory: 64M
-
-  aia-downloads:
-    image: nginx:1.27-alpine
-    container_name: aia-downloads
-    restart: unless-stopped
+    environment:
+      AIA_DOMAIN: ${AIA_DOMAIN}
+      NGINX_ENVSUBST_FILTER: AIA_DOMAIN
     volumes:
-      - /opt/108vision/public/downloads:/usr/share/nginx/html:ro
+      - /opt/108vision/public/downloads:/usr/share/nginx/html/downloads:ro
+    depends_on:
+      - aia-gateway
     networks:
       - internal
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.aia-downloads.rule=Host(`dl.${AIA_DOMAIN}`)"
-      - "traefik.http.routers.aia-downloads.entrypoints=websecure"
-      - "traefik.http.routers.aia-downloads.tls.certresolver=letsencrypt"
-      - "traefik.http.services.aia-downloads.loadbalancer.server.port=80"
+      - "traefik.http.routers.aia-app.rule=Host(`app.${AIA_DOMAIN}`)"
+      - "traefik.http.routers.aia-app.entrypoints=websecure"
+      - "traefik.http.routers.aia-app.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.aia-chat.rule=Host(`chat.${AIA_DOMAIN}`)"
+      - "traefik.http.routers.aia-chat.entrypoints=websecure"
+      - "traefik.http.routers.aia-chat.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.aia-dl.rule=Host(`dl.${AIA_DOMAIN}`)"
+      - "traefik.http.routers.aia-dl.entrypoints=websecure"
+      - "traefik.http.routers.aia-dl.tls.certresolver=letsencrypt"
+      - "traefik.http.services.aia-static.loadbalancer.server.port=80"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/healthz"]
+      interval: 30s
+      timeout: 3s
+      start_period: 5s
+      retries: 3
     deploy:
       resources:
         limits:
-          memory: 32M
+          memory: 48M
 EOF
 
 ```
@@ -656,195 +579,17 @@ mkdir -p /opt/108vision/public/downloads
 
 ---
 
-## 6. Deploy: Sito Web 108vision.it
-Il sito e attualmente su **Vercel** (free tier). Questa sezione copre sia il deploy su Hetzner che la procedura di migrazione da Vercel.
+## 6. Sito Web 108vision.it — servito dal VPS
+Il sito (repo `aia-website/`, Astro `output: 'static'` + TinaCMS) viene **buildato e servito dal container `aia-static`** (stage `site`: `npm ci && astro build` → `/usr/share/nginx/html/site`). Niente adapter/serverless: nginx serve `www.108vision.it`; l'apex `108vision.it` risponde 301 → www.
 
-### 6.1 docker-compose.website.yml
+1. Build: automatica nel `docker build` di `aia-static` (context = radice del repo `108vision`, quindi vede `aia-website/`).
+2. Form lead-magnet: `POST /api/subscribe` sul vhost www → proxy nginx al gateway (`/api/public/lead/subscribe` → Brevo). Richiede `BREVO_API_KEY` nel `.env`.
+3. DNS: `@` e `www` → IP del VPS (§3).
+4. Verifica: `curl -s -o /dev/null -w "%{http_code}" https://www.108vision.it` → 200; `curl -s -o /dev/null -w "%{http_code}" http://108vision.it` (via https) → 301.
 
-```bash
-cat > /opt/108vision/docker-compose.website.yml << 'EOF'
-version: "3.9"
+TinaCMS: nessun sidecar in produzione — i contenuti live sono quelli committati in `content/`. Flusso: editing locale con `tinacms dev` → commit → push → deploy (§8 webhook).
 
-services:
-  website:
-    build:
-      context: ./repos/aia-website
-      dockerfile: Dockerfile
-    container_name: website-108vision
-    restart: unless-stopped
-    environment:
-      NODE_ENV: production
-      TINA_PUBLIC_CLIENT_ID: ${TINA_PUBLIC_CLIENT_ID}
-      TINA_TOKEN: ${TINA_TOKEN}
-    networks:
-      - internal
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.website.rule=Host(`${SITE_DOMAIN}`) || Host(`108vision.it`)"
-      - "traefik.http.routers.website.entrypoints=websecure"
-      - "traefik.http.routers.website.tls.certresolver=letsencrypt"
-      - "traefik.http.services.website.loadbalancer.server.port=4321"
-      # Redirect naked → www
-      - "traefik.http.middlewares.www-redirect.redirectregex.regex=^https://108vision\\.it/(.*)"
-      - "traefik.http.middlewares.www-redirect.redirectregex.replacement=https://www.108vision.it/${1}"
-      - "traefik.http.routers.website.middlewares=www-redirect"
-    healthcheck:
-      test: ["CMD", "node", "-e", "fetch('http://localhost:4321').then(r=>r.ok?process.exit(0):process.exit(1)).catch(()=>process.exit(1))"]
-      interval: 30s
-      timeout: 5s
-      start_period: 20s
-      retries: 3
-    deploy:
-      resources:
-        limits:
-          memory: 256M
-EOF
-
-```
-
-### 6.2 Dockerfile per Astro + TinaCMS
-Crea `repos/aia-website/Dockerfile`:
-
-```dockerfile
-FROM node:20-alpine AS build
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci
-COPY . .
-# TinaCMS genera i file statici del CMS, poi Astro builda il sito
-RUN npx tinacms build && npx astro build
-
-FROM node:20-alpine AS runtime
-WORKDIR /app
-COPY --from=build /app/dist ./dist
-COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/package.json ./
-ENV HOST=0.0.0.0
-ENV PORT=4321
-EXPOSE 4321
-CMD ["node", "./dist/server/entry.mjs"]
-
-```
-
-### 6.3 Clone repository
-
-```bash
-cd /opt/108vision/repos
-# aia-website/ è dentro lo stesso monorepo 108vision clonato al §5.2 (non serve un secondo clone)
-
-```
-
-### 6.4 Avvio
-
-```bash
-cd /opt/108vision
-docker compose -f docker-compose.yml -f docker-compose.website.yml up -d --build website
-
-```
-Verifica:
-
-```bash
-curl -s -o /dev/null -w "%{http_code}" https://www.108vision.it
-# Atteso: 200
-
-```
-
-### 6.5 Migrazione da Vercel a Hetzner — Procedura step-by-step
-La migrazione deve essere fatta con **zero downtime** per il visitatore. La strategia e:
-
-1. Deployare il sito su Hetzner (senza cambiare DNS)
-2. Verificare che funzioni tramite IP diretto
-3. Switchare il DNS da Vercel a Hetzner
-4. Disattivare il progetto su Vercel
-**Step 1: Deploy su Hetzner (senza toccare DNS)**
-
-```bash
-# Il sito e gia in docker-compose.website.yml
-cd /opt/108vision
-docker compose -f docker-compose.yml -f docker-compose.website.yml up -d --build website
-
-# Verifica che il container sia healthy
-docker ps --filter name=website-108vision
-
-```
-**Step 2: Test tramite IP diretto e header Host**
-
-Siccome il DNS punta ancora a Vercel, testa con curl forzando l'Host header:
-
-```bash
-# Dal tuo PC locale (non dal server)
-curl -H "Host: www.108vision.it" --resolve "www.108vision.it:443:<IP_SERVER>" \
-  https://www.108vision.it -v -k
-
-# Oppure aggiungi temporaneamente al tuo file hosts locale:
-# Windows: C:\Windows\System32\drivers\etc\hosts
-# Mac/Linux: /etc/hosts
-# <IP_SERVER>  www.108vision.it  108vision.it
-
-```
-Naviga il sito dal browser con la modifica hosts — verifica:
-
-- [ ] Homepage carica correttamente
-- [ ] Pagine interne funzionano (es. `/risorse`)
-- [ ] CSS/JS/immagini si caricano
-- [ ] Form lead magnet funziona (se chiama API esterne come Brevo)
-- [ ] PDF downloadabili
-**Step 3: Switch DNS (Aruba)**
-
-Quando il sito su Hetzner funziona perfettamente:
-
-1. Vai su Aruba → Gestione DNS → `108vision.it`
-2. **Elimina** i record attuali che puntano a Vercel:
-- Elimina il record A `@` → `76.76.21.21`
-- Elimina il record CNAME `www` → `cname.vercel-dns.com`
-3. **Crea** i nuovi record che puntano a Hetzner:
-
-| Tipo | Host | Valore |
-| --- | --- | --- |
-| A | @ | <IP_SERVER> |
-| A | www | <IP_SERVER> |
-
-1. Attendi propagazione DNS (15-60 minuti, max 24h per i .it)
-**Step 4: Verifica post-migrazione**
-
-```bash
-# Verifica che il DNS punti al nuovo server
-dig +short www.108vision.it
-dig +short 108vision.it
-# Entrambi devono restituire <IP_SERVER>
-
-# Verifica SSL (Traefik emette il certificato Let's Encrypt al primo accesso)
-curl -vI https://www.108vision.it 2>&1 | grep "issuer"
-# Atteso: Let's Encrypt (non Vercel)
-
-# Verifica redirect naked → www
-curl -I http://108vision.it
-# Atteso: 301/308 → https://www.108vision.it
-
-```
-**Step 5: Disattiva Vercel**
-
-1. Vai su Vercel → Project Settings → Domains
-2. Rimuovi `108vision.it` e `www.108vision.it` dai domini custom
-3. (Opzionale) Elimina il progetto su Vercel o lascialo come backup
-**Step 6: Rimuovi file hosts locale**
-
-Se hai modificato `/etc/hosts` o `C:\Windows\System32\drivers\etc\hosts` al punto 2, rimuovi la riga aggiunta.
-
-### 6.6 Rollback a Vercel (se qualcosa va storto)
-Se dopo la migrazione qualcosa non funziona:
-
-1. Su Aruba → ripristina i record DNS di Vercel:
-- A `@` → `76.76.21.21`
-- CNAME `www` → `cname.vercel-dns.com`
-2. Su Vercel → ri-aggiungi i domini custom al progetto
-3. Attendi propagazione (15-60 min)
-Il sito torna su Vercel. Debug il problema su Hetzner con calma.
-
-### 6.7 Brevo (email marketing) — aggiornamento post-migrazione
-Brevo continua a funzionare senza modifiche — i record DNS per email (MX, SPF, DKIM, DMARC) restano invariati perche riguardano la ricezione/invio email, non l'hosting web.
-
-L'unica cosa da verificare: se il form del sito chiama un endpoint API serverless su Vercel (es. `/api/subscribe`), devi spostare quella logica nel container website o nel gateway AIA. Verifica in `aia-website/src/pages/api/` se ci sono route serverless.
+Brevo/email: record MX/SPF/DKIM/DMARC indipendenti, nessuna modifica.
 
 ---
 
@@ -878,7 +623,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Production
       ASPNETCORE_URLS: http://+:8080
-      ConnectionStrings__Postgres: "Host=postgres;Port=5432;Database=wellbeing;Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
+      ConnectionStrings__Postgres: "${WB_DATABASE_URL}"
       UserDataStorage__Provider: Postgres
       Jwt__Key: ${WB_JWT_KEY}
       Jwt__Issuer: https://${WB_DOMAIN}
@@ -908,9 +653,6 @@ services:
       AudioEffects__Provider: NWaves
       Catalog__Provider: Database
       Catalog__SeedOnStartupIfEmpty: "true"
-    depends_on:
-      postgres:
-        condition: service_healthy
     networks:
       - internal
     volumes:
@@ -1011,25 +753,16 @@ EOF
 
 ---
 
-## *8. Database condiviso — Multi-database setup*
-*Una sola istanza PostgreSQL serve tutti i servizi. Il file *`init-databases.sql`* (sezione 4.4) crea i database al primo avvio.*
+## 8. Database — Neon (multi-database)
+Un solo progetto Neon (eu-central-1) serve tutti i servizi con 3 database; lo schema della piattaforma e creato da `bootstrap-neon.sql` (§4.4).
 
-| Database | Utente | Usato da |
+| Database | Variabile env | Usato da |
 | --- | --- | --- |
-| aia_platform | admin108 | 108 AI Gateway |
-| litellm | admin108 | LiteLLM |
-| wellbeing | admin108 | WellBeing API |
+| aia_platform | `NEON_DATABASE_URL` | 108 AI Gateway (+ RAG pgvector in `shared.kb_chunks`) |
+| litellm | `NEON_LITELLM_DATABASE_URL` | LiteLLM (auto-migra al primo avvio) |
+| wellbeing | `WB_DATABASE_URL` | WellBeing API (EF migra al primo avvio) |
 
-> *Per isolamento maggiore puoi creare utenti dedicati modificando *`init-databases.sql`*:*
-
-> 
-```sql
-> CREATE USER aia_user WITH PASSWORD '<pw>';
-> CREATE USER wb_user WITH PASSWORD '<pw>';
-> GRANT ALL ON DATABASE aia_platform TO aia_user;
-> GRANT ALL ON DATABASE wellbeing TO wb_user;
-> 
-```
+Regole: sempre endpoint **`-pooler`**, **scale-to-zero OFF**, `sslmode=require` nelle URL di connessione.
 
 ---
 
@@ -1076,8 +809,8 @@ log "=== Deploy started ==="
 cd "$DEPLOY_DIR"
 
 # Pull repos
-log "Pulling aia-platform..."
-cd repos/aia-platform && git pull origin main && cd "$DEPLOY_DIR"
+log "Pulling 108vision monorepo..."
+cd repos/108vision && git pull origin main && cd "$DEPLOY_DIR"
 
 log "Pulling wellbeing-app..."
 cd repos/wellbeing-app && git pull origin main && cd "$DEPLOY_DIR"
@@ -1131,19 +864,18 @@ mkdir -p "$BACKUP_DIR/postgres" "$BACKUP_DIR/volumes"
 
 source /opt/108vision/.env
 
-# Dump di tutti i database
-for DB in aia_platform wellbeing litellm; do
-    docker exec postgres pg_dump -U "$POSTGRES_USER" -d "$DB" --clean --if-exists --no-owner \
-      | gzip > "$BACKUP_DIR/postgres/${DB}_${DATE}.sql.gz"
-    echo "[$(date)] Backup $DB: $(du -sh "$BACKUP_DIR/postgres/${DB}_${DATE}.sql.gz" | cut -f1)"
-done
+# Dump dei database remoti su Neon (nessun container postgres locale).
+# wellbeing usa Npgsql in WB_DATABASE_URL: per pg_dump definisci in .env anche
+#   NEON_WB_DATABASE_URL=postgresql://USER:PW@ep-xxx-pooler.../wellbeing?sslmode=require
+pg_dump "$NEON_DATABASE_URL" | gzip > "$BACKUP_DIR/postgres/aia_platform_${DATE}.sql.gz"
+pg_dump "$NEON_LITELLM_DATABASE_URL" | gzip > "$BACKUP_DIR/postgres/litellm_${DATE}.sql.gz"
+pg_dump "$NEON_WB_DATABASE_URL" | gzip > "$BACKUP_DIR/postgres/wellbeing_${DATE}.sql.gz"
+echo "[$(date)] Backup Neon completato (PITR nativo di Neon copre il point-in-time)"
 
-# Backup volumi Qdrant e Neo4j (settimanale — controlla il giorno)
+# Backup volume Neo4j (settimanale — controlla il giorno)
 if [ "$(date +%u)" = "7" ]; then
-    for VOLUME in 108vision_qdrant_data 108vision_neo4j_data; do
-        docker run --rm -v "$VOLUME":/data:ro -v "$BACKUP_DIR/volumes":/backup \
-            alpine tar czf "/backup/${VOLUME}_${DATE}.tar.gz" -C /data .
-    done
+    docker run --rm -v "108vision_neo4j_data":/data:ro -v "$BACKUP_DIR/volumes":/backup \
+        alpine tar czf "/backup/108vision_neo4j_data_${DATE}.tar.gz" -C /data .
 fi
 
 # Pulizia vecchi backup
@@ -1212,30 +944,28 @@ chmod +x /opt/108vision/health-check.sh
 
 ## *13. RAM Budget*
 
-### *CX32 — 8 GB RAM + 4 GB swap*
+### CX23 — 4 GB RAM + 4 GB swap (config attuale)
 | Componente | RAM stimata | Note |
 | --- | --- | --- |
-| OS + Docker daemon | ~700 MB | Kernel, systemd, SSH |
+| OS + Docker daemon | ~500 MB | Kernel, systemd, SSH |
 | Traefik v3 | ~50 MB | Reverse proxy |
-| PostgreSQL 16 (3 DB) | ~500 MB | shared_buffers=128MB |
-| Redis 7 | ~80 MB | maxmemory=128mb |
-| Qdrant | ~256 MB | Hard limit 256M |
+| PostgreSQL | **0 — su Neon** | free tier / Launch |
+| Redis 7 | ~96 MB | maxmemory=64mb, hard limit |
+| Qdrant | **rimossa** | RAG su pgvector (Neon) |
 | Neo4j 5 | ~450 MB | Heap 256m + pagecache 128m |
 | LiteLLM | ~400 MB | Hard limit 400M |
 | AIA Gateway (Node.js) | ~250 MB | Hard limit 384M |
-| AIA Dashboard (nginx) | ~20 MB | File statici |
-| AIA Client (nginx) | ~20 MB | File statici |
-| AIA Downloads (nginx) | ~10 MB | File statici |
-| WellBeing API (.NET 9) | ~350 MB | Hard limit 400M |
-| Website (Astro/Node) | ~100 MB | Self-hosted |
-| Subtotale | ~3.2 GB | Carico normale |
-| Buffer disponibile | ~4.8 GB | Picchi, GC |
-| Swap | 4 GB | Safety net per picchi |
+| AIA Static (nginx: sito+dashboard+client+dl, 5 vhost) | ~20 MB | Hard limit 48M |
+| WellBeing API (.NET 9) | ~350 MB | Hard limit 384M |
+| Website (Astro) | 0 — dentro `aia-static` (48M totali nginx) | build in immagine |
+| Subtotale limits | ~1.76 GB | Hard limit compose |
+| Carico reale tipico | ~2.5-3 GB | Con OS/Docker |
+| Swap | 4 GB | Safety net per picchi/build |
 
-***Conclusione:**** 8 GB + 4 GB swap regge tutto con margine sufficiente per uso moderato. Neo4j funziona con heap ridotto a 256m — adeguato per un knowledge graph piccolo/medio (< 100k nodi).*
+**Conclusione:** CX23 regge tutto con margine. Neo4j con heap 256m e adeguato per un graph piccolo/medio (< 100k nodi).
 
-### *Quando fare upgrade*
-*Upgrade al CX42 (16 GB, ~14 EUR/mese) quando: RAM used > 6.5 GB in condizioni normali (non picco). Su Hetzner il rescale e 2 click, zero downtime.*
+### Quando fare upgrade
+Upgrade al CX32/CX42 quando: RAM used > 3.5 GB in condizioni normali (non picco) o build in OOM ripetuto. Su Hetzner il rescale e 2 click, zero downtime.
 
 ---
 
@@ -1278,11 +1008,10 @@ sudo systemctl restart sshd
 
 ```
 
-### *14.4 Porte database non esposte*
-*Nessuna porta database e esposta nel compose (no *`ports:`* su postgres, redis, qdrant, neo4j). Sono raggiungibili solo dalla rete Docker interna.*
+### *14.4 Nessuna porta DB esposta*
+*Postgres e esterno (Neon, raggiungibile solo via TLS). Nel compose nessuna porta e esposta per redis e neo4j (no `ports:`) — raggiungibili solo dalla rete Docker interna.*
 
 ### *14.5 File .env protetto*
-
 ```bash
 chmod 600 /opt/108vision/.env
 
@@ -1297,10 +1026,10 @@ chmod 600 /opt/108vision/.env
 | SSL non funziona | DNS non propagato | dig +short api.108vision.it, attendi |
 | 502 Bad Gateway | Container non avviato | docker compose logs <service> |
 | WellBeing API crash | JWT key < 16 chars | Verifica WB_JWT_KEY (min 32 chars) |
-| LiteLLM non parte | DB connection string | Verifica che postgres sia healthy |
+| LiteLLM non parte | DB connection string | Verifica `NEON_LITELLM_DATABASE_URL` (endpoint `-pooler`, scale-to-zero OFF) |
 | Neo4j "heap too small" | RAM pressure | Riduci heap a 256m |
 | Qwen TTS timeout | WebSocket blocked | Verifica che outbound 443 sia aperto |
-| Website non builda | TinaCMS token scaduto | Rigenera TINA_TOKEN |
+| Timeout query / cold start | Neon scale-to-zero attivo | Disattivalo dal progetto Neon |
 
 ---
 
@@ -1327,10 +1056,9 @@ docker compose -f docker-compose.yml -f docker-compose.wellbeing.yml up -d --bui
 docker compose -f docker-compose.yml -f docker-compose.apps.yml -f docker-compose.wellbeing.yml logs -f
 docker logs --tail 100 -f wellbeing-api
 docker logs --tail 100 -f aia-gateway
-
-# === DATABASE ===
-docker exec -it postgres psql -U admin108 -d aia_platform
-docker exec -it postgres psql -U admin108 -d wellbeing
+# === DATABASE (tutto su Neon, dal terminale con le env var caricate) ===
+psql "$NEON_DATABASE_URL"
+psql "$NEON_LITELLM_DATABASE_URL"
 
 # === HEALTH ===
 /opt/108vision/health-check.sh
@@ -1353,23 +1081,21 @@ df -h
 
 ```plaintext
 /opt/108vision/
-├── docker-compose.yml              ← Infra (DB, cache, AI, proxy)
-├── docker-compose.apps.yml         ← App 108 AI (gateway, dashboard, client, downloads)
+├── docker-compose.yml              ← Infra (cache, graph, AI, proxy)
+├── docker-compose.apps.yml         ← App 108 AI (gateway, static: dashboard+client+downloads)
 ├── docker-compose.wellbeing.yml    ← WellBeing API
-├── docker-compose.website.yml      ← Sito 108vision.it (opzione B)
 ├── .env                            ← SEGRETO (chmod 600)
-├── init-databases.sql              ← Script init multi-DB
+├── bootstrap-neon.sql              ← Estensioni + schema shared + migrations 001→008
 ├── litellm-config.yaml             ← Config AI Gateway
 ├── deploy.sh                       ← Deploy automatico
 ├── backup.sh                       ← Backup script
 ├── health-check.sh                 ← Health check
+├── webhook-server.mjs              ← Autodeploy
 ├── public/
 │   └── downloads/                  ← Binari Desktop Agent
 ├── wellbeing-media/                ← Audio files WellBeing (volume mount)
 └── repos/
-    ├── aia-platform/               ← Git clone AIA Platform
-    ├── aia-website/                ← Git clone sito (opzione B)
-    └── wellbeing-app/              ← Git clone WellBeing
+    └── 108vision/                  ← Git clone monorepo (aia-platform/, aia-website/)
 
 /opt/backups/
 ├── postgres/                       ← Dump giornalieri
@@ -1387,27 +1113,28 @@ df -h
 
 ```bash
 # 1. Setup server (sezione 2) — 20 min
-# 2. Configura DNS (sezione 3) — 5 min + attesa propagazione
+# 2. Configura DNS (sezione 3) — 5 min + attesa propagazione (tutti i record, @/www compresi, → IP VPS)
 # 3. Crea directory e file compose (sezione 4) — 15 min
-# 4. Genera tutte le password nel .env — 10 min
-# 5. Avvia infrastruttura:
-docker compose up -d
+# 4. Genera tutte le password/URL Neon nel .env — 10 min
+# 5. Inizializza Neon (§4.4): CREATE DATABASE litellm/wellbeing + bootstrap-neon.sql
+# 6. Avvia infrastruttura:
+docker compose -f docker-compose.yml up -d
 
-# 6. Verifica che i DB siano healthy:
+# 7. Verifica che redis/neo4j/litellm siano healthy:
 docker compose ps
 
-# 7. Clone repos e avvia app:
+# 8. Clone repos e avvia app:
 docker compose -f docker-compose.yml -f docker-compose.apps.yml up -d --build
 
-# 8. Avvia WellBeing:
+# 9. Avvia WellBeing:
 docker compose -f docker-compose.yml -f docker-compose.wellbeing.yml up -d --build
 
-# 9. Verifica endpoints:
+# 10. Verifica endpoints:
 /opt/108vision/health-check.sh
 
-# 10. Configura backup e monitoring
-
+# 11. Configura backup e monitoring
 ```
+
 
 ---
 108 Vision — Costruiamo la direzione, non solo il codice.*

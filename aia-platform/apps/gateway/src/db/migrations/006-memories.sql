@@ -1,7 +1,8 @@
 -- 006: Persistent memory system
 -- Allows AI to remember user preferences, project context, and decisions across sessions.
+-- Idempotent: shared.memories may already exist from infrastructure/postgres/init/02-schemas.sql.
 
-CREATE TABLE shared.memories (
+CREATE TABLE IF NOT EXISTS shared.memories (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   tenant_id UUID NOT NULL REFERENCES shared.tenants(id) ON DELETE CASCADE,
   user_id UUID REFERENCES shared.users(id) ON DELETE SET NULL,
@@ -16,12 +17,13 @@ CREATE TABLE shared.memories (
 );
 
 -- Indexes
-CREATE INDEX idx_memories_tenant ON shared.memories(tenant_id);
-CREATE INDEX idx_memories_tenant_category ON shared.memories(tenant_id, category);
-CREATE INDEX idx_memories_tenant_tags ON shared.memories USING GIN(tags);
-CREATE INDEX idx_memories_embedding ON shared.memories USING ivfflat (embedding vector_cosine_ops) WITH (lists = 100);
+CREATE INDEX IF NOT EXISTS idx_memories_tenant ON shared.memories(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_memories_tenant_category ON shared.memories(tenant_id, category);
+CREATE INDEX IF NOT EXISTS idx_memories_tenant_tags ON shared.memories USING GIN(tags);
+CREATE INDEX IF NOT EXISTS idx_memories_embedding ON shared.memories USING ivfflat (embedding vector_cosine_ops) WITH (lists = 100);
 
 -- Trigger for updated_at
+DROP TRIGGER IF EXISTS set_updated_at ON shared.memories;
 CREATE TRIGGER set_updated_at
   BEFORE UPDATE ON shared.memories
   FOR EACH ROW

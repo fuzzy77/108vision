@@ -135,13 +135,13 @@ cd apps/client && pnpm dev
 
 ## Local Development — Website Only (`aia-website/`)
 
-The marketing website (`108vision.it`) is built with **Astro + TinaCMS** and deployed on Vercel. You can run it locally for UI changes, copy edits, or debugging without touching the platform at all.
+The marketing website (`108vision.it`) is built with **Astro + TinaCMS** as pure static output (`output: 'static'`, no serverless adapter) and is built + served by the `aia-static` nginx container on the VPS. You can run it locally for UI changes, copy edits, or debugging without touching the platform at all.
 
 ### Prerequisites
 
 - Node.js 20+
 - npm (bundled with Node)
-- Optional: a real `BREVO_API_KEY` to test the lead magnet form end-to-end
+- Lead magnet form posts to `/api/subscribe`, which is proxied to the gateway (`/api/public/lead/subscribe` → Brevo) only in production; it does not work against plain `astro dev`.
 
 ### Quick Start
 
@@ -156,7 +156,7 @@ npm run dev
 The site starts at **http://localhost:4321** (Astro default).  
 TinaCMS local editor available at **http://localhost:4321/admin** — no cloud credentials needed in local mode.
 
-> TinaCMS in local mode reads/writes content files directly from disk (no cloud sync). The `TINA_CLIENT_ID` and `TINA_TOKEN` env vars are only required on Vercel for the cloud editor.
+> TinaCMS in local mode reads/writes content files directly from disk (no cloud sync). Production builds read committed `content/` only — no Tina cloud env vars needed.
 
 ### Without TinaCMS (faster, no editor UI)
 
@@ -169,35 +169,20 @@ npx astro dev
 
 Same result at http://localhost:4321, but skips TinaCMS startup (~3s faster).
 
-### Environment Variables for Local Dev
-
-Create `aia-website/.env.local` (gitignored automatically by Astro):
-
-```bash
-# Required only to test the lead magnet form submission
-BREVO_API_KEY=your_key_here
-
-# Leave empty for local dev — TinaCMS runs in local mode
-# TINA_CLIENT_ID=
-# TINA_TOKEN=
-```
-
-Without `BREVO_API_KEY`, the form returns a 503 error — all other pages work fine.
-
 ### Build and Preview (production simulation)
 
 ```bash
 cd aia-website
 
-# Build (same command Vercel runs)
-npm run build:tina
+# Build (same command the Docker site stage runs)
+npm run build
 
 # Serve the built output locally
 npm run preview
 # → http://localhost:4321 (static output)
 ```
 
-Use `preview` to catch issues that only appear in production builds (e.g. missing prerender flags, broken static paths).
+Use `preview` to catch issues that only appear in production builds (e.g. broken static paths).
 
 ### Troubleshooting
 
@@ -213,11 +198,11 @@ This means the env var is being picked up from somewhere. Check that you don't h
 npx astro dev --port 4322
 ```
 
-#### Form returns 503 in local dev
-Expected if `BREVO_API_KEY` is not set. Add it to `.env.local` to test the full flow.
+#### Form returns 404/502 in local dev
+Expected: `/api/subscribe` only exists behind the production nginx vhost (proxied to the gateway). To test the full flow locally, run the gateway (`BREVO_API_KEY` set in its env) and point the request at `http://localhost:3000/api/public/lead/subscribe`.
 
-#### Build fails with adapter errors
-The `@astrojs/vercel` adapter is configured for static output (`output: 'static'` in `astro.config.mjs`). The `/api/subscribe` route has `export const prerender = false` which keeps it as a serverless function on Vercel but also works in local dev via `tinacms dev -c "astro dev"`.
+#### Build fails with "no adapter" errors
+There is no serverless adapter anymore — `astro.config.mjs` uses `output: 'static'` only. If a page sets `prerender = false`, the build fails with `NoAdapterInstalled`: keep all pages static and put server logic in the gateway.
 
 ---
 

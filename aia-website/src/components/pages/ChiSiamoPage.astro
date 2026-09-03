@@ -94,6 +94,36 @@ const contactPath = localizedPath('/contatti', locale);
       </div>
     </div>
   </section>
+  <section class="py-16 bg-white">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl font-bold text-slate-900 mb-4 text-center">{c.clients.heading}</h2>
+      <p class="text-slate-600 text-center max-w-3xl mx-auto mb-12">{c.clients.intro}</p>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {c.clients.items.map((client) => (
+          <div class="p-6 bg-slate-50 rounded-xl border border-slate-200">
+            <p class="font-semibold text-slate-900">{client.name}</p>
+            <p class="text-sm text-primary-600 font-medium mt-1 mb-2">{client.role}</p>
+            <p class="text-sm text-slate-600">{client.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="py-16 bg-slate-50">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl font-bold text-slate-900 mb-4 text-center">{c.aiExpertise.heading}</h2>
+      <p class="text-slate-600 text-center max-w-3xl mx-auto mb-12">{c.aiExpertise.intro}</p>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {c.aiExpertise.items.map((item) => (
+          <div class="p-6 bg-white rounded-xl border border-slate-200">
+            <h3 class="font-semibold text-slate-900 mb-2">{item.title}</h3>
+            <p class="text-sm text-slate-600">{item.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
 
   <CTASection
     title={c.cta.title}

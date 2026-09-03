@@ -154,11 +154,11 @@ const content: LocaleContent<DirezioneTecnicaContent> = {
       },
     },
     process: {
-      heading: 'Si entra con un Tech Assessment pagato',
+      heading: 'Il primo incontro è gratuito — e ti lascia già indicazioni utili',
       steps: [
         {
-          title: 'Call esplorativa',
-          text: 'Verifichiamo che esistano un team, un problema di direzione e accesso sufficiente alle evidenze. Se non c’è fit, lo diciamo.',
+          title: 'Incontro iniziale gratuito',
+          text: 'Capiamo se c’è un problema di direzione tecnica e, in ogni caso, ti lasciamo un valore concreto: uno studio iniziale di qualche ora con punti di miglioramento specifici già pronti.',
         },
         {
           title: 'Tech Assessment',
@@ -200,16 +200,16 @@ const content: LocaleContent<DirezioneTecnicaContent> = {
       },
     ],
     pdf: {
-      title: 'Presentazione per PMI (PDF)',
+      title: 'La presentazione che vende la direzione tecnica',
       description:
-        'Cinque pagine: diagnosi, costo dello status quo, metodo, deliverable e Tech Assessment. Da allegare a una mail o usare in call.',
-      cta: 'Scarica presentazione Direzione Tecnica',
+        'Cinque pagine pronte da inoltrare: quanto costa lo status quo, come portiamo ordine (metodo e deliverable) e come partire con un Tech Assessment.',
+      cta: 'Scarica subito la presentazione Direzione Tecnica',
     },
     partnerPdf: {
-      title: 'Kit per agenzie di consulenza (PDF)',
+      title: 'Il kit per qualificare l’opportunità',
       description:
-        'Cinque pagine per qualificare l’opportunità: promessa e confini, modelli B/C, RACI, script commerciale e Tech Assessment.',
-      cta: 'Scarica kit partner Direzione Tecnica',
+        'Cinque pagine per agenzie: promessa e confini, modelli B/C, RACI, script commerciale e Tech Assessment. Pronto per la prossima call.',
+      cta: 'Scarica subito il kit partner Direzione Tecnica',
     },
   },
   en: {
@@ -337,11 +337,11 @@ const content: LocaleContent<DirezioneTecnicaContent> = {
       },
     },
     process: {
-      heading: 'Start with a paid Tech Assessment',
+      heading: 'The first meeting is free — and already leaves you useful pointers',
       steps: [
         {
-          title: 'Exploratory call',
-          text: 'We confirm there is a team, a direction problem and enough access to evidence. If there is no fit, we say so.',
+          title: 'Free initial meeting',
+          text: 'We check for a technical direction problem and, in any case, leave you concrete value: a few hours of initial study with specific improvement points already ready.',
         },
         {
           title: 'Tech Assessment',
@@ -383,16 +383,16 @@ const content: LocaleContent<DirezioneTecnicaContent> = {
       },
     ],
     pdf: {
-      title: 'SME presentation (PDF)',
+      title: 'The presentation that sells technical direction',
       description:
-        'Five pages: diagnosis, cost of the status quo, method, deliverables and Tech Assessment. Attach it to an email or use it in a call.',
-      cta: 'Download Technical Direction presentation',
+        'Five pages ready to forward: what the status quo costs, how we bring order (method and deliverables), and how to start with a Tech Assessment.',
+      cta: 'Download the Technical Direction presentation now',
     },
     partnerPdf: {
-      title: 'Consulting firm partner kit (PDF)',
+      title: 'The kit to qualify the opportunity',
       description:
-        'Five pages to qualify the opportunity: promise and boundaries, B/C models, essential RACI, sales script and Tech Assessment.',
-      cta: 'Download Technical Direction partner kit',
+        'Five pages for agencies: promise and boundaries, B/C models, RACI, sales script and Tech Assessment. Ready for your next call.',
+      cta: 'Download the Technical Direction partner kit now',
     },
   },
 };

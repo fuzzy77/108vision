@@ -192,10 +192,6 @@ adminTenantsRouter.post('/', async (c) => {
     throw new AppError('TENANT_CREATE_FAILED', 'Failed to create tenant', 500);
   }
 
-  // Provision Qdrant collection
-  const { ensureCollection } = await import('../../lib/qdrant.js');
-  await ensureCollection(tenant.id);
-
   return c.json(tenant, 201);
 });
 
